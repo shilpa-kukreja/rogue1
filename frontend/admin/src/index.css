@@ -1,0 +1,25 @@
+@import "tailwindcss";
+
+
+
+
+/* Fix CKEditor styling in Vite */
+.cke_chrome {
+    border-radius: 0.5rem !important;
+    border: 1px solid #d1d5db !important;
+    overflow: hidden;
+    margin-top: 0.5rem;
+  }
+  
+  .cke_top {
+    border-bottom: 1px solid #d1d5db !important;
+    background: #f9fafb !important;
+  }
+  
+  .cke_bottom {
+    border-top: 1px solid #d1d5db !important;
+    background: #f9fafb !important;
+  }
+  .cke_notification{
+    display: none !important;
+  }

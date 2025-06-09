@@ -1,0 +1,279 @@
+
+  @font-face {
+    font-family: 'Andale Mono';
+    src: url('../src/assets/ANDALEMO.TTF') format('truetype');
+  }
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Orbitron:wght@400;700&display=swap');
+
+
+
+@import "tailwindcss";
+
+.container{ max-width:1080px; padding: 0 20px; }
+
+ body{
+      overflow-x: hidden;
+      font-family: 'Andale Mono', monospace;  
+      
+ }
+
+ :root {
+  --bgColor: #605B55;
+  --color: #D2D3D5;
+  --text-color:#A9ABAE ;
+}
+
+.glow {
+  /* text-shadow: 0 0 10px #ffcc00, 0 0 20px #ffcc00; */
+}
+
+.swiper-button-prev,
+.swiper-button-next {
+  color: white !important;}
+
+.swiper-pagination-bullet {
+  background-color: white !important; 
+  opacity: 0.7; 
+   display: none!important;
+}
+*{
+  text-transform: uppercase ;
+}
+
+/* .login-input{
+  text-transform: none;
+} */
+
+
+
+.swiper-pagination-bullet-active {
+  background-color: white !important; /* Active dot white */
+  opacity: 1;
+}
+
+.product_img { margin-right: -60px ;}
+
+
+  
+ /*  loginbar  */
+
+ .loginbars {
+  height: 1px;
+  width: 100%;
+  position: relative;
+  border: 1px dashed #A9ABAE;
+  margin: 25px 0px;
+}
+.loginbars::after {
+  position: absolute;
+  content: "or";
+  left: 50%;
+  transform: translateX(-50%);
+  top: -22px;
+  background: #333332;
+  padding: 0px;
+  margin: 0px;
+  padding: 7px;
+  color:#A9ABAE;
+}
+
+
+
+
+/*  360 image rotate  animation  */
+
+
+
+
+/* 
+.rotate_img {
+  position: relative;
+  
+
+  height: 500px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.rotate_img img {
+
+  object-fit: cover;
+   position: absolute; 
+  top: 0;
+  
+  right: 0;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  animation: showImages 7s infinite;
+}
+
+@keyframes showImages {
+   0% { opacity: 1; }
+   14% { opacity: 1; }
+   15% { opacity: 0; }
+   100% { opacity: 0; }
+}
+
+
+
+.rotate_img img:nth-child(1) { animation: showImages 7s infinite 0s; }
+.rotate_img img:nth-child(2) { animation: showImages 7s infinite 1s; }
+.rotate_img img:nth-child(3) { animation: showImages 7s infinite 2s; }
+.rotate_img img:nth-child(4) { animation: showImages 7s infinite 3s; }
+.rotate_img img:nth-child(5) { animation: showImages 7s infinite 4s; }
+.rotate_img img:nth-child(6) { animation: showImages 7s infinite 5s; }
+.rotate_img img:nth-child(7) { animation: showImages 7s infinite 6s; }
+
+ */
+
+ .rotate_img {
+  position: relative;
+  height: 500px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.rotate_img img {
+  object-fit: cover;
+  position: absolute;
+  right: 0;
+  
+  opacity:0;
+  transition: opacity 1s ease-in-out;
+  animation: showImages 7s infinite;
+}
+
+@keyframes showImages {
+  0% { opacity: 1; }
+  14% { opacity: 1; }
+  15% { opacity: 0; }
+  100% { opacity: 0; }
+}
+
+/* Apply animation to each image with different delays */
+.rotate_img img:nth-child(1) { animation: showImages 7s infinite 0s; }
+.rotate_img img:nth-child(2) { animation: showImages 7s infinite 1s; }
+.rotate_img img:nth-child(3) { animation: showImages 7s infinite 2s; }
+.rotate_img img:nth-child(4) { animation: showImages 7s infinite 3s; }
+.rotate_img img:nth-child(5) { animation: showImages 7s infinite 4s; }
+.rotate_img img:nth-child(6) { animation: showImages 7s infinite 5s; }
+.rotate_img img:nth-child(7) { animation: showImages 7s infinite 6s; }
+
+
+
+/* .product_details { display: flex;  justify-content: space-between; flex-wrap: wrap; width: 100%;} */
+
+/* .product_info{
+   width: 30%;
+} 
+
+/* .product_img{  width: 50%;} */
+
+
+
+@media screen and (max-width:992px) {
+
+  .product_img{ order: -1;}
+  .rotate_img img {
+    
+    right: 50%;
+    
+    z-index: 50;
+  }
+  
+}
+
+/* @media screen and (max-width:600px) {   
+  .swiper {  display: flex; justify-content: center; align-items: center; height: 100% ;}
+  .swiper .swiper-slide  {  display: flex; justify-content: center; align-items: center; height: 100% ;}
+
+  .login-remove{ display: none!important;}
+} */
+
+
+
+
+.cart {
+  width: 100px;
+  height: 100px;
+  background: url('https://cdn-icons-png.flaticon.com/512/1170/1170678.png') no-repeat center;
+  background-size: cover;
+  animation: rotateCart 5s linear infinite;
+}
+
+@keyframes rotateCart {
+  from {
+      transform: rotateY(0deg) rotateX(0deg);
+  }
+  to {
+      transform: rotateY(360deg) rotateX(360deg);
+  }
+}
+
+@keyframes moveCart {
+  0% {
+      left: -100px;
+  }
+  50% {
+      left: 50%;
+      transform: translateX(-50%);
+  }
+  100% {
+      left: 100vw;
+  }
+}
+
+.animation-image-container{
+  
+  width: 30%;
+  display: flex;
+  justify-content: center;
+}
+
+
+/* Swiper styles */
+.swiper {
+  width: 100%;
+  height: 100%;
+}
+
+.swiper-slide {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.swiper-slide img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+/* Navigation buttons */
+.swiper-button-next,
+.swiper-button-prev {
+  color: #fff;
+  background: rgba(0, 0, 0, 0.5);
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  font-size: 12px;
+}
+
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+/* Pagination bullets */
+.swiper-pagination-bullet {
+  background: #fff;
+  opacity: 0.5;
+}
+
+.swiper-pagination-bullet-active {
+  background: #fff;
+  opacity: 1;
+}
