@@ -99,7 +99,7 @@ const App = () => {
       playsInline
     >
       {browser === 'Safari' ? (
-        <source src={ rougemovideo } type="video/mov" />
+        <source src={ rougemovideo } type="video/quicktime" />
       ) : (
         <source src={bgVideo} type="video/mp4" />
       )}
