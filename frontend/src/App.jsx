@@ -50,16 +50,16 @@ const App = () => {
   const isSignUp = location.pathname === '/signup'
   const isForgotPassword = location.pathname === '/forgot-password'
   const isHomePage = location.pathname === "/";
-  const isCheckOut= location.pathname === "/checkout";
-  const isOrder= location.pathname === "/orders";
-  const isCart= location.pathname === "/checkout";
+  const isCheckOut = location.pathname === "/checkout";
+  const isOrder = location.pathname === "/orders";
+  const isCart = location.pathname === "/checkout";
 
   const [Muted, setIsMuted] = useState(true);
-   const [browser, setBrowser] = useState('');
+  const [browser, setBrowser] = useState('');
   const videoRef = useRef(null);
 
 
-    useEffect(() => {
+  useEffect(() => {
     const detected = getBrowser();
     console.log("Detected Browser:", detected);
     setBrowser(detected);
@@ -88,44 +88,45 @@ const App = () => {
     }}> */}
 
 
-       {isHomePage ? (
-  <>
-    <video
-      ref={videoRef}
-      className="absolute top-0 left-0 w-full h-full object-cover z-[-1]"
-      autoPlay
-      loop
-      muted={Muted}
-      playsInline
-    >
-      {browser === 'Safari' ? (
-        <source src={ rougemovideo } type="video/quicktime" />
-      ) : (
-        <source src={bgVideo} type="video/mp4" />
-      )}
-      Your browser does not support the video tag.
-    </video>
+      {isHomePage ? (
+        <>
+          <video
+            ref={videoRef}
+            className="absolute top-0 left-0 w-full h-full object-cover z-[-1]"
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+          >
+            {browser === 'Safari' ? (
+              <source src={bgVideo} type="video/mp4" />
+            ) : (
+              <source src={bgVideo} type="video/mp4" />
+            )}
+            Your browser does not support the video tag.
+          </video>
 
-    <button
-      onClick={toggleAudio}
-      className="absolute top-10 transform -translate-y-1/2 z-[100] text-[#A9ABAE] cursor-pointer font-andale rounded-full text-[18px] tracking-wide right-10"
-    >
-      {Muted ? <PiSpeakerSimpleSlashDuotone /> : <PiSpeakerSimpleNoneDuotone />}
-    </button>
-  </>
+          <button
+            onClick={toggleAudio}
+            className="absolute top-10 transform -translate-y-1/2 z-[100] text-[#A9ABAE] cursor-pointer font-andale rounded-full text-[18px] tracking-wide right-10"
+          >
+            {Muted ? <PiSpeakerSimpleSlashDuotone /> : <PiSpeakerSimpleNoneDuotone />}
+          </button>
+        </>
 
       ) : (
         <div
           className="absolute top-0 left-0 w-full h-full min-h-[100vh] bg-cover bg-center z-[-1]"
-          style={{ backgroundImage: `url(${assets.bgImg})`,backgroundAttachment : "fixed" }}
+          style={{ backgroundImage: `url(${assets.bgImg})`, backgroundAttachment: "fixed" }}
         />
-       
+
       )}
-       {!isLoginPage && !isSignUp && !isForgotPassword &&  !isHomePage && !isCheckOut && !isOrder && <Sidebar />}
+      {!isLoginPage && !isSignUp && !isForgotPassword && !isHomePage && !isCheckOut && !isOrder && <Sidebar />}
 
 
       <div>
-           
+
       </div>
 
 
@@ -136,19 +137,19 @@ const App = () => {
 
       {/* <Navbar  /> */}
       <ToastContainer
-  position="top-right"
-  autoClose={3000}
-  hideProgressBar={false}
-  newestOnTop={false}
-  closeOnClick
-  rtl={false}
-  pauseOnFocusLoss
-  draggable
-  pauseOnHover
-  theme="colored" // OR 'light' — avoid 'dark'
-/>
-      {!isLoginPage && !isSignUp && !isForgotPassword &&  <Navbar />}
-     
+        position="top-right"
+        autoClose={3000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={false}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+        theme="colored" // OR 'light' — avoid 'dark'
+      />
+      {!isLoginPage && !isSignUp && !isForgotPassword && <Navbar />}
+
 
       <Routes>
         <Route path='/' element={<Home />} />
@@ -175,8 +176,8 @@ const App = () => {
         <Route path="/search" element={<SearchResults />} />
         <Route path='*' element={<Error />} />
       </Routes>
-     
-      {!isLoginPage && !isHomePage && !isSignUp && !isForgotPassword && !isCart &&  <Footer />}
+
+      {!isLoginPage && !isHomePage && !isSignUp && !isForgotPassword && !isCart && <Footer />}
 
     </div>
   )
