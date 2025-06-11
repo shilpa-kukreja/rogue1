@@ -11,7 +11,7 @@ import Footer from './pages/Footer'
 import { useLocation } from 'react-router-dom'
 import Error from './component/Error'
 import Career from './component/Career'
-import rougemp4video from './assets/rougemp4video.mp4';
+import rougemp4video1 from './assets/rougemp4video1.mp4';
 
 import Terms from './component/Terms'
 import Shipping from './component/Shipping'
@@ -100,7 +100,7 @@ const App = () => {
             preload="auto"
           >
             {browser === 'Safari' ? (
-              <source src={rougemp4video} type="video/mp4" />
+              <source src={rougemp4video1} type="video/mp4" />
             ) : (
               <source src={bgVideo} type="video/mp4" />
             )}
