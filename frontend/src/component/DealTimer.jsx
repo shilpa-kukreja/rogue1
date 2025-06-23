@@ -12,7 +12,7 @@ const DealTimer = () => {
   useEffect(() => {
     // Set the date we're counting down to: June 10, 2025, 00:00:00
     // Month is 0-indexed, so June is 5
-    const countDownDate = new Date(2025, 5, 23, 0, 0, 0).getTime();
+    const countDownDate = new Date(2025, 6, 7, 0, 0, 0).getTime();
 
     const updateCountdown = () => {
       const now = new Date().getTime();
