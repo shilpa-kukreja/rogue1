@@ -331,6 +331,7 @@ const CheckOut = () => {
             );
 
             console.log("Shiprocket Response:", shipData);
+            console.log("order data brefore send email", order);
 
             if (shipData.success) {
               await axios.post("https://rogue0707.com/api/order/send-order-confirmation", {
