@@ -8,7 +8,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Link } from "react-router-dom";
-// import DealTimer from '../component/DealTimer';
+import DealTimer from '../component/DealTimer';
 // import DealTimer from '../component/DealTimer';
 
 
@@ -28,8 +28,8 @@ const Product = () => {
   return (
     <>
   
-     {/* <DealTimer/> */}
-     <div className='sm:max-w-[680px]    md:max-w-[700px]   lg:max-w-[1024px]  2xl:max-w-[1600px] h-[75vh] items-center justify-center mx-auto'>
+     <DealTimer/>
+     <div className='sm:max-w-[680px] hidden   md:max-w-[700px]   lg:max-w-[1024px]  2xl:max-w-[1600px] h-[75vh] items-center justify-center mx-auto'>
 
      
       {/* <h2 className='uppercase  pb-3  text-[#d2d3d4] text-2xl  text-center'>Rouge</h2> */}
