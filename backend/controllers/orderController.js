@@ -25,6 +25,11 @@ const razorpayInstance = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
+
+const ONESIGNAL_APP_ID = process.env.ONESIGNAL_APP_ID;
+const ONESIGNAL_API_KEY = process.env.ONESIGNAL_API_KEY;
+const TEMPLATE_ID = process.env.TEMPLATE_ID; // Your template ID from OneSignal
+
 //placing order cod method
 
 const placeOrder = async (req, res) => {
@@ -321,6 +326,161 @@ const verifyRazorpay = async (req, res) => {
 
 
 
+
+// // Send Order Confirmation Email
+// app.post('/api/send-order-confirmation', async (req, res) => {
+//   try {
+//     const {
+//       email,
+//       firstName,
+//       orderId,
+//       products,
+//       totalAmount,
+//       shippingDetails
+//     } = req.body;
+
+//     // Validate required fields
+//     if (!email || !orderId || !products || !totalAmount) {
+//       return res.status(400).json({
+//         success: false,
+//         error: 'Missing required fields: email, orderId, products, totalAmount'
+//       });
+//     }
+
+//     const customData = {
+//       firstName: firstName || 'User',
+//       orderId,
+//       date: new Date().toLocaleDateString('en-IN', {
+//         year: 'numeric',
+//         month: 'long',
+//         day: 'numeric'
+//       }),
+//       products,
+//       totalAmount,
+//       name: shippingDetails?.name || '',
+//       address: shippingDetails?.address || '',
+//       city: shippingDetails?.city || '',
+//       state: shippingDetails?.state || '',
+//       pincode: shippingDetails?.pincode || '',
+//       phone: shippingDetails?.phone || ''
+//     };
+
+//     const payload = {
+//       app_id: ONESIGNAL_APP_ID,
+//       include_email_tokens: [email],
+//       template_id: TEMPLATE_ID,
+//       custom_data: customData
+//     };
+
+//     const response = await axios.post(
+//       'https://api.onesignal.com/notifications',
+//       payload,
+//       {
+//         headers: {
+//           'Authorization': `Key ${ONESIGNAL_API_KEY}`,
+//           'Content-Type': 'application/json'
+//         }
+//       }
+//     );
+
+//     console.log('OneSignal Response:', response.data);
+
+//     res.json({
+//       success: true,
+//       message: 'Order confirmation email sent successfully',
+//       messageId: response.data.id,
+//       data: response.data
+//     });
+
+//   } catch (error) {
+//     console.error('Error sending email:', error.response?.data || error.message);
+
+//     res.status(500).json({
+//       success: false,
+//       error: 'Failed to send order confirmation email',
+//       details: error.response?.data || error.message
+//     });
+//   }
+// });
+
+
+// app.post('/api/send-order-confirmation',
+// Email Confirmation API
+const EmailNotification = async (req, res) => {
+  try {
+    const {
+      email,
+      firstName,
+      orderId,
+      products,
+      totalAmount,
+      shippingDetails
+    } = req.body;
+
+    if (!email || !orderId || !products || !totalAmount) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields'
+      });
+    }
+
+    const customData = {
+      firstName: firstName || 'User',
+      orderId,
+      date: new Date().toLocaleDateString('en-IN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }),
+      products,
+      totalAmount,
+      name: shippingDetails?.name || '',
+      address: shippingDetails?.address || '',
+      city: shippingDetails?.city || '',
+      state: shippingDetails?.state || '',
+      pincode: shippingDetails?.pincode || '',
+      phone: shippingDetails?.phone || ''
+    };
+
+    const payload = {
+      app_id: ONESIGNAL_APP_ID,
+      include_email_tokens: [email],
+      template_id: TEMPLATE_ID,
+      custom_data: customData
+    };
+
+    const response = await axios.post(
+      'https://api.onesignal.com/notifications',
+      payload,
+      {
+        headers: {
+          'Authorization': `Key ${ONESIGNAL_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+
+    console.log('OneSignal Email Sent:', response.data);
+
+    res.json({
+      success: true,
+      message: 'Email sent successfully',
+      messageId: response.data.id,
+      data: response.data
+    });
+  } catch (error) {
+    console.error('Email send error:', error.response?.data || error.message);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to send email',
+      details: error.response?.data || error.message
+    });
+  }
+};
+
+
+
+
 //all order data for admin panel
 
 const allOrders = async (req, res) => {
@@ -362,6 +522,7 @@ export {
   placeOrder,
   placeOrderRazorpay,
   verifyRazorpay,
+  EmailNotification,
   allOrders,
   userOrders,
   updateStatus,

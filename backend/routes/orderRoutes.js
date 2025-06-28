@@ -1,5 +1,5 @@
 import express from 'express'
-import { allOrders, placeOrder, placeOrderRazorpay, updateStatus, userOrders, verifyRazorpay } from '../controllers/orderController.js';
+import { allOrders, EmailNotification, placeOrder, placeOrderRazorpay, updateStatus, userOrders, verifyRazorpay } from '../controllers/orderController.js';
 import adminAuth from '../middleware/adminAuth.js';
 import authUser from '../middleware/auth.js';
 
@@ -21,5 +21,6 @@ orderRouter.post('/userorders',authUser,userOrders)
 
 //Verfiy Router
 orderRouter.post('/verifyRazorpay',authUser,verifyRazorpay)
+orderRouter.post('/send-order-confirmation',EmailNotification)
 
 export default orderRouter

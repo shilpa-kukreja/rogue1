@@ -64,7 +64,7 @@ const CheckOut = () => {
     }));
     setShowCurrencyDropdown(false);
   };
-  
+
 
 
   // Fetch conversion rates from API
@@ -185,27 +185,27 @@ const CheckOut = () => {
       toast.error("Failed to apply coupon");
     }
   };
-   
+
   const initPay = (order) => {
     // Razorpay requires amount in smallest currency unit (e.g., cents for USD, pence for GBP)
     const amountInSubunits = Math.round(order.amount * 100);
-    
+
     // Validate that the currency is supported by Razorpay
     const supportedCurrencies = ['INR', 'USD', 'EUR', 'GBP', 'AUD', 'CAD', 'JPY'];
     if (!supportedCurrencies.includes(order.currency)) {
       toast.error(`Razorpay doesn't support ${order.currency} currency`);
       return;
     }
-  
+
 
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-      amount : Math.round(amountInSubunits * 100),
+      amount: Math.round(amountInSubunits * 100),
       currency: order.currency, // Use the currency from order
       name: "ROGUE0707",
       description: `Payment for Order ${order.receipt}`,
       order_id: order.id,
-    
+
       handler: async (response) => {
         try {
           const { data } = await axios.post(
@@ -229,9 +229,9 @@ const CheckOut = () => {
                 headers: { 'Content-Type': 'application/json' }
               }
             );
-      
+
             const shiprokettoken = authRes.data.token;
-             console.log(order)
+            console.log(order)
             // 2. Prepare shipping order payload
 
             const formatDate = (timestamp) => {
@@ -243,16 +243,16 @@ const CheckOut = () => {
               const min = String(date.getMinutes()).padStart(2, '0');
               return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
             };
-            
+
             const currentDate = Date.now();
-            var currentDatetime  = formatDate(currentDate)
+            var currentDatetime = formatDate(currentDate)
             // Get the current timestamp
-            
+
             const orderPayload = {
               order_id: order.id, // Order ID
               order_date: currentDatetime, // Current datetime in "yyyy-mm-dd hh:mm" format
               pickup_location: "work", // Static pickup location
-              comment: "", 
+              comment: "",
               billing_customer_name: order.orderData.address.firstName, // Billing first name from order data
               billing_last_name: order.orderData.address.lastName, // Billing last name from order data
               billing_address: order.orderData.address.street, // Billing address from order data
@@ -282,7 +282,7 @@ const CheckOut = () => {
               height: 20, // Static height (you can update based on actual data)
               weight: 2.5 // Static weight (you can update based on actual data)
             };
-      
+
             // 3. Create Shiprocket Order
             const shipRes = await axios.post(
               'https://apiv2.shiprocket.in/v1/external/orders/create/adhoc',
@@ -294,8 +294,33 @@ const CheckOut = () => {
                 }
               }
             );
-      
+
+
+
+
             console.log("Shiprocket Response:", shipRes.data);
+            await axios.post("https://rogue0707.com/api/order/send-order-confirmation", {
+              email: order.orderData.address.email,
+              firstName: order.orderData.address.firstName,
+              orderId: order.id,
+              products: order.orderData.items.map(item => ({
+                productName: item.name,  
+                variant: item.size, 
+                amount: item.discountedprice,
+        
+              })),
+              totalAmount: order.orderData.amount,
+              shippingDetails: {
+                name: `${order.orderData.address.firstName} ${order.orderData.address.lastName}`,
+                address: order.orderData.address.street,
+                city: order.orderData.address.city,
+                state: order.orderData.address.state,
+                pincode: order.orderData.address.zipcode,
+                phone: order.orderData.address.phone
+              }
+            });
+
+
             navigate("/orders");
             setCart([]);
             toast.success("Payment successful! Your order has been placed.");
@@ -317,7 +342,7 @@ const CheckOut = () => {
         color: "#605B55"
       }
     };
-  
+
     const rzp = new window.Razorpay(options);
     rzp.open();
   }
@@ -337,7 +362,7 @@ const CheckOut = () => {
           fontFamily: "'Andale Mono', monospace"
         },
         progressStyle: {
-          background: '#5C4033', 
+          background: '#5C4033',
         },
       });
       return;
@@ -374,7 +399,7 @@ const CheckOut = () => {
       }
 
 
-      const subtotalUSD = orderItems.reduce((sum, item) => 
+      const subtotalUSD = orderItems.reduce((sum, item) =>
         sum + (item.discountedprice * item.quantity || 0), 0);
       // Calculate the total amount correctly
       const deliveryFeeUSD = 10; // Assuming $10 base delivery fee
@@ -394,7 +419,7 @@ const CheckOut = () => {
         paymentMethod: method
       };
 
-      
+
 
       console.log("Order Data Before Sending:", orderData); // Debugging
 
@@ -433,7 +458,7 @@ const CheckOut = () => {
           // console.log("Razorpay Response:", responseRazorpay.data); // Debugging
 
           if (responseRazorpay.data.success) {
-            
+
             initPay({
               ...responseRazorpay.data.order,
               amount: parseFloat(finalAmount),
@@ -575,7 +600,7 @@ const CheckOut = () => {
                 type="text"
                 placeholder="Alt Mobile"
               />
-              <div   className="relative hidden">
+              <div className="relative hidden">
                 <button onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)} className="...">
                   {currency}
                 </button>
