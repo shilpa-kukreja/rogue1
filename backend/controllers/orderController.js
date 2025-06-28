@@ -2,7 +2,7 @@ import Razorpay from "razorpay";
 import orderModel from "../models/orderModel.js";
 import User from "../models/userModel.js";
 import nodemailer from 'nodemailer';
-
+import axios from 'axios';
 //global variables
 const currency = "inr";
 const deliveryCharge = 10;
