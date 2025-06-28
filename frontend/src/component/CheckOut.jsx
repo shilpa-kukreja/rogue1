@@ -218,10 +218,11 @@ const CheckOut = () => {
             { headers: { token } }
           );
           if (data.success) {
+            console.log("order:",order);
             try {
               const shipRes = await axios.post(
                 "https://rogue0707.com/api/order/ship",
-                { orderData, orderid: order.id },
+                { orderData : order.orderData, orderid: order.id },
                 { headers: { token } }
               );
 
