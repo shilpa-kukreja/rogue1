@@ -572,7 +572,8 @@ const EmailNotification = async (req, res) => {
       success: true,
       message: 'Email sent successfully',
       messageId: response.data.id,
-      data: response.data
+      data: response.data,
+      payload : payload
     });
   } catch (error) {
     console.error('Email send error:', error.response?.data || error.message);

@@ -334,7 +334,7 @@ const CheckOut = () => {
             console.log("order data brefore send email", order);
 
             if (shipData.success) {
-              await axios.post("https://rogue0707.com/api/order/send-order-confirmation", {
+              const res = await axios.post("https://rogue0707.com/api/order/send-order-confirmation", {
                 email: order.orderData.address.email,
                 firstName: order.orderData.address.firstName,
                 orderId: order.id,
@@ -353,6 +353,8 @@ const CheckOut = () => {
                   phone: order.orderData.address.phone
                 }
               });
+
+              console.log("backend response", res.data);
 
               setCart([]);
               navigate("/orders");
