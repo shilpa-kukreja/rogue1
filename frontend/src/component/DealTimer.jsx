@@ -75,7 +75,7 @@ const DealTimer = () => {
   }, []);
 
   return (
-    <div className="h-[80vh] flex items-center justify-center  bg-cover bg-center bg-fixed bg-no-repeat" 
+    <div className="h-[80vh] flex flex-col items-center justify-center  bg-cover bg-center bg-fixed bg-no-repeat" 
          style={{ backgroundImage: "url('background.png')" }}>
       <div className=" bg-opacity-30   backdrop-saturate-150  max-w-3xl w-full">
         {dealExpired ? (
