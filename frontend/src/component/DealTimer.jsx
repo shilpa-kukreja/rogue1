@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { RiLock2Fill } from "react-icons/ri";
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 const DealTimer = () => {
   const [timeLeft, setTimeLeft] = useState({
@@ -8,6 +11,32 @@ const DealTimer = () => {
     seconds: '00'
   });
   const [dealExpired, setDealExpired] = useState(false);
+  const [email, setEmail] = useState("");
+
+
+   const handleSubmit =async (e) => {
+    e.preventDefault();
+    try {
+    const response=await axios.post("https://rogue0707.com/api/subscribe", { email });
+      toast(response.data.message, {
+        style: {
+          background: '#605B55',
+          color: '#A9ABAE',
+          width: '300px',
+          fontSize: '10px',
+          borderRadius: '8px',
+          fontFamily: "'Andale Mono', monospace"
+        },
+        progressStyle: {
+          background: '#5C4033', 
+        },
+      })
+      setEmail("");
+    } catch (error) {
+       toast.error(error.response?.data?.message || "Subscription failed");
+    }
+    
+  };
 
   useEffect(() => {
     // Set the date we're counting down to: June 10, 2025, 00:00:00
@@ -79,6 +108,29 @@ const DealTimer = () => {
            
           </>
         )}
+      </div>
+
+      <div>
+            <p className="text-[15px] text-[#63605c] text-center tracking-widest mb-4">"0707 BLACKLIST"</p>
+
+      <form
+        onSubmit={handleSubmit}
+        className="w-[280px] sm:w-[340px] flex items-center gap-2"
+      >
+        <input
+          type="email"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          placeholder=""
+          className="flex-1 px-3 py-0.5 rounded-full bg-[#40403e] text-[#A9ABAE] placeholder-[#A9ABAE] focus:outline-none "
+        />
+        <button
+          type="submit"
+          className="text-3xl  text-[#40403e]  "
+        >
+         <RiLock2Fill />
+        </button>
+      </form>
       </div>
     </div>
   );
