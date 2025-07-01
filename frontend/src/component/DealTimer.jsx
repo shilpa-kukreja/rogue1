@@ -111,7 +111,7 @@ const DealTimer = () => {
       </div>
 
       <div>
-            <p className="text-[18px] text-[#63605c] text-center tracking-widest mb-4">"0707 BLACKLIST"</p>
+            <p className="text-[15px] text-[#63605c] text-center tracking-widest mb-4">"0707 BLACKLIST"</p>
 
       <form
         onSubmit={handleSubmit}
