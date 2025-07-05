@@ -588,6 +588,49 @@ const EmailNotification = async (req, res) => {
 
 
 
+
+
+
+const sendorderstatusEmail=async(req,res)=>{
+  const data = req.body;
+  const status = data.current_status?.toLowerCase(); 
+  const customerEmail = data.customer_email;
+  const orderId = data.order_id;
+
+  try {
+    switch (status) {
+      case 'order_confirmed':
+        await sendOrderEmail(customerEmail, 'Order Confirmed', `Your order #${orderId} has been confirmed.`);
+        break;
+
+      case 'shipped':
+        await sendOrderEmail(customerEmail, 'Order Shipped', `Your order #${orderId} has been shipped.`);
+        break;
+
+      case 'out_for_delivery':
+        await sendOrderEmail(customerEmail, 'Out for Delivery', `Your order #${orderId} is out for delivery.`);
+        break;
+
+      // Optional: handle delivered, cancelled, etc.
+    }
+
+    res.status(200).send('Webhook received');
+  } catch (err) {
+    console.error('Error sending email:', err);
+    res.status(500).send('Error processing webhook');
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
 //all order data for admin panel
 
 const allOrders = async (req, res) => {
@@ -631,6 +674,7 @@ export {
   verifyRazorpay,
   ShipOrders,
   EmailNotification,
+  sendorderstatusEmail,
   allOrders,
   userOrders,
   updateStatus,

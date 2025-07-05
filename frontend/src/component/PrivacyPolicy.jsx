@@ -56,6 +56,7 @@ const PrivacyPolicy = () => {
       <p className='text-[#A9ABAE] text-xs'>For more information about our privacy practices, questions, or complaints, contact us at support@rogue0707.com.</p>
 
       <p className='text-[#A9ABAE] text-xs  mt-5 font-semibold'>Team ROGUE 0707</p>
+      <p></p>
     </div>
   );
 };
