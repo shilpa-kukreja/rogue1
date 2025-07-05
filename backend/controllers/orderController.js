@@ -632,11 +632,15 @@ const sendorderstatusEmail = async (req, res) => {
   const customerEmail = data.customer_email;
   const orderId = data.order_id;
 
-  if (!status || !customerEmail || !orderId) {
-    return res.status(400).json({
-      success: false,
-      error: 'Missing required fields in webhook data'
-    });
+  // if (!status || !customerEmail || !orderId) {
+  //   return res.status(400).json({
+  //     success: false,
+  //     error: 'Missing required fields in webhook data'
+  //   });
+  // }
+
+   if (!status || !customerEmail || !orderId) {
+    return res.status(200).send("ok")
   }
 
   // Optional: You can use different templates for each status
