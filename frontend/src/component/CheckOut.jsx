@@ -348,6 +348,7 @@ const CheckOut = () => {
                   name: `${order.orderData.address.firstName} ${order.orderData.address.lastName}`,
                   address: order.orderData.address.street,
                   city: order.orderData.address.city,
+                  currency:order.orderData.address.currencytype,
                   state: order.orderData.address.state,
                   pincode: order.orderData.address.zipcode,
                   phone: order.orderData.address.phone
