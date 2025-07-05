@@ -14,6 +14,7 @@ const ShopContextProvider = (props) => {
   const [token, setToken] = useState("");
   const [currency, setCurrency] = useState('USD');
   const navigate = useNavigate();
+   const [timerExpire, setTimerExpire] = useState(false);
 
   const [cart, setCart] = useState(() => {
     const savedCart = localStorage.getItem("cart");
@@ -214,6 +215,8 @@ const ShopContextProvider = (props) => {
     navigate,
     getCartCount,
     updateQuantity,
+     timerExpire,
+    setTimerExpire
   };
   return (
     <ShopContext.Provider value={value}>{props.children}</ShopContext.Provider>

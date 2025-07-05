@@ -1,23 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { RiLock2Fill } from "react-icons/ri";
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { ShopContext } from '../Context/ShopContext';
 
-const DealTimer = () => {
+const DealTimer = ({ onDealEnd }) => {
+  const { setTimerExpire, timerExpire } = useContext(ShopContext);
+
   const [timeLeft, setTimeLeft] = useState({
     days: '00',
     hours: '00',
     minutes: '00',
     seconds: '00'
   });
-  const [dealExpired, setDealExpired] = useState(false);
+
   const [email, setEmail] = useState("");
 
-
-   const handleSubmit =async (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-    const response=await axios.post("https://rogue0707.com/api/subscribe", { email });
+      const response = await axios.post("https://rogue0707.com/api/subscribe", { email });
       toast(response.data.message, {
         style: {
           background: '#605B55',
@@ -28,27 +30,25 @@ const DealTimer = () => {
           fontFamily: "'Andale Mono', monospace"
         },
         progressStyle: {
-          background: '#5C4033', 
+          background: '#5C4033',
         },
-      })
+      });
       setEmail("");
     } catch (error) {
-       toast.error(error.response?.data?.message || "Subscription failed");
+      toast.error(error.response?.data?.message || "Subscription failed");
     }
-    
   };
 
   useEffect(() => {
-    // Set the date we're counting down to: June 10, 2025, 00:00:00
-    // Month is 0-indexed, so June is 5
-    const countDownDate = new Date(2025, 6, 7, 9, 45, 0).getTime();
+    const countDownDate = new Date(2025, 6, 5, 17, 38, 0).getTime();
 
     const updateCountdown = () => {
       const now = new Date().getTime();
       const distance = countDownDate - now;
 
       if (distance < 0) {
-        setDealExpired(true);
+        setTimerExpire(true);
+        if (onDealEnd) onDealEnd();
         return;
       }
 
@@ -65,72 +65,53 @@ const DealTimer = () => {
       });
     };
 
-    // Initial call to display the timer immediately
     updateCountdown();
-
-    // Update the countdown every 1 second
     const timerInterval = setInterval(updateCountdown, 1000);
-
     return () => clearInterval(timerInterval);
-  }, []);
+  }, [onDealEnd, setTimerExpire]);
+
+  if (timerExpire) return null; // ✅ Don't render anything if timer expired
 
   return (
-    <div className="h-[80vh] flex flex-col items-center justify-center  bg-cover bg-center bg-fixed bg-no-repeat" 
-         style={{ backgroundImage: "url('background.png')" }}>
-      <div className=" bg-opacity-30   backdrop-saturate-150  max-w-3xl w-full">
-        {dealExpired ? (
-          <>
-            <h1 className="text-3xl md:text-4xl font-bold text-center mb-8 font-orbitron text-yellow-400 tracking-wider">
-              DEAL EXPIRED
-            </h1>
-            <div className="bg-white bg-opacity-10 p-6 rounded-xl border border-white border-opacity-20">
-              <p className="text-2xl text-yellow-400 text-center">The deal has expired!</p>
-            </div>
-          </>
-        ) : (
-          <>
-            {/* <h1 className="text-2xl md:text-4xl font-bold text-center mb-6 md:mb-8 font-orbitron text-yellow-400 tracking-wider glow">
-              EXCLUSIVE OFFER ENDS SOON!
-            </h1> */}
-            
-            <div className="flex justify-center mb-8 md:mb-10">
-              <div className="flex flex-col md:flex-row items-center  bg-opacity-10   rounded-xl ">
-                <TimeSegment value={timeLeft.days} label="Days"  />
-                <Separator />
-                <TimeSegment value={timeLeft.hours} label="Hours" />
-                <Separator />
-                <TimeSegment value={timeLeft.minutes} label="Minutes" />
-                <Separator />
-                <TimeSegment value={timeLeft.seconds} label="Seconds" />
-              </div>
-            </div>
-            
-           
-          </>
-        )}
-      </div>
+    <div className="h-[80vh] flex flex-col items-center justify-center bg-cover bg-center bg-fixed bg-no-repeat"
+      style={{ backgroundImage: "url('background.png')" }}>
+      <div className="bg-opacity-30 backdrop-saturate-150 max-w-3xl w-full">
 
-      <div>
-            <p className="text-[15px] text-[#63605c] text-center tracking-widest mb-4">"0707 BLACKLIST"</p>
+        <div className="flex justify-center mb-8 md:mb-10">
+          <div className="flex flex-col md:flex-row items-center bg-opacity-10 rounded-xl">
+            <TimeSegment value={timeLeft.days} label="Days" />
+            <Separator />
+            <TimeSegment value={timeLeft.hours} label="Hours" />
+            <Separator />
+            <TimeSegment value={timeLeft.minutes} label="Minutes" />
+            <Separator />
+            <TimeSegment value={timeLeft.seconds} label="Seconds" />
+          </div>
+        </div>
 
-      <form
-        onSubmit={handleSubmit}
-        className="w-[280px] sm:w-[340px] flex items-center gap-2"
-      >
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder=""
-          className="flex-1 px-3 py-0.5 rounded-full bg-[#40403e] text-[#A9ABAE] placeholder-[#A9ABAE] focus:outline-none "
-        />
-        <button
-          type="submit"
-          className="text-3xl  text-[#40403e]  "
-        >
-         <RiLock2Fill />
-        </button>
-      </form>
+        <div className='flex flex-col items-center justify-center'> 
+          <p className="text-[15px] text-[#63605c] font-bold text-center tracking-widest mb-4">"0707 BLACKLIST"</p>
+
+          <form
+            onSubmit={handleSubmit}
+            className="w-[280px] sm:w-[340px] flex items-center gap-2"
+          >
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder=""
+              className="flex-1 px-3 py-0.5 rounded-full bg-[#40403e] text-[#A9ABAE] placeholder-[#A9ABAE] focus:outline-none"
+            />
+            <button
+              type="submit"
+              className="text-3xl text-[#40403e]"
+            >
+              <RiLock2Fill />
+            </button>
+          </form>
+        </div>
+
       </div>
     </div>
   );
