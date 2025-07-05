@@ -40,7 +40,7 @@ const DealTimer = ({ onDealEnd }) => {
   };
 
   useEffect(() => {
-    const countDownDate = new Date(2025, 6, 5, 17, 38, 0).getTime();
+    const countDownDate = new Date(2025, 6, 5, 17, 50, 0).getTime();
 
     const updateCountdown = () => {
       const now = new Date().getTime();
