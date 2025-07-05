@@ -82,6 +82,7 @@ const placeOrderRazorpay = async (req, res) => {
     const { userId, items, amount, address, couponCode, discount, currency } = req.body;
 
     const orderData = {
+      orderid: "", // Will be filled after Razorpay order creation
       userId,
       items,
       amount,
@@ -92,26 +93,33 @@ const placeOrderRazorpay = async (req, res) => {
       couponCode,
       discount,
     };
+
     const newOrder = new orderModel(orderData);
     await newOrder.save();
 
     const options = {
-      amount: Math.round((amount - (discount || 0)) * 100),
+      amount: Math.round((amount - (discount || 0)) * 100), // Convert to paise
       currency: currency.toUpperCase(),
       receipt: newOrder._id.toString(),
     };
-    await razorpayInstance.orders.create(options, (error, order) => {
+
+    razorpayInstance.orders.create(options, async (error, razorpayOrder) => {
       if (error) {
         console.log(error);
         return res.json({ success: false, message: error });
       }
-      res.json({ success: true, order });
+
+      newOrder.orderid = razorpayOrder.id;
+      await newOrder.save();
+
+      res.json({ success: true, order: razorpayOrder });
     });
   } catch (error) {
     console.log(error);
     res.json({ success: false, message: error.message });
   }
 };
+
 
 
 const verifyRazorpay = async (req, res) => {
@@ -625,62 +633,158 @@ const EmailNotification = async (req, res) => {
 
 
 
+// const sendorderstatusEmail = async (req, res) => {
+//   const data = req.body;
+
+//   const status = data.current_status?.toLowerCase(); 
+//   const customerEmail = data.customer_email;
+//   const orderId = data.order_id;
+
+//   // if (!status || !customerEmail || !orderId) {
+//   //   return res.status(400).json({
+//   //     success: false,
+//   //     error: 'Missing required fields in webhook data'
+//   //   });
+//   // }
+
+//    if (!status || !customerEmail || !orderId) {
+//     return res.status(200).send("OK")
+//   }
+
+//   // Optional: You can use different templates for each status
+//   const STATUS_TEMPLATES = {
+//     order_reserved: '6636af91-29c3-4c5b-a739-f8ebf4022742',
+//     shipped: '01f337cf-b0ed-4eb1-bd59-ad18d522a65b',
+//     out_for_delivery: 'a22de7d7-886c-4beb-a3b1-530e0a09dfe0',
+//     order_arrived:'a9f0f8d0-fc7f-45e2-932f-6f59d72953a4',
+//   };
+
+//   const template_id = STATUS_TEMPLATES[status];
+
+//   if (!template_id) {
+//     console.log(`No email template configured for status: ${status}`);
+//     return res.status(200).send('No email sent (status not handled)');
+//   }
+
+//   const customData = {
+//     orderId,
+//     date: new Date().toLocaleDateString('en-IN', {
+//       year: 'numeric',
+//       month: 'long',
+//       day: 'numeric'
+//     }),
+//     status: status,
+//   };
+
+//   const payload = {
+//     app_id: ONESIGNAL_APP_ID,
+//     include_email_tokens: [customerEmail],
+//     template_id: template_i1d,
+//     custom_data: customData
+//   };
+
+//   try {
+//     const response = await axios.post(
+//       'https://api.onesignal.com/notifications',
+//       payload,
+//       {
+//         headers: {
+//           'Authorization': `Key ${ONESIGNAL_API_KEY}`,
+//           'Content-Type': 'application/json'
+//         }
+//       }
+//     );
+
+//     console.log('OneSignal Order Status Email Sent:', response.data);
+
+//     res.status(200).json({
+//       success: true,
+//       message: 'Order status email sent',
+//       messageId: response.data.id,
+//       status: status
+//     });
+//   } catch (error) {
+//     console.error('Error sending OneSignal email:', error.response?.data || error.message);
+//     res.status(500).json({
+//       success: false,
+//       error: 'Failed to send status email',
+//       details: error.response?.data || error.message
+//     });
+//   }
+// };
+
+
+
+
+
+
 const sendorderstatusEmail = async (req, res) => {
   const data = req.body;
 
-  const status = data.current_status?.toLowerCase(); 
-  const customerEmail = data.customer_email;
+  const status = data.current_status?.toLowerCase();
   const orderId = data.order_id;
 
-  // if (!status || !customerEmail || !orderId) {
-  //   return res.status(400).json({
-  //     success: false,
-  //     error: 'Missing required fields in webhook data'
-  //   });
-  // }
-
-   if (!status || !customerEmail || !orderId) {
-    return res.status(200).send("OK")
+  if (!status || !orderId) {
+    return res.status(200).send("OK");
   }
 
-  // Optional: You can use different templates for each status
   const STATUS_TEMPLATES = {
-    order_confirmed: 'TEMPLATE_ID_ORDER_CONFIRMED',
-    shipped: 'TEMPLATE_ID_ORDER_SHIPPED',
-    out_for_delivery: 'TEMPLATE_ID_OUT_FOR_DELIVERY',
+    order_reserved: '6636af91-29c3-4c5b-a739-f8ebf4022742',
+    shipped: '01f337cf-b0ed-4eb1-bd59-ad18d522a65b',
+    out_for_delivery: 'a22de7d7-886c-4beb-a3b1-530e0a09dfe0',
+    order_arrived: 'a9f0f8d0-fc7f-45e2-932f-6f59d72953a4',
   };
 
   const template_id = STATUS_TEMPLATES[status];
-
   if (!template_id) {
     console.log(`No email template configured for status: ${status}`);
     return res.status(200).send('No email sent (status not handled)');
   }
 
-  const customData = {
-    orderId,
-    date: new Date().toLocaleDateString('en-IN', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    }),
-    status: status,
-  };
-
-  const payload = {
-    app_id: ONESIGNAL_APP_ID,
-    include_email_tokens: [customerEmail],
-    template_id: template_id,
-    custom_data: customData
-  };
-
   try {
+    const order = await orderModel.findOne({ orderid: orderId }); 
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        error: 'Order not found',
+      });
+    }
+
+    const customerEmail = order.email;
+
+    const customData = {
+      firstName: order.firstName || 'User',
+      orderId: order.orderid,
+      date: new Date().toLocaleDateString('en-IN', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      }),
+      products: order.items || [],
+      totalAmount: order.amount || 0,
+      name: order.address?.name || '',
+      address: order.address?.address || '',
+      city: order.address?.city || '',
+      state: order.address?.state || '',
+      pincode: order.address?.pincode || '',
+      phone: order.address?.phone || '',
+      status: status
+    };
+
+    const payload = {
+      app_id: process.env.ONESIGNAL_APP_ID,
+      include_email_tokens: [customerEmail],
+      template_id,
+      custom_data: customData
+    };
+
     const response = await axios.post(
       'https://api.onesignal.com/notifications',
       payload,
       {
         headers: {
-          'Authorization': `Key ${ONESIGNAL_API_KEY}`,
+          Authorization: `Key ${process.env.ONESIGNAL_API_KEY}`,
           'Content-Type': 'application/json'
         }
       }
@@ -694,6 +798,7 @@ const sendorderstatusEmail = async (req, res) => {
       messageId: response.data.id,
       status: status
     });
+
   } catch (error) {
     console.error('Error sending OneSignal email:', error.response?.data || error.message);
     res.status(500).json({
@@ -703,6 +808,7 @@ const sendorderstatusEmail = async (req, res) => {
     });
   }
 };
+
 
 
 
