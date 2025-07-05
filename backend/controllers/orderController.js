@@ -591,35 +591,115 @@ const EmailNotification = async (req, res) => {
 
 
 
-const sendorderstatusEmail=async(req,res)=>{
+// const sendorderstatusEmail=async(req,res)=>{
+//   const data = req.body;
+//   const status = data.current_status?.toLowerCase(); 
+//   const customerEmail = data.customer_email;
+//   const orderId = data.order_id;
+
+//   try {
+//     switch (status) {
+//       case 'order_confirmed':
+//         await sendOrderEmail(customerEmail, 'Order Confirmed', `Your order #${orderId} has been confirmed.`);
+//         break;
+
+//       case 'shipped':
+//         await sendOrderEmail(customerEmail, 'Order Shipped', `Your order #${orderId} has been shipped.`);
+//         break;
+
+//       case 'out_for_delivery':
+//         await sendOrderEmail(customerEmail, 'Out for Delivery', `Your order #${orderId} is out for delivery.`);
+//         break;
+
+//       // Optional: handle delivered, cancelled, etc.
+//     }
+
+//     res.status(200).send('Webhook received');
+//   } catch (err) {
+//     console.error('Error sending email:', err);
+//     res.status(500).send('Error processing webhook');
+//   }
+// };
+
+
+
+
+
+const sendorderstatusEmail = async (req, res) => {
   const data = req.body;
+
   const status = data.current_status?.toLowerCase(); 
   const customerEmail = data.customer_email;
   const orderId = data.order_id;
 
+  if (!status || !customerEmail || !orderId) {
+    return res.status(400).json({
+      success: false,
+      error: 'Missing required fields in webhook data'
+    });
+  }
+
+  // Optional: You can use different templates for each status
+  const STATUS_TEMPLATES = {
+    order_confirmed: 'TEMPLATE_ID_ORDER_CONFIRMED',
+    shipped: 'TEMPLATE_ID_ORDER_SHIPPED',
+    out_for_delivery: 'TEMPLATE_ID_OUT_FOR_DELIVERY',
+  };
+
+  const template_id = STATUS_TEMPLATES[status];
+
+  if (!template_id) {
+    console.log(`No email template configured for status: ${status}`);
+    return res.status(200).send('No email sent (status not handled)');
+  }
+
+  const customData = {
+    orderId,
+    date: new Date().toLocaleDateString('en-IN', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    }),
+    status: status,
+  };
+
+  const payload = {
+    app_id: ONESIGNAL_APP_ID,
+    include_email_tokens: [customerEmail],
+    template_id: template_id,
+    custom_data: customData
+  };
+
   try {
-    switch (status) {
-      case 'order_confirmed':
-        await sendOrderEmail(customerEmail, 'Order Confirmed', `Your order #${orderId} has been confirmed.`);
-        break;
+    const response = await axios.post(
+      'https://api.onesignal.com/notifications',
+      payload,
+      {
+        headers: {
+          'Authorization': `Key ${ONESIGNAL_API_KEY}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
 
-      case 'shipped':
-        await sendOrderEmail(customerEmail, 'Order Shipped', `Your order #${orderId} has been shipped.`);
-        break;
+    console.log('OneSignal Order Status Email Sent:', response.data);
 
-      case 'out_for_delivery':
-        await sendOrderEmail(customerEmail, 'Out for Delivery', `Your order #${orderId} is out for delivery.`);
-        break;
-
-      // Optional: handle delivered, cancelled, etc.
-    }
-
-    res.status(200).send('Webhook received');
-  } catch (err) {
-    console.error('Error sending email:', err);
-    res.status(500).send('Error processing webhook');
+    res.status(200).json({
+      success: true,
+      message: 'Order status email sent',
+      messageId: response.data.id,
+      status: status
+    });
+  } catch (error) {
+    console.error('Error sending OneSignal email:', error.response?.data || error.message);
+    res.status(500).json({
+      success: false,
+      error: 'Failed to send status email',
+      details: error.response?.data || error.message
+    });
   }
 };
+
 
 
 
