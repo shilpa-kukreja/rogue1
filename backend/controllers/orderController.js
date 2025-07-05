@@ -640,7 +640,7 @@ const sendorderstatusEmail = async (req, res) => {
   // }
 
    if (!status || !customerEmail || !orderId) {
-    return res.status(200).send("ok")
+    return res.status(200).send("OK")
   }
 
   // Optional: You can use different templates for each status
