@@ -845,6 +845,32 @@ const EmailNotification = async (req, res) => {
   }
 
 
+
+
+  
+     const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      }
+    });
+
+    const mailOptions = {
+      from: `"Webhook Notification" <${process.env.EMAIL_USER}>`,
+      to: toEmail,
+      subject: ` Shiprocket Webhook Received`,
+      text: `Here is the raw webhook data:\n\n${JSON.stringify(data, null, 2)}`,
+      html: `
+        <h3>Shiprocket Webhook Data</h3>
+        <pre style="background:#f4f4f4;padding:10px;border-radius:6px;">${JSON.stringify(data, null, 2)}</pre>
+      `
+    };
+
+    const result = await transporter.sendMail(mailOptions);
+    console.log(' Webhook Email Sent:', result.messageId);
+
+
   const STATUS_TEMPLATES = {
     order_reserved: '6636af91-29c3-4c5b-a739-f8ebf4022742',
     shipped: '01f337cf-b0ed-4eb1-bd59-ad18d522a65b',
@@ -909,27 +935,6 @@ const EmailNotification = async (req, res) => {
       console.log(` No OneSignal template for status: ${status}`);
     }
 
-     const transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      }
-    });
-
-    const mailOptions = {
-      from: `"Webhook Notification" <${process.env.EMAIL_USER}>`,
-      to: toEmail,
-      subject: ` Shiprocket Webhook Received`,
-      text: `Here is the raw webhook data:\n\n${JSON.stringify(data, null, 2)}`,
-      html: `
-        <h3>Shiprocket Webhook Data</h3>
-        <pre style="background:#f4f4f4;padding:10px;border-radius:6px;">${JSON.stringify(data, null, 2)}</pre>
-      `
-    };
-
-    const result = await transporter.sendMail(mailOptions);
-    console.log(' Webhook Email Sent:', result.messageId);
 
     return res.status(200).json({
       success: true,
