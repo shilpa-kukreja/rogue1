@@ -726,7 +726,7 @@ const sendorderstatusEmail = async (req, res) => {
   const orderId = data.order_id;
 
   if (!status || !orderId) {
-    return res.status(200).send("OK");
+      res.json({ success: true, order : 'ok' });
   }
 
   const STATUS_TEMPLATES = {

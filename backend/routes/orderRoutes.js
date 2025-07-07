@@ -23,6 +23,6 @@ orderRouter.post('/userorders',authUser,userOrders)
 orderRouter.post('/verifyRazorpay',authUser,verifyRazorpay)
 orderRouter.post('/send-order-confirmation',EmailNotification)
 orderRouter.post('/ship',ShipOrders)
-orderRouter.post('/shiprocket-webhook',sendorderstatusEmail)
+orderRouter.post('/shipemail',sendorderstatusEmail)
 
 export default orderRouter
