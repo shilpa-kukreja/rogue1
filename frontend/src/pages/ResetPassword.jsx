@@ -42,12 +42,12 @@ const ResetPassword = () => {
   };
 
   return (
-    <div className='flex min-h-screen items-center justify-center bg-white p-6'>
-      <div className='w-full max-w-md p-8 bg-white rounded-lg shadow-lg'>
-        <h2 className='text-2xl font-bold text-center mb-6'>Reset Password</h2>
+    <div className='flex h-[80vh] items-center justify-center  p-6'>
+      <div className='w-full max-w-md p-8  rounded-lg shadow-lg'>
+        <h2 className='text-2xl font-bold text-[#A9ABAE]  text-center mb-6'>Reset Password</h2>
         <form onSubmit={handleSubmit} className='space-y-4'>
           <input
-            className='w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-700 placeholder-gray-500'
+            className='w-full border border-gray-300 text-[#A9ABAE]  text-sm rounded-lg px-4 py-2 focus:outline-none placeholder-gray-500'
             type='password'
             placeholder='New Password'
             value={password}
@@ -55,7 +55,7 @@ const ResetPassword = () => {
             required
           />
           <input
-            className='w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-gray-700 placeholder-gray-500'
+            className='w-full border text-[#A9ABAE]  text-sm  border-gray-300 rounded-lg px-4 py-2 focus:outline-none  placeholder-gray-500'
             type='password'
             placeholder='Confirm New Password'
             value={confirmPassword}
@@ -64,7 +64,7 @@ const ResetPassword = () => {
           />
           <button
             type='submit'
-            className='w-full bg-[#743B32] text-white py-2 rounded-lg text-lg font-semibold hover:bg-[#5a2a25] transition'
+            className='w-full bg-[#605B55]  px-2 mt-3 text-[#D2D3D5]  py-2 rounded-lg text-lg font-semibold  transition'
           >
             Reset Password
           </button>
