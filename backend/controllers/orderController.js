@@ -725,9 +725,9 @@ const sendorderstatusEmail = async (req, res) => {
   const status = data.current_status?.toLowerCase();
   const orderId = data.order_id;
 
-  if (!status || !orderId) {
-      res.json({ success: true, order : 'ok' });
-  }
+  // if (!status || !orderId) {
+  //     res.json({ success: true, order : 'ok' });
+  // }
 
   const STATUS_TEMPLATES = {
     order_reserved: '6636af91-29c3-4c5b-a739-f8ebf4022742',
