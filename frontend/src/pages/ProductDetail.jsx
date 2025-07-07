@@ -340,7 +340,7 @@ const ProductDetail = () => {
                                                 <img
                                                     src={`https://rogue0707.com${variant.images[3]}`}
                                                     alt={selectedProduct.name}
-                                                    className='object-cover h-[132px] w-full'
+                                                    className='object-cover h-[132px] m-auto'
                                                 />
                                             )
                                         }
