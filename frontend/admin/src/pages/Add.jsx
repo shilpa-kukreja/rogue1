@@ -86,6 +86,37 @@ const Add = () => {
     sizesInfo: [],
   };
 
+
+//   const initialVariant = (variantIndex) => {
+//   if (variantIndex === 0) {
+//     return {
+//       gender: "men",
+//       color: "",
+//       video: "dummy-video-placeholder",
+//       videoPreview: null,
+//       animationimages: [],
+//       animationPreviews: [],
+//       images: [],
+//       imagePreviews: [],
+//       sizeChart: [
+//         { ref: "", label: "", XXS: 0, XS: 0, S: 0, M: 0, L: 0, XL: 0, XXL: 0 },
+//       ],
+//       sizesInfo: [],
+//     };
+//   } else {
+//     return {
+//       gender: "men",
+//       color: "",
+//       video: "dummy-video-placeholder",
+//       videoPreview: null,
+//       animationimages: [],
+//       animationPreviews: [],
+//       images: [],
+//       imagePreviews: [],
+//     };
+//   }
+// };
+
   // Variants State
   const [variants, setVariants] = useState([{ ...initialVariant }]);
 
@@ -495,6 +526,8 @@ const handleSubmit = async (e) => {
                 ))}
               </div>
 
+              { variantIndex === 0 && (
+              <div>
               {/* Size Chart Section */}
               <div className="space-y-4">
                 <div className="flex justify-between items-center">
@@ -649,6 +682,10 @@ const handleSubmit = async (e) => {
                   </div>
                 </>
               )}
+              </div>
+
+              )}
+              
             </div>
           ))}
 
