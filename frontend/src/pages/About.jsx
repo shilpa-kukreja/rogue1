@@ -72,6 +72,7 @@ const About = () => {
       <p className='text-[#A9ABAE] text-xs mb-5'>ROGUE0707 is for those who defy labels. For those who live unapologetically. For those who embrace the chaos of creation and the beauty of rebellion.</p> 
       <p className='text-[#A9ABAE] text-xs mb-5'> This is not just fashion. This is a revolution.</p> 
       <p className='text-[#A9ABAE] text-xs mb-5'> Welcome to ROGUE0707.</p> 
+      <p className='text-[#A9ABAE] text-xs mb-5'>MARKETTED BY ROGUE0707 MANUFACTURED BY LUBANA EXIM PVT LIMITED</p>
 
 
 

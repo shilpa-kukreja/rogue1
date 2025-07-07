@@ -252,7 +252,7 @@ const ProductDetail = () => {
                                 )}
                             </div>
                              
-                             <h4 className='text-[8px] uppercase text-[#A9ABAE] font-medium'>INCLUSIVE OF TAXES.DUTIES ON ARRIVAL.</h4>
+                             <h4 className='text-[8px] uppercase text-[#A9ABAE] font-medium'>INCLUSIVE OF TAXES. DUTIES ON ARRIVAL.</h4>
 
                             {/* Colors */}
                             <div className='flex gap-3 my-5'>
