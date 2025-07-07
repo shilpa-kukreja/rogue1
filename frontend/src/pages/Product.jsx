@@ -150,7 +150,7 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { Link } from "react-router-dom";
-import DealTimer from '../component/DealTimer';
+// import DealTimer from '../component/DealTimer';
 // import DealTimer from '../component/DealTimer';
 
 
@@ -159,7 +159,7 @@ const Product = () => {
 
   const {products , timerExpire} = useContext(ShopContext)
   const [showProduct, setShowProduct] = useState([])
-  const [dealOver, setDealOver] = useState(false);
+  // const [dealOver, setDealOver] = useState(false);
 
   useEffect(() => {
     if (products) {
@@ -170,16 +170,16 @@ const Product = () => {
   console.log(products)
 
 
-   const handleDealEnd = () => {
-    setDealOver(true);
-  };
+  //  const handleDealEnd = () => {
+  //   setDealOver(true);
+  // };
   return (
     <>
   
-     <DealTimer onDealEnd={handleDealEnd}/>
+     {/* <DealTimer onDealEnd={handleDealEnd}/> */}
 
 
-     {timerExpire && (
+     {/* {timerExpire && ( */}
      <div className='sm:max-w-[680px]   md:max-w-[700px]   lg:max-w-[1024px]  2xl:max-w-[1600px] h-[75vh] items-center justify-center mx-auto'>
 
      
@@ -270,7 +270,7 @@ const Product = () => {
 
       
       </div>
-      )}
+      {/* )} */}
     </>
   )
 }
