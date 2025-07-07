@@ -828,7 +828,7 @@ const EmailNotification = async (req, res) => {
 
 
 
-export const sendorderstatusEmail = async (req, res) => {
+ const sendorderstatusEmail = async (req, res) => {
   const data = req.body;
   const status = data.current_status?.toLowerCase();
   const orderId = data.order_id;
