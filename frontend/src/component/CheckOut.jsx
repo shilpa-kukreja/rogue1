@@ -111,7 +111,7 @@ const CheckOut = () => {
       const { zipcode } = formData;
       const weight = cart.reduce((total, item) => {
         const sizeInfo = item.variants?.[0]?.sizesInfo?.find((s) => s.size === item.size);
-        return total + ((sizeInfo?.weight || 0.5) * item.quantity);
+        return total + ((sizeInfo?.weight || 2.5) * item.quantity);
       }, 0);
 
       console.log("Calculating delivery fee for weight:", weight, "and zipcode:", zipcode);
