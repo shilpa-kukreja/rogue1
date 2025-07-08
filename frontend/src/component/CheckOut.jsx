@@ -16,6 +16,7 @@ const CheckOut = () => {
   const [selectedCity, setSelectedCity] = useState('');
   const [totalAfterDiscount, setTotalAfterDiscount] = useState(null);
   const [conversionRates, setConversionRates] = useState({});
+  const [deliveryFee, setDeliveryFee] = useState(0);
   const {
     navigate,
     token,
@@ -103,6 +104,41 @@ const CheckOut = () => {
   const cartTotal = convertPrice(getTotalPrice(), currency);
 
 
+
+
+  const fetchDeliveryFee = async () => {
+    try {
+      const { zipcode } = formData;
+      const weight = cart.reduce((total, item) => {
+        const sizeInfo = item.variants?.[0]?.sizesInfo?.find((s) => s.size === item.size);
+        return total + ((sizeInfo?.weight || 2.5) * item.quantity);
+      }, 0);
+
+      const res = await axios.post("https://rogue0707.com/api/order/get-shipping-rate", {
+        pickup_postcode: "201010",
+        delivery_postcode: zipcode,
+        weight,
+        cod: method === "cod" ? 1 : 0,
+      });
+
+      if (res.data.success) {
+        setDeliveryFee(res.data.delivery_fee);
+      } else {
+        toast.warn(res.data.message || "No courier found");
+      }
+    } catch (err) {
+      console.error(err);
+      toast.error("Could not fetch delivery fee");
+    }
+  };
+
+
+
+  useEffect(() => {
+    if (formData.zipcode.length === 6) {
+      fetchDeliveryFee();
+    }
+  }, [formData.zipcode, method, cart]);
 
 
 
@@ -239,7 +275,7 @@ const CheckOut = () => {
   //               productName: item.name,  
   //               variant: item.size, 
   //               amount: item.discountedprice,
-        
+
   //             })),
   //             totalAmount: order.orderData.amount,
   //             shippingDetails: {
@@ -266,7 +302,7 @@ const CheckOut = () => {
   //         } else {
   //           toast.error(data.message || "Payment verification failed.");
   //         }
-        
+
   //      } catch (error) {
   //         console.error(error);
   //         toast.error("Payment verification failed");
@@ -291,111 +327,111 @@ const CheckOut = () => {
 
 
   const initPay = (order) => {
-  const amountInSubunits = Math.round(order.amount * 100);
+    const amountInSubunits = Math.round(order.amount * 100);
 
-  const supportedCurrencies = ['INR', 'USD', 'EUR', 'GBP', 'AUD', 'CAD', 'JPY'];
-  if (!supportedCurrencies.includes(order.currency)) {
-    toast.error(`Razorpay doesn't support ${order.currency} currency`);
-    return;
-  }
-
-  const options = {
-    key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-    amount: Math.round(amountInSubunits * 100),
-    currency: order.currency,
-    name: "ROGUE0707",
-    description: `Payment for Order ${order.receipt}`,
-    order_id: order.id,
-
-    handler: async (response) => {
-      try {
-        const { data: verifyData } = await axios.post(
-          "https://rogue0707.com/api/order/verifyRazorpay",
-          {
-            ...response,
-            currency: order.currency,
-            actualAmount: order.amount
-          },
-          { headers: { token } }
-        );
-
-        if (verifyData.success) {
-          try {
-            const { data: shipData } = await axios.post(
-              "https://rogue0707.com/api/order/ship",
-              {
-                orderData: order.orderData,
-                orderid: order.id
-              },
-              { headers: { token } }
-            );
-
-            console.log("Shiprocket Response:", shipData);
-            console.log("order data brefore send email", order);
-
-            if (shipData.success) {
-              const res = await axios.post("https://rogue0707.com/api/order/send-order-confirmation", {
-                email: order.orderData.address.email,
-                firstName: order.orderData.address.firstName,
-                orderId: order.id,
-                products: order.orderData.items.map(item => ({
-                  productName: item.name,
-                  variant: item.size,
-                  amount: item.discountedprice,
-                })),
-                totalAmount: order.orderData.amount,
-                shippingDetails: {
-                  name: `${order.orderData.address.firstName} ${order.orderData.address.lastName}`,
-                  address: order.orderData.address.street,
-                  city: order.orderData.address.city,
-                  currency:order.orderData.address.currencytype,
-                  state: order.orderData.address.state,
-                  pincode: order.orderData.address.zipcode,
-                  phone: order.orderData.address.phone
-                }
-              });
-
-              console.log("backend response", res.data);
-
-              setCart([]);
-              navigate("/orders");
-              toast.success("Payment successful! Your order has been placed.");
-            } else {
-              toast.error("Shipping failed after payment.");
-              console.error("Shipping failed:", shipData);
-            }
-          } catch (shipErr) {
-            console.error("Shipping error:", shipErr.response?.data || shipErr.message);
-            toast.error("Shipping error after payment.");
-          }
-        } else {
-          toast.error(verifyData.message || "Payment verification failed.");
-        }
-
-      } catch (error) {
-        console.error("Payment verification failed:", error.response?.data || error.message);
-        toast.error("Payment verification failed");
-      }
-    },
-
-    prefill: {
-      name: `${formData.firstName} ${formData.lastName}`,
-      email: formData.email,
-      contact: formData.phone
-    },
-
-    notes: {
-      address: `${formData.street}, ${formData.city}, ${formData.country}`
-    },
-
-    theme: {
-      color: "#605B55"
+    const supportedCurrencies = ['INR', 'USD', 'EUR', 'GBP', 'AUD', 'CAD', 'JPY'];
+    if (!supportedCurrencies.includes(order.currency)) {
+      toast.error(`Razorpay doesn't support ${order.currency} currency`);
+      return;
     }
-  };
 
-  const rzp = new window.Razorpay(options);
-  rzp.open();
-};
+    const options = {
+      key: import.meta.env.VITE_RAZORPAY_KEY_ID,
+      amount: Math.round(amountInSubunits * 100),
+      currency: order.currency,
+      name: "ROGUE0707",
+      description: `Payment for Order ${order.receipt}`,
+      order_id: order.id,
+
+      handler: async (response) => {
+        try {
+          const { data: verifyData } = await axios.post(
+            "https://rogue0707.com/api/order/verifyRazorpay",
+            {
+              ...response,
+              currency: order.currency,
+              actualAmount: order.amount
+            },
+            { headers: { token } }
+          );
+
+          if (verifyData.success) {
+            try {
+              const { data: shipData } = await axios.post(
+                "https://rogue0707.com/api/order/ship",
+                {
+                  orderData: order.orderData,
+                  orderid: order.id
+                },
+                { headers: { token } }
+              );
+
+              console.log("Shiprocket Response:", shipData);
+              console.log("order data brefore send email", order);
+
+              if (shipData.success) {
+                const res = await axios.post("https://rogue0707.com/api/order/send-order-confirmation", {
+                  email: order.orderData.address.email,
+                  firstName: order.orderData.address.firstName,
+                  orderId: order.id,
+                  products: order.orderData.items.map(item => ({
+                    productName: item.name,
+                    variant: item.size,
+                    amount: item.discountedprice,
+                  })),
+                  totalAmount: order.orderData.amount,
+                  shippingDetails: {
+                    name: `${order.orderData.address.firstName} ${order.orderData.address.lastName}`,
+                    address: order.orderData.address.street,
+                    city: order.orderData.address.city,
+                    currency: order.orderData.address.currencytype,
+                    state: order.orderData.address.state,
+                    pincode: order.orderData.address.zipcode,
+                    phone: order.orderData.address.phone
+                  }
+                });
+
+                console.log("backend response", res.data);
+
+                setCart([]);
+                navigate("/orders");
+                toast.success("Payment successful! Your order has been placed.");
+              } else {
+                toast.error("Shipping failed after payment.");
+                console.error("Shipping failed:", shipData);
+              }
+            } catch (shipErr) {
+              console.error("Shipping error:", shipErr.response?.data || shipErr.message);
+              toast.error("Shipping error after payment.");
+            }
+          } else {
+            toast.error(verifyData.message || "Payment verification failed.");
+          }
+
+        } catch (error) {
+          console.error("Payment verification failed:", error.response?.data || error.message);
+          toast.error("Payment verification failed");
+        }
+      },
+
+      prefill: {
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        contact: formData.phone
+      },
+
+      notes: {
+        address: `${formData.street}, ${formData.city}, ${formData.country}`
+      },
+
+      theme: {
+        color: "#605B55"
+      }
+    };
+
+    const rzp = new window.Razorpay(options);
+    rzp.open();
+  };
 
 
   const onSubmitHandler = async (event) => {
@@ -453,7 +489,8 @@ const CheckOut = () => {
       const subtotalUSD = orderItems.reduce((sum, item) =>
         sum + (item.discountedprice * item.quantity || 0), 0);
       // Calculate the total amount correctly
-      const deliveryFeeUSD = 10; // Assuming $10 base delivery fee
+      const rate = conversionRates[currency.toLowerCase()] || 1;
+      const deliveryFeeUSD = deliveryFee / rate;
       const totalUSD = subtotalUSD + deliveryFeeUSD - (discount || 0);
 
       // Convert to selected currency
@@ -736,9 +773,16 @@ const CheckOut = () => {
                 {convertPrice(getTotalPrice(), currency)} {currency}
               </span>
             </p>
+
             <p className="text-[10px] text-[#A9ABAE] ">
-              Delivery Fee: <span className="font-semibold float-end">0 {currency}</span>
+              Delivery Fee:
+              <span className="font-semibold float-end">
+                {convertPrice(deliveryFee, currency)} {currency}
+              </span>
             </p>
+            {/* <p className="text-[10px] text-[#A9ABAE] ">
+              Delivery Fee: <span className="font-semibold float-end">0 {currency}</span>
+            </p> */}
             {discount > 0 && (
               <div className="flex justify-between items-center text-green-600">
                 <p>Discount</p>

@@ -1,5 +1,5 @@
 import express from 'express'
-import { allOrders, EmailNotification, placeOrder, placeOrderRazorpay, sendorderstatusEmail, ShipOrders, updateStatus, userOrders, verifyRazorpay } from '../controllers/orderController.js';
+import { allOrders, CalculateShippingRate, EmailNotification, placeOrder, placeOrderRazorpay, sendorderstatusEmail, ShipOrders, updateStatus, userOrders, verifyRazorpay } from '../controllers/orderController.js';
 import adminAuth from '../middleware/adminAuth.js';
 import authUser from '../middleware/auth.js';
 
@@ -24,5 +24,6 @@ orderRouter.post('/verifyRazorpay',authUser,verifyRazorpay)
 orderRouter.post('/send-order-confirmation',EmailNotification)
 orderRouter.post('/ship',ShipOrders)
 orderRouter.post('/shipemail',sendorderstatusEmail)
+orderRouter.post('/get-shipping-rate',CalculateShippingRate)
 
 export default orderRouter
