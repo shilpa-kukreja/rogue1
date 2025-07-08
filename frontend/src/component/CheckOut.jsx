@@ -106,55 +106,31 @@ const CheckOut = () => {
 
 
 
-  const fetchDeliveryFee = async () => {
+ const fetchDeliveryFee = async () => {
   try {
     const { zipcode } = formData;
-    
-    // Validate zipcode
-    if (!zipcode || zipcode.length !== 6) {
-      console.log("Invalid zipcode:", zipcode);
-      return;
-    }
-
-    // Calculate weight more reliably
     const weight = cart.reduce((total, item) => {
       const sizeInfo = item.variants?.[0]?.sizesInfo?.find((s) => s.size === item.size);
-      const itemWeight = sizeInfo?.weight || 0.5; // Default to 0.5kg if not specified
-      return total + (itemWeight * item.quantity);
+      return total + ((sizeInfo?.weight || 0.5) * item.quantity); // Default to 0.5kg
     }, 0);
 
-    // Minimum weight check (ShipRocket often requires >= 0.1kg)
-    const validWeight = Math.max(weight, 0.1); 
-
-    console.log("Shipping request payload:", {
+    const res = await axios.post("/api/order/getshippingrate", {
       pickup_postcode: "110015",
       delivery_postcode: zipcode,
-      weight: validWeight,
+      weight: Math.max(weight, 0.1).toFixed(2), // Minimum 0.1kg
       cod: method === "cod" ? 1 : 0
     });
-
-    const res = await axios.post("https://rogue0707.com/api/order/getshippingrate", {
-      pickup_postcode: "110015",
-      delivery_postcode: zipcode,
-      weight: validWeight.toFixed(2), // Ensure 2 decimal places
-      cod: method === "cod" ? 1 : 0
-    });
-    
-    console.log("Shipping API Response:", res.data);
 
     if (res.data.success) {
       setDeliveryFee(res.data.delivery_fee);
+      toast.success(`Shipping via ${res.data.courier_name} (Est. ${res.data.etd})`);
     } else {
-      toast.warn(res.data.message || "No courier found for this location");
-      console.warn("No courier details:", res.data.debug);
+      toast.warn(res.data.message);
+      console.warn("Shipping debug:", res.data.debug);
     }
   } catch (err) {
-    console.error("Shipping Error:", {
-      message: err.message,
-      response: err.response?.data,
-      config: err.config
-    });
-    toast.error(err.response?.data?.message || "Could not fetch delivery fee");
+    toast.error(err.response?.data?.message || "Shipping error");
+    console.error("Shipping error:", err.response?.data);
   }
 };
 
