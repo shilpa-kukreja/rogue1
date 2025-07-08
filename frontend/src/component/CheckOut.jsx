@@ -114,13 +114,15 @@ const CheckOut = () => {
         return total + ((sizeInfo?.weight || 0.5) * item.quantity);
       }, 0);
 
-
+      console.log("Calculating delivery fee for weight:", weight, "and zipcode:", zipcode);
       const res = await axios.post("https://rogue0707.com/api/order/getshippingrate", {
         pickup_postcode: "110015",
         delivery_postcode: zipcode,
         weight,
         cod: method === "cod" ? 1 : 0,
       });
+      
+      console.log("Shiprocket Response:", res.data);
 
       if (res.data.success) {
         setDeliveryFee(res.data.delivery_fee);
@@ -132,6 +134,9 @@ const CheckOut = () => {
       toast.error("Could not fetch delivery fee");
     }
   };
+
+
+
 
 
 
