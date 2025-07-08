@@ -101,7 +101,10 @@ const CheckOut = () => {
   };
 
 
-  const cartTotal = convertPrice(getTotalPrice(), currency);
+  const cartTotal = convertPrice(
+  getTotalPrice() + (deliveryFee / (conversionRates['inr'] || 1)), 
+  currency
+);
 
 
 

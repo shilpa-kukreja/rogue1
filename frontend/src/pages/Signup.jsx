@@ -81,13 +81,13 @@ const Signup = () => {
             <div>
               <input   value={email}
               onChange={(e) => setEmail(e.target.value.toLowerCase())} 
-              required   type="email" autoComplete="off" className='border-b login-input w-full py-1 px-2 text-[#A9ABAE] placeholder-[#A9ABAE] text-sm outline-0' name='txtemail' id='txtemail' placeholder='Email' />
+              required   type="email" autoComplete="off" pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"  title="Please enter a valid email address" className='border-b login-input w-full py-1 px-2 text-[#A9ABAE] placeholder-[#A9ABAE] text-sm outline-0' name='txtemail' id='txtemail' placeholder='Email' />
             </div>
 
             <div>
               <input value={mobile}
                 onChange={(e) => setMobile(e.target.value)} autoComplete="off"
-                required type="tel" className='border-b login-input w-full py-1 px-2 mt-5 text-[#A9ABAE] placeholder-[#A9ABAE] text-sm outline-0' name='txtnum' id='txtnum' placeholder='Mobile' />
+                required type="tel" className='border-b login-input w-full py-1 px-2 mt-5 text-[#A9ABAE] placeholder-[#A9ABAE] text-sm outline-0'  pattern="^[6-9][0-9]{9}$"  title="Please enter a valid 10-digit phone number starting with 6-9" name='txtnum' id='txtnum' placeholder='Mobile' />
             </div>
 
             <div className='flex relative'>
