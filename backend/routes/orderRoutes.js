@@ -24,6 +24,6 @@ orderRouter.post('/verifyRazorpay',authUser,verifyRazorpay)
 orderRouter.post('/send-order-confirmation',EmailNotification)
 orderRouter.post('/ship',ShipOrders)
 orderRouter.post('/shipemail',sendorderstatusEmail)
-orderRouter.post('/get-shipping-rate', CalculateShippingRate);
+orderRouter.post('/getshippingrate', CalculateShippingRate);
 
 export default orderRouter

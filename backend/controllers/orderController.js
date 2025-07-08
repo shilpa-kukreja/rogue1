@@ -820,56 +820,10 @@ const sendorderstatusEmail = async (req, res) => {
 
 
 
-// let token = null;
-// const email = 'mehararora05@gmail.com';
-// const password = 'Mehar@0707';
-
-
-// async function getToken() {
-//   if (token) return token;
-
-//   const res = await axios.post('https://apiv2.shiprocket.in/v1/external/auth/login', {
-//     email,
-//     password,
-//   });
-
-//   token = res.data.token;
-//   return token;
-// }
-
-
-// const CalculateShippingRate = async (req, res) => {
-//   const { pickup_postcode, delivery_postcode, weight, cod } = req.body;
-
-//   try {
-//     const authToken = await getToken();
-//     const { data } = await axios.get(
-//       'https://apiv2.shiprocket.in/v1/external/courier/serviceability/',
-//       {
-//         headers: { Authorization: `Bearer ${authToken}` },
-//         params: { pickup_postcode, delivery_postcode, weight, cod },
-//       }
-//     );
-
-//     const cheapest = data.available_courier_companies?.sort((a, b) => a.rate - b.rate)[0];
-
-//     if (cheapest) {
-//       res.json({ success: true, delivery_fee: cheapest.rate });
-//     } else {
-//       res.json({ success: false, message: 'No courier available' });
-//     }
-//   } catch (err) {
-//     console.error(err.response?.data || err.message);
-//     res.status(500).json({ success: false, message: 'Failed to fetch shipping rate' });
-//   }
-// };
-
-
-
-
 let token = null;
 const email = 'mehararora05@gmail.com';
 const password = 'Mehar@0707';
+
 
 async function getToken() {
   if (token) return token;
@@ -883,27 +837,17 @@ async function getToken() {
   return token;
 }
 
+
 const CalculateShippingRate = async (req, res) => {
   const { pickup_postcode, delivery_postcode, weight, cod } = req.body;
 
   try {
     const authToken = await getToken();
-
-    const payload = {
-      pickup_postcode,
-      delivery_postcode,
-      weight,
-      cod,
-    };
-
-    const { data } = await axios.post(
+    const { data } = await axios.get(
       'https://apiv2.shiprocket.in/v1/external/courier/serviceability/',
-      payload,
       {
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-          'Content-Type': 'application/json'
-        }
+        headers: { Authorization: `Bearer ${authToken}` },
+        params: { pickup_postcode, delivery_postcode, weight, cod },
       }
     );
 
@@ -915,10 +859,66 @@ const CalculateShippingRate = async (req, res) => {
       res.json({ success: false, message: 'No courier available' });
     }
   } catch (err) {
-    console.error("Shiprocket Error:", err.response?.data || err.message);
+    console.error(err.response?.data || err.message);
     res.status(500).json({ success: false, message: 'Failed to fetch shipping rate' });
   }
 };
+
+
+
+
+// let token = null;
+// const email = 'mehararora05@gmail.com';
+// const password = 'Mehar@0707';
+
+// async function getToken() {
+//   if (token) return token;
+
+//   const res = await axios.post('https://apiv2.shiprocket.in/v1/external/auth/login', {
+//     email,
+//     password,
+//   });
+
+//   token = res.data.token;
+//   return token;
+// }
+
+// const CalculateShippingRate = async (req, res) => {
+//   const { pickup_postcode, delivery_postcode, weight, cod } = req.body;
+
+//   try {
+//     const authToken = await getToken();
+
+//     const payload = {
+//       pickup_postcode,
+//       delivery_postcode,
+//       weight,
+//       cod,
+//     };
+
+//     const { data } = await axios.post(
+//       'https://apiv2.shiprocket.in/v1/external/courier/serviceability/',
+//       payload,
+//       {
+//         headers: {
+//           Authorization: `Bearer ${authToken}`,
+//           'Content-Type': 'application/json'
+//         }
+//       }
+//     );
+
+//     const cheapest = data.available_courier_companies?.sort((a, b) => a.rate - b.rate)[0];
+
+//     if (cheapest) {
+//       res.json({ success: true, delivery_fee: cheapest.rate });
+//     } else {
+//       res.json({ success: false, message: 'No courier available' });
+//     }
+//   } catch (err) {
+//     console.error("Shiprocket Error:", err.response?.data || err.message);
+//     res.status(500).json({ success: false, message: 'Failed to fetch shipping rate' });
+//   }
+// };
 
 
 
