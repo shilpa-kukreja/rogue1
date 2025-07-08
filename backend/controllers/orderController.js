@@ -843,6 +843,7 @@ const CalculateShippingRate = async (req, res) => {
 
   try {
     const authToken = await getToken();
+    console.log("Shiprocket Auth Token:", authToken);
     const { data } = await axios.get(
       'https://apiv2.shiprocket.in/v1/external/courier/serviceability/',
       {
@@ -850,8 +851,10 @@ const CalculateShippingRate = async (req, res) => {
         params: { pickup_postcode, delivery_postcode, weight, cod },
       }
     );
+    console.log("Shiprocket Response:", data);
 
     const cheapest = data.available_courier_companies?.sort((a, b) => a.rate - b.rate)[0];
+    console.log("Cheapest Courier:", cheapest);
 
     if (cheapest) {
       res.json({ success: true, delivery_fee: cheapest.rate });
