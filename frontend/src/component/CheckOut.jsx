@@ -100,7 +100,7 @@ const CheckOut = () => {
   };
 
 
-  const cartTotal = convertPrice(getTotalPrice() + 10, currency);
+  const cartTotal = convertPrice(getTotalPrice(), currency);
 
 
 
@@ -737,7 +737,7 @@ const CheckOut = () => {
               </span>
             </p>
             <p className="text-[10px] text-[#A9ABAE] ">
-              Delivery Fee: <span className="font-semibold float-end">10 {currency}</span>
+              Delivery Fee: <span className="font-semibold float-end">0 {currency}</span>
             </p>
             {discount > 0 && (
               <div className="flex justify-between items-center text-green-600">
