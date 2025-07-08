@@ -923,83 +923,217 @@ async function getToken() {
 
 
 
+// const CalculateShippingRate = async (req, res) => {
+//   const { pickup_postcode, delivery_postcode, weight, cod, country = 'IN' } = req.body;
+//   const numericWeight = parseFloat(weight);
+//   const numericCod = parseInt(cod);
+
+//   // Validate postcode format based on country
+//   if (country !== 'IN' && !validateInternationalPostcode(delivery_postcode, country)) {
+//     return res.json({
+//       success: false,
+//       message: `Invalid postcode format for ${country}. ${getPostcodeExample(country)}`
+//     });
+//   }
+
+//   try {
+//     const authToken = await getToken();
+//     const params = {
+//       pickup_postcode: country === 'IN' ? pickup_postcode : '110015', // Default India pickup
+//       delivery_postcode,
+//       weight: numericWeight,
+//       cod: country === 'IN' ? numericCod : 0, // COD only for India
+//       country // Add country parameter
+//     };
+
+//     const { data } = await axios.get(
+//       'https://apiv2.shiprocket.in/v1/external/courier/serviceability/',
+//       {
+//         headers: { Authorization: `Bearer ${authToken}` },
+//         params
+//       }
+//     );
+
+//     if (!data.data?.available_courier_companies) {
+//       return res.json({
+//         success: false,
+//         message: 'No courier companies data found',
+//         debug: data
+//       });
+//     }
+
+//     // International-specific filtering
+//     const validCouriers = data.data.available_courier_companies
+//       .map(courier => {
+//         const minWeight = parseFloat(courier.min_weight) || 0;
+//         const rate = parseFloat(courier.rate) || 0;
+//         const maxWeight = parseFloat(courier.air_max_weight || courier.surface_max_weight) || Infinity;
+//         const isInternational = country !== 'IN';
+
+//         return {
+//           ...courier,
+//           minWeight,
+//           rate,
+//           maxWeight,
+//           supportsCod: parseInt(courier.cod) === 1,
+//           isEligible: (
+//             rate > 0 &&
+//             numericWeight >= minWeight &&
+//             numericWeight <= maxWeight &&
+//             (!isInternational || courier.is_international) && // International flag check
+//             (country === 'IN' || numericCod === 0) && // No COD for international
+//             !courier.blocked
+//           )
+//         };
+//       })
+//       .filter(courier => courier.isEligible)
+//       .sort((a, b) => a.rate - b.rate);
+
+//     if (validCouriers.length === 0) {
+//       return res.json({
+//         success: false,
+//         message: `No couriers available for ${country} shipment`,
+//         debug: {
+//           requirements: {
+//             weight: `${numericWeight}kg`,
+//             country,
+//             payment_type: numericCod ? "COD" : "Prepaid"
+//           },
+//           all_couriers: data.data.available_courier_companies
+//         }
+//       });
+//     }
+
+//     const cheapest = validCouriers[0];
+//     res.json({
+//       success: true,
+//       delivery_fee: cheapest.rate,
+//       courier_name: cheapest.courier_name,
+//       etd: cheapest.etd || '5-10 business days',
+//       is_international: country !== 'IN'
+//     });
+
+//   } catch (err) {
+//     console.error("Shipping Error:", err.response?.data || err.message);
+//     res.status(500).json({
+//       success: false,
+//       message: 'Failed to calculate shipping',
+//       error: err.response?.data || err.message
+//     });
+//   }
+// };
+
+// // Helper functions
+// function validateInternationalPostcode(postcode, country) {
+//   const patterns = {
+//     UK: /^[A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2}$/i,
+//     US: /^\d{5}(-\d{4})?$/,
+//     CA: /^[A-Z]\d[A-Z] ?\d[A-Z]\d$/i
+//   };
+//   return patterns[country]?.test(postcode) || false;
+// }
+
+// function getPostcodeExample(country) {
+//   const examples = {
+//     UK: 'Eg: SW1A 1AA',
+//     US: 'Eg: 10001',
+//     CA: 'Eg: M5V 3L9'
+//   };
+//   return examples[country] || '';
+// }
+
+
+
+
+
 const CalculateShippingRate = async (req, res) => {
   const { pickup_postcode, delivery_postcode, weight, cod, country = 'IN' } = req.body;
   const numericWeight = parseFloat(weight);
   const numericCod = parseInt(cod);
 
-  // Validate postcode format based on country
-  if (country !== 'IN' && !validateInternationalPostcode(delivery_postcode, country)) {
-    return res.json({
-      success: false,
-      message: `Invalid postcode format for ${country}. ${getPostcodeExample(country)}`
-    });
+  // Convert full country name to ISO code if needed
+  const countryCode = getCountryCode(country);
+
+  // Validate postcode format
+  if (countryCode !== 'IN') {
+    const isValid = validateInternationalPostcode(delivery_postcode, countryCode);
+    if (!isValid) {
+      return res.json({
+        success: false,
+        message: `Invalid postcode for ${country}. ${getPostcodeExample(countryCode)}`
+      });
+    }
   }
 
   try {
     const authToken = await getToken();
     const params = {
-      pickup_postcode: country === 'IN' ? pickup_postcode : '110015', // Default India pickup
+      pickup_postcode: countryCode === 'IN' ? pickup_postcode : '110015',
       delivery_postcode,
       weight: numericWeight,
-      cod: country === 'IN' ? numericCod : 0, // COD only for India
-      country // Add country parameter
+      cod: countryCode === 'IN' ? numericCod : 0,
+      country: countryCode
     };
 
-    const { data } = await axios.get(
-      'https://apiv2.shiprocket.in/v1/external/courier/serviceability/',
-      {
-        headers: { Authorization: `Bearer ${authToken}` },
-        params
-      }
-    );
+    // International endpoint may differ
+    const apiUrl = countryCode === 'IN' 
+      ? 'https://apiv2.shiprocket.in/v1/external/courier/serviceability/'
+      : 'https://apiv2.shiprocket.in/v1/external/international/courier/serviceability/';
+
+    const { data } = await axios.get(apiUrl, {
+      headers: { 
+        Authorization: `Bearer ${authToken}`,
+        'Content-Type': 'application/json'
+      },
+      params
+    });
 
     if (!data.data?.available_courier_companies) {
       return res.json({
         success: false,
-        message: 'No courier companies data found',
+        message: 'No courier companies available',
         debug: data
       });
     }
 
-    // International-specific filtering
+    // Enhanced courier filtering
     const validCouriers = data.data.available_courier_companies
-      .map(courier => {
-        const minWeight = parseFloat(courier.min_weight) || 0;
-        const rate = parseFloat(courier.rate) || 0;
-        const maxWeight = parseFloat(courier.air_max_weight || courier.surface_max_weight) || Infinity;
-        const isInternational = country !== 'IN';
-
-        return {
-          ...courier,
-          minWeight,
-          rate,
-          maxWeight,
-          supportsCod: parseInt(courier.cod) === 1,
-          isEligible: (
-            rate > 0 &&
-            numericWeight >= minWeight &&
-            numericWeight <= maxWeight &&
-            (!isInternational || courier.is_international) && // International flag check
-            (country === 'IN' || numericCod === 0) && // No COD for international
-            !courier.blocked
-          )
-        };
-      })
-      .filter(courier => courier.isEligible)
+      .map(courier => ({
+        ...courier,
+        rate: parseFloat(courier.rate) || 0,
+        minWeight: parseFloat(courier.min_weight) || 0,
+        maxWeight: parseFloat(courier.air_max_weight || courier.surface_max_weight) || 30, // Default 30kg max
+        supportsCod: parseInt(courier.cod) === 1,
+        isInternational: parseInt(courier.is_international) === 1
+      }))
+      .filter(courier => (
+        courier.rate > 0 &&
+        numericWeight >= courier.minWeight &&
+        numericWeight <= courier.maxWeight &&
+        (countryCode === 'IN' || courier.isInternational) &&
+        (countryCode === 'IN' || numericCod === 0) &&
+        !courier.blocked
+      ))
       .sort((a, b) => a.rate - b.rate);
 
     if (validCouriers.length === 0) {
       return res.json({
         success: false,
-        message: `No couriers available for ${country} shipment`,
+        message: `No couriers available for ${countryCode} shipment with current parameters`,
         debug: {
           requirements: {
             weight: `${numericWeight}kg`,
-            country,
+            country: countryCode,
             payment_type: numericCod ? "COD" : "Prepaid"
           },
-          all_couriers: data.data.available_courier_companies
+          all_couriers: data.data.available_courier_companies.map(c => ({
+            name: c.courier_name,
+            rate: c.rate,
+            min_weight: c.min_weight,
+            max_weight: c.air_max_weight || c.surface_max_weight,
+            international: c.is_international,
+            cod: c.cod
+          }))
         }
       });
     }
@@ -1009,12 +1143,17 @@ const CalculateShippingRate = async (req, res) => {
       success: true,
       delivery_fee: cheapest.rate,
       courier_name: cheapest.courier_name,
-      etd: cheapest.etd || '5-10 business days',
-      is_international: country !== 'IN'
+      etd: cheapest.etd || (countryCode === 'IN' ? '3-5 days' : '7-14 days'),
+      is_international: countryCode !== 'IN',
+      currency: 'USD' // Force USD for international
     });
 
   } catch (err) {
-    console.error("Shipping Error:", err.response?.data || err.message);
+    console.error("Shipping Error:", {
+      message: err.message,
+      response: err.response?.data,
+      stack: err.stack
+    });
     res.status(500).json({
       success: false,
       message: 'Failed to calculate shipping',
@@ -1024,22 +1163,38 @@ const CalculateShippingRate = async (req, res) => {
 };
 
 // Helper functions
-function validateInternationalPostcode(postcode, country) {
-  const patterns = {
-    UK: /^[A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2}$/i,
-    US: /^\d{5}(-\d{4})?$/,
-    CA: /^[A-Z]\d[A-Z] ?\d[A-Z]\d$/i
+function getCountryCode(countryName) {
+  const countryMap = {
+    'india': 'IN',
+    'united kingdom': 'UK',
+    'united states': 'US',
+    'canada': 'CA',
+    'australia': 'AU'
+    // Add more mappings as needed
   };
-  return patterns[country]?.test(postcode) || false;
+  return countryMap[countryName.toLowerCase()] || countryName;
 }
 
-function getPostcodeExample(country) {
+function validateInternationalPostcode(postcode, countryCode) {
+  const patterns = {
+    UK: /^[A-Za-z]{1,2}[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}$/,
+    US: /^[0-9]{5}(-[0-9]{4})?$/,
+    CA: /^[A-Za-z][0-9][A-Za-z] ?[0-9][A-Za-z][0-9]$/,
+    AU: /^[0-9]{4}$/,
+    IN: /^[1-9][0-9]{5}$/
+  };
+  return patterns[countryCode]?.test(postcode) || false;
+}
+
+function getPostcodeExample(countryCode) {
   const examples = {
     UK: 'Eg: SW1A 1AA',
-    US: 'Eg: 10001',
-    CA: 'Eg: M5V 3L9'
+    US: 'Eg: 10001 or 10001-1234',
+    CA: 'Eg: M5V 3L9',
+    AU: 'Eg: 2000',
+    IN: 'Eg: 110001'
   };
-  return examples[country] || '';
+  return examples[countryCode] || '';
 }
 
 
