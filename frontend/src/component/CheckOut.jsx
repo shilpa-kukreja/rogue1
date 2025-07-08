@@ -101,8 +101,14 @@ const CheckOut = () => {
   };
 
 
-  const cartTotal = convertPrice(
-  getTotalPrice() + (deliveryFee / (conversionRates['inr'] || 1)), 
+  const subtotalUSD = getTotalPrice(); // Products total in USD
+const deliveryFeeUSD = deliveryFee / (conversionRates['inr'] || 1); // Convert INR to USD
+const totalBeforeDiscountUSD = subtotalUSD + deliveryFeeUSD;
+const totalAfterDiscountUSD = totalBeforeDiscountUSD - (discount / (conversionRates['inr'] || 1));
+const finalAmount = convertPrice(totalAfterDiscountUSD, currency);
+
+const cartTotal = convertPrice(
+  getTotalPrice() + (deliveryFee / (conversionRates['inr'] || 1)) - (discount / (conversionRates['inr'] || 1)), 
   currency
 );
 
@@ -548,136 +554,122 @@ const getPostcodeExample = (countryCode) => {
 
 
   const onSubmitHandler = async (event) => {
+  event.preventDefault();
 
-    event.preventDefault();
+  if (!token) {
+    toast('Login REQUIRED', {
+      style: {
+        background: '#605B55',
+        color: '#A9ABAE',
+        width: '300px',
+        fontSize: '10px',
+        borderRadius: '8px',
+        fontFamily: "'Andale Mono', monospace"
+      },
+      progressStyle: {
+        background: '#5C4033',
+      },
+    });
+    return;
+  }
 
-    if (!token) {
-      toast('Login REQUIRED', {
-        style: {
-          background: '#605B55',
-          color: '#A9ABAE',
-          width: '300px',
-          fontSize: '10px',
-          borderRadius: '8px',
-          fontFamily: "'Andale Mono', monospace"
-        },
-        progressStyle: {
-          background: '#5C4033',
-        },
-      });
-      return;
+  try {
+    // Ensure cart is not empty
+    if (!cart || cart.length === 0) {
+      return toast.error("Your cart is empty. Please add items before checkout.");
     }
-    try {
-      // Ensure cart is not empty
-      if (!cart || cart.length === 0) {
-        return toast.error(
-          "Your cart is empty. Please add items before checkout."
-        );
-      }
 
-      // Extract and format order items
-      let orderItems = cart.map((item) => {
-        const selectedSizeInfo = item.variants?.[0]?.sizesInfo?.find(
-          (s) => s.size === item.size
-        );
+    // Calculate amounts in USD first
+    const subtotalUSD = getTotalPrice(); // Products total in USD
+    const deliveryFeeUSD = deliveryFee / (conversionRates['inr'] || 1); // Convert INR to USD
+    const discountUSD = discount / (conversionRates['inr'] || 1); // Convert discount from INR to USD
+    const totalUSD = subtotalUSD + deliveryFeeUSD - discountUSD;
+    
+    // Convert to selected currency for display/processing
+    const finalAmount = convertPrice(totalUSD, currency);
 
-        return {
-          _id: item._id,
-          name: item.name,
-          image: item.images?.[0] || "",
-          size: item.size,
-          quantity: item.quantity,
-          discountedprice: Number(selectedSizeInfo?.discountPrice) || 0,
-          actualprice: Number(selectedSizeInfo?.actualPrice) || 0,
-        };
-      });
-
-      // console.log("Items in Order:", orderItems); // Debugging
-
-      if (orderItems.length === 0) {
-        return toast.error("No items selected for the order.");
-      }
-
-
-      const subtotalUSD = orderItems.reduce((sum, item) =>
-        sum + (item.discountedprice * item.quantity || 0), 0);
-      // Calculate the total amount correctly
-      const rate = conversionRates[currency.toLowerCase()] || 1;
-      const deliveryFeeUSD = deliveryFee / rate;
-      const totalUSD = subtotalUSD + deliveryFeeUSD - (discount || 0);
-
-      // Convert to selected currency
-      const finalAmount = convertPrice(totalUSD, currency);
-
-      const orderData = {
-        address: formData,
-        items: orderItems,
-        amount: parseFloat(finalAmount),
-        currency: currency,
-        baseAmountUSD: totalUSD, // Store original USD amount
-        couponCode,
-        discount,
-        paymentMethod: method
+    // Prepare order items
+    const orderItems = cart.map((item) => {
+      const sizeInfo = item.variants?.[0]?.sizesInfo?.find(s => s.size === item.size);
+      return {
+        _id: item._id,
+        name: item.name,
+        image: item.images?.[0] || "",
+        size: item.size,
+        quantity: item.quantity,
+        discountedprice: Number(sizeInfo?.discountPrice) || 0,
+        actualprice: Number(sizeInfo?.actualPrice) || 0,
       };
+    });
 
+    const orderData = {
+      address: formData,
+      items: orderItems,
+      amount: parseFloat(finalAmount),
+      currency: currency,
+      baseAmountUSD: totalUSD, // Original amount in USD
+      couponCode,
+      discount: discountUSD, // Send discount in USD
+      paymentMethod: method,
+      deliveryFee: deliveryFeeUSD // Send delivery fee in USD
+    };
 
-
-      console.log("Order Data Before Sending:", orderData); // Debugging
-
-      switch (method) {
-        case "cod": {
-          const response = await axios.post(
-            "https://rogue0707.com/api/order/place",
-            orderData,
-            { headers: { token } }
-          );
-
-          console.log("Order Response:", response.data); // Debugging
-
-          if (response.data.success) {
-            setCart([]); // Clear cart after order
-            navigate("/orders");
-
-
-          } else {
-            toast.error(response.data.message);
-          }
-          break;
-        }
-
-        case "razorpay": {
-          const responseRazorpay = await axios.post(
-            "https://rogue0707.com/api/order/razorpay",
-            {
-              ...orderData,
-              currency: currency, // Ensure currency is passed
-              amount: parseFloat(finalAmount)
-            },
-            { headers: { token } }
-          );
-
-          // console.log("Razorpay Response:", responseRazorpay.data); // Debugging
-
-          if (responseRazorpay.data.success) {
-
-            initPay({
-              ...responseRazorpay.data.order,
-              amount: parseFloat(finalAmount),
-              currency: currency,
-              orderData,
-            });
-          }
-          break;
-        }
-
-        default:
-          break;
+    console.log("Order Data:", {
+      ...orderData,
+      currencyConversion: {
+        inrToUsdRate: conversionRates['inr'] || 1,
+        selectedCurrency: currency,
+        finalAmount
       }
-    } catch (error) {
-      console.error("Error Placing Order:", error);
-      toast.error("Failed to place order. Please try again.");
+    });
+
+    // Process order based on payment method
+    switch (method) {
+      case "cod": {
+        const response = await axios.post(
+          "https://rogue0707.com/api/order/place",
+          orderData,
+          { headers: { token } }
+        );
+
+        if (response.data.success) {
+          setCart([]);
+          navigate("/orders");
+        } else {
+          toast.error(response.data.message);
+        }
+        break;
+      }
+
+      case "razorpay": {
+        const responseRazorpay = await axios.post(
+          "https://rogue0707.com/api/order/razorpay",
+          orderData,
+          { headers: { token } }
+        );
+
+        if (responseRazorpay.data.success) {
+          initPay({
+            ...responseRazorpay.data.order,
+            amount: parseFloat(finalAmount),
+            currency: currency,
+            orderData,
+          });
+        }
+        break;
+      }
+
+      default:
+        break;
     }
-  };
+  } catch (error) {
+    console.error("Order Error:", {
+      error: error.response?.data || error.message,
+      stack: error.stack
+    });
+    toast.error(error.response?.data?.message || "Failed to place order");
+  }
+};
 
 
 
@@ -878,46 +870,50 @@ const getPostcodeExample = (countryCode) => {
           </div>
 
           {/* Order Summary */}
-          <div className="   p-6 rounded-lg shadow-md">
-            <h2 className="text-sm   mb-4 text-[#A9ABAE]">ORDER SUMMARY</h2>
-            <p className="text-[10px] text-[#A9ABAE] ">
-              Subtotal:{" "}
-              <span className="font-semibold float-end">
-                {convertPrice(getTotalPrice(), currency)} {currency}
-              </span>
-            </p>
+<div className="p-6 rounded-lg shadow-md">
+  <h2 className="text-sm mb-4 text-[#A9ABAE]">ORDER SUMMARY</h2>
+  
+  <p className="text-[10px] text-[#A9ABAE]">
+    Subtotal:{" "}
+    <span className="font-semibold float-end">
+      {convertPrice(getTotalPrice(), currency)} {currency}
+    </span>
+  </p>
 
-            <p className="text-[10px] text-[#A9ABAE] ">
-              Delivery Fee:
-              <span className="font-semibold float-end">
-                {convertPrice(deliveryFee, currency)} {currency}
-              </span>
-            </p>
-            {/* <p className="text-[10px] text-[#A9ABAE] ">
-              Delivery Fee: <span className="font-semibold float-end">0 {currency}</span>
-            </p> */}
-            {discount > 0 && (
-              <div className="flex justify-between items-center text-green-600">
-                <p>Discount</p>
-                <p className="font-medium text-green-600">-₹{discount}</p>
-              </div>
-            )}
-            <p className="font-bold text-[10px] mt-2  text-[#A9ABAE]">
-              Total:{" "}
-              <span className=" float-end">
-                {totalAfterDiscount !== null ? totalAfterDiscount : cartTotal} {currency}
-              </span>
-            </p>
-            <button
-              type="submit"
-              form="Form"
-              className="text-[#D2D3D5] text-[10px] bg-[#605B55] cursor-pointer px-4 py-2 rounded w-full mt-2"
-            >
-              Place Order
-            </button>
+  <p className="text-[10px] text-[#A9ABAE]">
+    Delivery Fee:{" "}
+    <span className="font-semibold float-end">
+      {convertPrice(deliveryFee / (conversionRates['inr'] || 1), currency)} {currency}
+    </span>
+  </p>
+
+  {discount > 0 && (
+    <p className="text-[10px] text-[#A9ABAE]">
+      Discount:{" "}
+      <span className="font-semibold float-end text-green-600">
+        -{convertPrice(discount / (conversionRates['inr'] || 1), currency)} {currency}
+      </span>
+    </p>
+  )}
+
+  <p className="font-bold text-[10px] mt-2 text-[#A9ABAE]">
+    Total:{" "}
+    <span className="float-end">
+      {cartTotal} {currency}
+    </span>
+  </p>
+
+  <button
+    type="submit"
+    form="Form"
+    className="text-[#D2D3D5] text-[10px] bg-[#605B55] cursor-pointer px-4 py-2 rounded w-full mt-2"
+  >
+    Place Order
+  </button>
+</div>
           </div>
         </div>
-      </div>
+      
     </>
   );
 };
