@@ -159,9 +159,9 @@ const CheckOut = () => {
       const weight = Math.max(
         cart.reduce((total, item) => {
           const sizeInfo = item.variants?.[0]?.sizesInfo?.find(s => s.size === item.size);
-          return total + ((sizeInfo?.weight || 2) * item.quantity);
+          return total + ((sizeInfo?.weight || 2.5) * item.quantity);
         }, 0),
-        2 // Minimum weight set to 2kg
+        2.5 // Minimum weight set to 2kg
       ).toFixed(2);
 
       // Validate postcode before API call
