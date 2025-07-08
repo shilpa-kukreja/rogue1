@@ -106,12 +106,12 @@ const CheckOut = () => {
 
 
 
- const fetchDeliveryFee = async () => {
+const fetchDeliveryFee = async () => {
   try {
     const { zipcode } = formData;
     const weight = cart.reduce((total, item) => {
       const sizeInfo = item.variants?.[0]?.sizesInfo?.find((s) => s.size === item.size);
-      return total + ((sizeInfo?.weight || 0.5) * item.quantity); // Default to 0.5kg
+      return total + ((sizeInfo?.weight || 0.5) * item.quantity);
     }, 0);
 
     const res = await axios.post("/api/order/getshippingrate", {
@@ -123,7 +123,7 @@ const CheckOut = () => {
 
     if (res.data.success) {
       setDeliveryFee(res.data.delivery_fee);
-      toast.success(`Shipping via ${res.data.courier_name} (Est. ${res.data.etd})`);
+      toast.success(`Shipping via ${res.data.courier_name} (${res.data.etd})`);
     } else {
       toast.warn(res.data.message);
       console.warn("Shipping debug:", res.data.debug);
@@ -133,7 +133,6 @@ const CheckOut = () => {
     console.error("Shipping error:", err.response?.data);
   }
 };
-
 
 
 

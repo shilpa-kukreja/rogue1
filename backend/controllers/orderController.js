@@ -851,30 +851,51 @@ const CalculateShippingRate = async (req, res) => {
       }
     );
 
-    // Debug log full response
-    console.log("Full Shiprocket Response:", JSON.stringify(data, null, 2));
+    // Debug log
+    console.log("Full API Response:", JSON.stringify(data, null, 2));
 
-    // Filter out couriers with invalid rates
-    const validCouriers = data.available_courier_companies?.filter(
-      courier => courier.rate > 0 && !isNaN(courier.rate)
-    );
-
-    if (!validCouriers || validCouriers.length === 0) {
-      return res.json({ 
-        success: false, 
-        message: 'No couriers with valid rates available',
-        debug: data // Include full response for debugging
+    if (!data.data?.available_courier_companies) {
+      return res.json({
+        success: false,
+        message: 'No courier companies data found in response',
+        debug: data
       });
     }
 
-    // Sort by rate and pick cheapest
-    const cheapest = validCouriers.sort((a, b) => a.rate - b.rate)[0];
+    // Process available couriers
+    const validCouriers = data.data.available_courier_companies
+      .map(courier => ({
+        ...courier,
+        // Convert rate to number safely
+        rate: parseFloat(courier.rate) || 0,
+        // Extract ETD (Estimated Delivery Time)
+        etd: courier.etd || 'Not specified'
+      }))
+      .filter(courier => 
+        courier.rate > 0 && // Only couriers with valid rates
+        courier.is_active && // Only active couriers
+        (!courier.air_max_weight || parseFloat(courier.air_max_weight) >= weight) // Weight check
+      .sort((a, b) => a.rate - b.rate)); // Sort by rate
+
+    if (validCouriers.length === 0) {
+      return res.json({
+        success: false,
+        message: 'No eligible couriers found after filtering',
+        debug: {
+          input: { pickup_postcode, delivery_postcode, weight, cod },
+          all_couriers: data.data.available_courier_companies
+        }
+      });
+    }
+
+    const cheapest = validCouriers[0];
     
-    res.json({ 
-      success: true, 
+    res.json({
+      success: true,
       delivery_fee: cheapest.rate,
-      courier_name: cheapest.courier_name,
-      etd: cheapest.etd // Estimated delivery time
+      courier_name: cheapest.courier_name || 'Standard Courier',
+      etd: cheapest.etd,
+      all_options: validCouriers // Optional: send all valid options
     });
 
   } catch (err) {
@@ -883,10 +904,10 @@ const CalculateShippingRate = async (req, res) => {
       response: err.response?.data,
       stack: err.stack
     });
-    res.status(500).json({ 
-      success: false, 
-      message: err.response?.data?.message || 'Shipping rate fetch failed',
-      error: err.response?.data 
+    res.status(500).json({
+      success: false,
+      message: err.response?.data?.message || 'Failed to fetch shipping rates',
+      error: err.response?.data
     });
   }
 };
