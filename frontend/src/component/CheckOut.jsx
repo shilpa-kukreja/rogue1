@@ -701,10 +701,10 @@ const CheckOut = () => {
               </div>
 
             </div>
-            <p className="text-[#A9ABAE] text-[10px] mt-4">
+            {/* <p className="text-[#A9ABAE] text-[10px] mt-4">
               Finalize your sustainable shopping journey with ease. Complete
               your order and contribute to positive change today!
-            </p>
+            </p> */}
             <div className="mt-4 hidden">
               <input
                 value={couponCode}
