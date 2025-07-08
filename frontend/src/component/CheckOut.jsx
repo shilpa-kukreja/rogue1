@@ -102,101 +102,101 @@ const CheckOut = () => {
 
 
   const subtotalUSD = getTotalPrice(); // Products total in USD
-const deliveryFeeUSD = deliveryFee / (conversionRates['inr'] || 1); // Convert INR to USD
-const totalBeforeDiscountUSD = subtotalUSD + deliveryFeeUSD;
-const totalAfterDiscountUSD = totalBeforeDiscountUSD - (discount / (conversionRates['inr'] || 1));
-const finalAmount = convertPrice(totalAfterDiscountUSD, currency);
+  const deliveryFeeUSD = deliveryFee / (conversionRates['inr'] || 1); // Convert INR to USD
+  const totalBeforeDiscountUSD = subtotalUSD + deliveryFeeUSD;
+  const totalAfterDiscountUSD = totalBeforeDiscountUSD - (discount / (conversionRates['inr'] || 1));
+  const finalAmount = convertPrice(totalAfterDiscountUSD, currency);
 
-const cartTotal = convertPrice(
-  getTotalPrice() + (deliveryFee / (conversionRates['inr'] || 1)) - (discount / (conversionRates['inr'] || 1)), 
-  currency
-);
-
-
-
-
-//   const fetchDeliveryFee = async () => {
-//     try {
-//       const { zipcode } = formData;
-//       const weight = Math.max(
-//         cart.reduce((total, item) => {
-//           const sizeInfo = item.variants?.[0]?.sizesInfo?.find(s => s.size === item.size);
-//           return total + ((sizeInfo?.weight || 0.5) * item.quantity);
-//         }, 0),
-//         0.5 // Minimum weight
-//       ).toFixed(2)
-
-//       const res = await axios.post("/api/order/getshippingrate", {
-//         pickup_postcode: "110015",
-//         delivery_postcode: zipcode,
-//         weight: Math.max(weight, 0.1).toFixed(2), // Minimum 0.1kg
-//         cod: method === "cod" ? 1 : 0
-//       });
-
-//      if (res.data.success) {
-//   setDeliveryFee(res.data.delivery_fee);
-// } else {
-//   toast.warn(res.data.message);
-//   console.warn("Ineligible couriers:", {
-//     reason: res.data.message,
-//     couriers: res.data.debug?.all_couriers
-//   });
-// }} catch (err) {
-//       toast.error(err.response?.data?.message || "Shipping error");
-//       console.error("Shipping error:", err.response?.data);
-//     }
-//   };
+  const cartTotal = convertPrice(
+    getTotalPrice() + (deliveryFee / (conversionRates['inr'] || 1)) - (discount / (conversionRates['inr'] || 1)),
+    currency
+  );
 
 
 
 
+  //   const fetchDeliveryFee = async () => {
+  //     try {
+  //       const { zipcode } = formData;
+  //       const weight = Math.max(
+  //         cart.reduce((total, item) => {
+  //           const sizeInfo = item.variants?.[0]?.sizesInfo?.find(s => s.size === item.size);
+  //           return total + ((sizeInfo?.weight || 0.5) * item.quantity);
+  //         }, 0),
+  //         0.5 // Minimum weight
+  //       ).toFixed(2)
+
+  //       const res = await axios.post("/api/order/getshippingrate", {
+  //         pickup_postcode: "110015",
+  //         delivery_postcode: zipcode,
+  //         weight: Math.max(weight, 0.1).toFixed(2), // Minimum 0.1kg
+  //         cod: method === "cod" ? 1 : 0
+  //       });
+
+  //      if (res.data.success) {
+  //   setDeliveryFee(res.data.delivery_fee);
+  // } else {
+  //   toast.warn(res.data.message);
+  //   console.warn("Ineligible couriers:", {
+  //     reason: res.data.message,
+  //     couriers: res.data.debug?.all_couriers
+  //   });
+  // }} catch (err) {
+  //       toast.error(err.response?.data?.message || "Shipping error");
+  //       console.error("Shipping error:", err.response?.data);
+  //     }
+  //   };
 
 
-// Update fetchDeliveryFee
-const fetchDeliveryFee = async () => {
-  try {
-    const { zipcode, country } = formData;
-    const weight = Math.max(
-      cart.reduce((total, item) => {
-        const sizeInfo = item.variants?.[0]?.sizesInfo?.find(s => s.size === item.size);
-        return total + ((sizeInfo?.weight || 0.5) * item.quantity);
-      }, 0),
-      0.5
-    ).toFixed(2);
 
-    // Validate postcode before API call
-    const countryCode = getCountryCode(country);
-    if (countryCode !== 'IN' && !validatePostcode(zipcode, countryCode)) {
-      toast.warn(`Invalid ${country} postcode format. ${getPostcodeExample(countryCode)}`);
-      return;
-    }
 
-    const payload = {
-      pickup_postcode: "110015",
-      delivery_postcode: zipcode,
-      weight,
-      cod: countryCode === 'IN' ? (method === "cod" ? 1 : 0) : 0,
-      country: countryCode
-    };
 
-    const res = await axios.post("/api/order/getshippingrate", payload);
 
-    if (res.data.success) {
-      setDeliveryFee(res.data.delivery_fee);
-      // Force USD for international
-      if (res.data.is_international) {
-        setCurrency('USD');
-        toast.info(`International shipping via ${res.data.courier_name} (${res.data.etd})`);
+  // Update fetchDeliveryFee
+  const fetchDeliveryFee = async () => {
+    try {
+      const { zipcode, country } = formData;
+      const weight = Math.max(
+        cart.reduce((total, item) => {
+          const sizeInfo = item.variants?.[0]?.sizesInfo?.find(s => s.size === item.size);
+          return total + ((sizeInfo?.weight || 2) * item.quantity);
+        }, 0),
+        2 // Minimum weight set to 2kg
+      ).toFixed(2);
+
+      // Validate postcode before API call
+      const countryCode = getCountryCode(country);
+      if (countryCode !== 'IN' && !validatePostcode(zipcode, countryCode)) {
+        toast.warn(`Invalid ${country} postcode format. ${getPostcodeExample(countryCode)}`);
+        return;
       }
-    } else {
-      toast.warn(res.data.message);
-      console.warn("Shipping debug:", res.data.debug);
+
+      const payload = {
+        pickup_postcode: "110015",
+        delivery_postcode: zipcode,
+        weight,
+        cod: countryCode === 'IN' ? (method === "cod" ? 1 : 0) : 0,
+        country: countryCode
+      };
+
+      const res = await axios.post("/api/order/getshippingrate", payload);
+
+      if (res.data.success) {
+        setDeliveryFee(res.data.delivery_fee);
+        // Force USD for international
+        if (res.data.is_international) {
+          setCurrency('USD');
+          toast.info(`International shipping via ${res.data.courier_name} (${res.data.etd})`);
+        }
+      } else {
+        toast.warn(res.data.message);
+        console.warn("Shipping debug:", res.data.debug);
+      }
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Shipping error");
+      console.error("Shipping error:", err.response?.data);
     }
-  } catch (err) {
-    toast.error(err.response?.data?.message || "Shipping error");
-    console.error("Shipping error:", err.response?.data);
-  }
-};
+  };
 
   useEffect(() => {
     if (formData.zipcode.length === 6) {
@@ -235,58 +235,58 @@ const fetchDeliveryFee = async () => {
 
 
   const handleCountryChange = (e) => {
-  const countryName = e.target.value;
-  setSelectedCountry(countryName);
-  setSelectedState('');
-  setSelectedCity('');
-  setCities([]);
-  
-  // Update form data with proper country code
-  const countryCode = getCountryCode(countryName);
-  setFormData(prev => ({ 
-    ...prev, 
-    country: countryCode,
-    zipcode: '' // Reset zipcode when country changes
-  }));
-  
-  const country = countries.find(c => c.name === countryName);
-  setStates(country?.states || []);
-};
+    const countryName = e.target.value;
+    setSelectedCountry(countryName);
+    setSelectedState('');
+    setSelectedCity('');
+    setCities([]);
 
+    // Update form data with proper country code
+    const countryCode = getCountryCode(countryName);
+    setFormData(prev => ({
+      ...prev,
+      country: countryCode,
+      zipcode: '' // Reset zipcode when country changes
+    }));
 
-
-
-// Add these helper functions
-const getCountryCode = (countryName) => {
-  const countryMap = {
-    'india': 'IN',
-    'united kingdom': 'UK',
-    'united states': 'US',
-    'canada': 'CA',
-    'australia': 'AU'
+    const country = countries.find(c => c.name === countryName);
+    setStates(country?.states || []);
   };
-  return countryMap[countryName?.toLowerCase()] || countryName;
-};
 
-const validatePostcode = (postcode, countryCode) => {
-  const patterns = {
-    UK: /^[A-Za-z]{1,2}[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}$/,
-    US: /^[0-9]{5}(-[0-9]{4})?$/,
-    CA: /^[A-Za-z][0-9][A-Za-z] ?[0-9][A-Za-z][0-9]$/,
-    IN: /^[1-9][0-9]{5}$/
-  };
-  return patterns[countryCode]?.test(postcode) || false;
-};
 
-const getPostcodeExample = (countryCode) => {
-  const examples = {
-    UK: 'Eg: SW1A 1AA',
-    US: 'Eg: 10001 or 10001-1234',
-    CA: 'Eg: M5V 3L9',
-    IN: 'Eg: 110001'
+
+
+  // Add these helper functions
+  const getCountryCode = (countryName) => {
+    const countryMap = {
+      'india': 'IN',
+      'united kingdom': 'UK',
+      'united states': 'US',
+      'canada': 'CA',
+      'australia': 'AU'
+    };
+    return countryMap[countryName?.toLowerCase()] || countryName;
   };
-  return examples[countryCode] || '';
-};
+
+  const validatePostcode = (postcode, countryCode) => {
+    const patterns = {
+      UK: /^[A-Za-z]{1,2}[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}$/,
+      US: /^[0-9]{5}(-[0-9]{4})?$/,
+      CA: /^[A-Za-z][0-9][A-Za-z] ?[0-9][A-Za-z][0-9]$/,
+      IN: /^[1-9][0-9]{5}$/
+    };
+    return patterns[countryCode]?.test(postcode) || false;
+  };
+
+  const getPostcodeExample = (countryCode) => {
+    const examples = {
+      UK: 'Eg: SW1A 1AA',
+      US: 'Eg: 10001 or 10001-1234',
+      CA: 'Eg: M5V 3L9',
+      IN: 'Eg: 110001'
+    };
+    return examples[countryCode] || '';
+  };
 
 
 
@@ -554,122 +554,122 @@ const getPostcodeExample = (countryCode) => {
 
 
   const onSubmitHandler = async (event) => {
-  event.preventDefault();
+    event.preventDefault();
 
-  if (!token) {
-    toast('Login REQUIRED', {
-      style: {
-        background: '#605B55',
-        color: '#A9ABAE',
-        width: '300px',
-        fontSize: '10px',
-        borderRadius: '8px',
-        fontFamily: "'Andale Mono', monospace"
-      },
-      progressStyle: {
-        background: '#5C4033',
-      },
-    });
-    return;
-  }
-
-  try {
-    // Ensure cart is not empty
-    if (!cart || cart.length === 0) {
-      return toast.error("Your cart is empty. Please add items before checkout.");
+    if (!token) {
+      toast('Login REQUIRED', {
+        style: {
+          background: '#605B55',
+          color: '#A9ABAE',
+          width: '300px',
+          fontSize: '10px',
+          borderRadius: '8px',
+          fontFamily: "'Andale Mono', monospace"
+        },
+        progressStyle: {
+          background: '#5C4033',
+        },
+      });
+      return;
     }
 
-    // Calculate amounts in USD first
-    const subtotalUSD = getTotalPrice(); // Products total in USD
-    const deliveryFeeUSD = deliveryFee / (conversionRates['inr'] || 1); // Convert INR to USD
-    const discountUSD = discount / (conversionRates['inr'] || 1); // Convert discount from INR to USD
-    const totalUSD = subtotalUSD + deliveryFeeUSD - discountUSD;
-    
-    // Convert to selected currency for display/processing
-    const finalAmount = convertPrice(totalUSD, currency);
+    try {
+      // Ensure cart is not empty
+      if (!cart || cart.length === 0) {
+        return toast.error("Your cart is empty. Please add items before checkout.");
+      }
 
-    // Prepare order items
-    const orderItems = cart.map((item) => {
-      const sizeInfo = item.variants?.[0]?.sizesInfo?.find(s => s.size === item.size);
-      return {
-        _id: item._id,
-        name: item.name,
-        image: item.images?.[0] || "",
-        size: item.size,
-        quantity: item.quantity,
-        discountedprice: Number(sizeInfo?.discountPrice) || 0,
-        actualprice: Number(sizeInfo?.actualPrice) || 0,
+      // Calculate amounts in USD first
+      const subtotalUSD = getTotalPrice(); // Products total in USD
+      const deliveryFeeUSD = deliveryFee / (conversionRates['inr'] || 1); // Convert INR to USD
+      const discountUSD = discount / (conversionRates['inr'] || 1); // Convert discount from INR to USD
+      const totalUSD = subtotalUSD + deliveryFeeUSD - discountUSD;
+
+      // Convert to selected currency for display/processing
+      const finalAmount = convertPrice(totalUSD, currency);
+
+      // Prepare order items
+      const orderItems = cart.map((item) => {
+        const sizeInfo = item.variants?.[0]?.sizesInfo?.find(s => s.size === item.size);
+        return {
+          _id: item._id,
+          name: item.name,
+          image: item.images?.[0] || "",
+          size: item.size,
+          quantity: item.quantity,
+          discountedprice: Number(sizeInfo?.discountPrice) || 0,
+          actualprice: Number(sizeInfo?.actualPrice) || 0,
+        };
+      });
+
+      const orderData = {
+        address: formData,
+        items: orderItems,
+        amount: parseFloat(finalAmount),
+        currency: currency,
+        baseAmountUSD: totalUSD, // Original amount in USD
+        couponCode,
+        discount: discountUSD, // Send discount in USD
+        paymentMethod: method,
+        deliveryFee: deliveryFeeUSD // Send delivery fee in USD
       };
-    });
 
-    const orderData = {
-      address: formData,
-      items: orderItems,
-      amount: parseFloat(finalAmount),
-      currency: currency,
-      baseAmountUSD: totalUSD, // Original amount in USD
-      couponCode,
-      discount: discountUSD, // Send discount in USD
-      paymentMethod: method,
-      deliveryFee: deliveryFeeUSD // Send delivery fee in USD
-    };
-
-    console.log("Order Data:", {
-      ...orderData,
-      currencyConversion: {
-        inrToUsdRate: conversionRates['inr'] || 1,
-        selectedCurrency: currency,
-        finalAmount
-      }
-    });
-
-    // Process order based on payment method
-    switch (method) {
-      case "cod": {
-        const response = await axios.post(
-          "https://rogue0707.com/api/order/place",
-          orderData,
-          { headers: { token } }
-        );
-
-        if (response.data.success) {
-          setCart([]);
-          navigate("/orders");
-        } else {
-          toast.error(response.data.message);
+      console.log("Order Data:", {
+        ...orderData,
+        currencyConversion: {
+          inrToUsdRate: conversionRates['inr'] || 1,
+          selectedCurrency: currency,
+          finalAmount
         }
-        break;
-      }
+      });
 
-      case "razorpay": {
-        const responseRazorpay = await axios.post(
-          "https://rogue0707.com/api/order/razorpay",
-          orderData,
-          { headers: { token } }
-        );
-
-        if (responseRazorpay.data.success) {
-          initPay({
-            ...responseRazorpay.data.order,
-            amount: parseFloat(finalAmount),
-            currency: currency,
+      // Process order based on payment method
+      switch (method) {
+        case "cod": {
+          const response = await axios.post(
+            "https://rogue0707.com/api/order/place",
             orderData,
-          });
-        }
-        break;
-      }
+            { headers: { token } }
+          );
 
-      default:
-        break;
+          if (response.data.success) {
+            setCart([]);
+            navigate("/orders");
+          } else {
+            toast.error(response.data.message);
+          }
+          break;
+        }
+
+        case "razorpay": {
+          const responseRazorpay = await axios.post(
+            "https://rogue0707.com/api/order/razorpay",
+            orderData,
+            { headers: { token } }
+          );
+
+          if (responseRazorpay.data.success) {
+            initPay({
+              ...responseRazorpay.data.order,
+              amount: parseFloat(finalAmount),
+              currency: currency,
+              orderData,
+            });
+          }
+          break;
+        }
+
+        default:
+          break;
+      }
+    } catch (error) {
+      console.error("Order Error:", {
+        error: error.response?.data || error.message,
+        stack: error.stack
+      });
+      toast.error(error.response?.data?.message || "Failed to place order");
     }
-  } catch (error) {
-    console.error("Order Error:", {
-      error: error.response?.data || error.message,
-      stack: error.stack
-    });
-    toast.error(error.response?.data?.message || "Failed to place order");
-  }
-};
+  };
 
 
 
@@ -870,50 +870,50 @@ const getPostcodeExample = (countryCode) => {
           </div>
 
           {/* Order Summary */}
-<div className="p-6 rounded-lg shadow-md">
-  <h2 className="text-sm mb-4 text-[#A9ABAE]">ORDER SUMMARY</h2>
-  
-  <p className="text-[10px] text-[#A9ABAE]">
-    Subtotal:{" "}
-    <span className="font-semibold float-end">
-      {convertPrice(getTotalPrice(), currency)} {currency}
-    </span>
-  </p>
+          <div className="p-6 rounded-lg shadow-md">
+            <h2 className="text-sm mb-4 text-[#A9ABAE]">ORDER SUMMARY</h2>
 
-  <p className="text-[10px] text-[#A9ABAE]">
-    Delivery Fee:{" "}
-    <span className="font-semibold float-end">
-      {convertPrice(deliveryFee / (conversionRates['inr'] || 1), currency)} {currency}
-    </span>
-  </p>
+            <p className="text-[10px] text-[#A9ABAE]">
+              Subtotal:{" "}
+              <span className="font-semibold float-end">
+                {convertPrice(getTotalPrice(), currency)} {currency}
+              </span>
+            </p>
 
-  {discount > 0 && (
-    <p className="text-[10px] text-[#A9ABAE]">
-      Discount:{" "}
-      <span className="font-semibold float-end text-green-600">
-        -{convertPrice(discount / (conversionRates['inr'] || 1), currency)} {currency}
-      </span>
-    </p>
-  )}
+            <p className="text-[10px] text-[#A9ABAE]">
+              Delivery Fee:{" "}
+              <span className="font-semibold float-end">
+                {convertPrice(deliveryFee / (conversionRates['inr'] || 1), currency)} {currency}
+              </span>
+            </p>
 
-  <p className="font-bold text-[10px] mt-2 text-[#A9ABAE]">
-    Total:{" "}
-    <span className="float-end">
-      {cartTotal} {currency}
-    </span>
-  </p>
+            {discount > 0 && (
+              <p className="text-[10px] text-[#A9ABAE]">
+                Discount:{" "}
+                <span className="font-semibold float-end text-green-600">
+                  -{convertPrice(discount / (conversionRates['inr'] || 1), currency)} {currency}
+                </span>
+              </p>
+            )}
 
-  <button
-    type="submit"
-    form="Form"
-    className="text-[#D2D3D5] text-[10px] bg-[#605B55] cursor-pointer px-4 py-2 rounded w-full mt-2"
-  >
-    Place Order
-  </button>
-</div>
+            <p className="font-bold text-[10px] mt-2 text-[#A9ABAE]">
+              Total:{" "}
+              <span className="float-end">
+                {cartTotal} {currency}
+              </span>
+            </p>
+
+            <button
+              type="submit"
+              form="Form"
+              className="text-[#D2D3D5] text-[10px] bg-[#605B55] cursor-pointer px-4 py-2 rounded w-full mt-2"
+            >
+              Place Order
+            </button>
           </div>
         </div>
-      
+      </div>
+
     </>
   );
 };

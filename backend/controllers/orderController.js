@@ -1102,7 +1102,7 @@ const CalculateShippingRate = async (req, res) => {
         ...courier,
         rate: parseFloat(courier.rate) || 0,
         minWeight: parseFloat(courier.min_weight) || 0,
-        maxWeight: parseFloat(courier.air_max_weight || courier.surface_max_weight) || 30, // Default 30kg max
+        maxWeight: parseFloat(courier.air_max_weight || courier.surface_max_weight) || 30, 
         supportsCod: parseInt(courier.cod) === 1,
         isInternational: parseInt(courier.is_international) === 1
       }))
@@ -1145,7 +1145,7 @@ const CalculateShippingRate = async (req, res) => {
       courier_name: cheapest.courier_name,
       etd: cheapest.etd || (countryCode === 'IN' ? '3-5 days' : '7-14 days'),
       is_international: countryCode !== 'IN',
-      currency: 'USD' // Force USD for international
+      currency: 'USD' 
     });
 
   } catch (err) {
