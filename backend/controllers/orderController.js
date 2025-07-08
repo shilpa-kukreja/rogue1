@@ -840,6 +840,8 @@ async function getToken() {
 
 const CalculateShippingRate = async (req, res) => {
   const { pickup_postcode, delivery_postcode, weight, cod } = req.body;
+  const numericWeight = parseFloat(weight);
+  const numericCod = parseInt(cod);
 
   try {
     const authToken = await getToken();
@@ -847,12 +849,9 @@ const CalculateShippingRate = async (req, res) => {
       'https://apiv2.shiprocket.in/v1/external/courier/serviceability/',
       {
         headers: { Authorization: `Bearer ${authToken}` },
-        params: { pickup_postcode, delivery_postcode, weight, cod },
+        params: { pickup_postcode, delivery_postcode, weight: numericWeight, cod: numericCod },
       }
     );
-
-    // Debug log
-    console.log("Full API Response:", JSON.stringify(data, null, 2));
 
     if (!data.data?.available_courier_companies) {
       return res.json({
@@ -862,52 +861,61 @@ const CalculateShippingRate = async (req, res) => {
       });
     }
 
-    // Process available couriers
+    // Enhanced courier filtering
     const validCouriers = data.data.available_courier_companies
-      .map(courier => ({
-        ...courier,
-        // Convert rate to number safely
-        rate: parseFloat(courier.rate) || 0,
-        // Extract ETD (Estimated Delivery Time)
-        etd: courier.etd || 'Not specified'
-      }))
-      .filter(courier => 
-        courier.rate > 0 && // Only couriers with valid rates
-        courier.is_active && // Only active couriers
-        (!courier.air_max_weight || parseFloat(courier.air_max_weight) >= weight) // Weight check
-      .sort((a, b) => a.rate - b.rate)); // Sort by rate
+      .map(courier => {
+        // Parse numeric values safely
+        const minWeight = parseFloat(courier.min_weight) || 0;
+        const rate = parseFloat(courier.rate) || 0;
+        const supportsCod = parseInt(courier.cod) === 1;
+        
+        return {
+          ...courier,
+          minWeight,
+          rate,
+          supportsCod,
+          isEligible: (
+            rate > 0 &&
+            numericWeight >= minWeight &&
+            (numericCod === 0 || supportsCod) &&
+            !courier.blocked
+          )
+        };
+      })
+      .filter(courier => courier.isEligible)
+      .sort((a, b) => a.rate - b.rate);
 
     if (validCouriers.length === 0) {
       return res.json({
         success: false,
-        message: 'No eligible couriers found after filtering',
+        message: 'No eligible couriers after applying business rules',
         debug: {
-          input: { pickup_postcode, delivery_postcode, weight, cod },
-          all_couriers: data.data.available_courier_companies
+          input: { pickup_postcode, delivery_postcode, weight: numericWeight, cod: numericCod },
+          all_couriers: data.data.available_courier_companies.map(c => ({
+            name: c.courier_name,
+            rate: c.rate,
+            min_weight: c.min_weight,
+            cod: c.cod,
+            blocked: c.blocked
+          }))
         }
       });
     }
 
     const cheapest = validCouriers[0];
-    
     res.json({
       success: true,
       delivery_fee: cheapest.rate,
-      courier_name: cheapest.courier_name || 'Standard Courier',
-      etd: cheapest.etd,
-      all_options: validCouriers // Optional: send all valid options
+      courier_name: cheapest.courier_name,
+      etd: cheapest.etd || '3-5 business days'
     });
 
   } catch (err) {
-    console.error("Shipping Error:", {
-      message: err.message,
-      response: err.response?.data,
-      stack: err.stack
-    });
+    console.error("Shipping Error:", err.response?.data || err.message);
     res.status(500).json({
       success: false,
-      message: err.response?.data?.message || 'Failed to fetch shipping rates',
-      error: err.response?.data
+      message: 'Failed to calculate shipping',
+      error: err.response?.data || err.message
     });
   }
 };
