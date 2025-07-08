@@ -114,6 +114,7 @@ const CheckOut = () => {
         return total + ((sizeInfo?.weight || 0.5) * item.quantity);
       }, 0);
 
+      
       const res = await axios.post("https://rogue0707.com/api/order/get-shipping-rate", {
         pickup_postcode: "110015",
         delivery_postcode: zipcode,
