@@ -838,46 +838,150 @@ async function getToken() {
 }
 
 
+// const CalculateShippingRate = async (req, res) => {
+//   const { pickup_postcode, delivery_postcode, weight, cod } = req.body;
+//   const numericWeight = parseFloat(weight);
+//   const numericCod = parseInt(cod);
+
+//   try {
+//     const authToken = await getToken();
+//     const { data } = await axios.get(
+//       'https://apiv2.shiprocket.in/v1/external/courier/serviceability/',
+//       {
+//         headers: { Authorization: `Bearer ${authToken}` },
+//         params: { pickup_postcode, delivery_postcode, weight: numericWeight, cod: numericCod },
+//       }
+//     );
+
+//     if (!data.data?.available_courier_companies) {
+//       return res.json({
+//         success: false,
+//         message: 'No courier companies data found in response',
+//         debug: data
+//       });
+//     }
+
+//     // Enhanced courier filtering
+//     const validCouriers = data.data.available_courier_companies
+//       .map(courier => {
+//         // Parse numeric values safely
+//         const minWeight = parseFloat(courier.min_weight) || 0;
+//         const rate = parseFloat(courier.rate) || 0;
+//         const supportsCod = parseInt(courier.cod) === 1;
+        
+//         return {
+//           ...courier,
+//           minWeight,
+//           rate,
+//           supportsCod,
+//           isEligible: (
+//             rate > 0 &&
+//             numericWeight >= minWeight &&
+//             (numericCod === 0 || supportsCod) &&
+//             !courier.blocked
+//           )
+//         };
+//       })
+//       .filter(courier => courier.isEligible)
+//       .sort((a, b) => a.rate - b.rate);
+
+//     if (validCouriers.length === 0) {
+//       return res.json({
+//         success: false,
+//         message: 'No eligible couriers after applying business rules',
+//         debug: {
+//           input: { pickup_postcode, delivery_postcode, weight: numericWeight, cod: numericCod },
+//           all_couriers: data.data.available_courier_companies.map(c => ({
+//             name: c.courier_name,
+//             rate: c.rate,
+//             min_weight: c.min_weight,
+//             cod: c.cod,
+//             blocked: c.blocked
+//           }))
+//         }
+//       });
+//     }
+
+//     const cheapest = validCouriers[0];
+//     res.json({
+//       success: true,
+//       delivery_fee: cheapest.rate,
+//       courier_name: cheapest.courier_name,
+//       etd: cheapest.etd || '3-5 business days'
+//     });
+
+//   } catch (err) {
+//     console.error("Shipping Error:", err.response?.data || err.message);
+//     res.status(500).json({
+//       success: false,
+//       message: 'Failed to calculate shipping',
+//       error: err.response?.data || err.message
+//     });
+//   }
+// };
+
+
+
+
 const CalculateShippingRate = async (req, res) => {
-  const { pickup_postcode, delivery_postcode, weight, cod } = req.body;
+  const { pickup_postcode, delivery_postcode, weight, cod, country = 'IN' } = req.body;
   const numericWeight = parseFloat(weight);
   const numericCod = parseInt(cod);
 
+  // Validate postcode format based on country
+  if (country !== 'IN' && !validateInternationalPostcode(delivery_postcode, country)) {
+    return res.json({
+      success: false,
+      message: `Invalid postcode format for ${country}. ${getPostcodeExample(country)}`
+    });
+  }
+
   try {
     const authToken = await getToken();
+    const params = {
+      pickup_postcode: country === 'IN' ? pickup_postcode : '110015', // Default India pickup
+      delivery_postcode,
+      weight: numericWeight,
+      cod: country === 'IN' ? numericCod : 0, // COD only for India
+      country // Add country parameter
+    };
+
     const { data } = await axios.get(
       'https://apiv2.shiprocket.in/v1/external/courier/serviceability/',
       {
         headers: { Authorization: `Bearer ${authToken}` },
-        params: { pickup_postcode, delivery_postcode, weight: numericWeight, cod: numericCod },
+        params
       }
     );
 
     if (!data.data?.available_courier_companies) {
       return res.json({
         success: false,
-        message: 'No courier companies data found in response',
+        message: 'No courier companies data found',
         debug: data
       });
     }
 
-    // Enhanced courier filtering
+    // International-specific filtering
     const validCouriers = data.data.available_courier_companies
       .map(courier => {
-        // Parse numeric values safely
         const minWeight = parseFloat(courier.min_weight) || 0;
         const rate = parseFloat(courier.rate) || 0;
-        const supportsCod = parseInt(courier.cod) === 1;
-        
+        const maxWeight = parseFloat(courier.air_max_weight || courier.surface_max_weight) || Infinity;
+        const isInternational = country !== 'IN';
+
         return {
           ...courier,
           minWeight,
           rate,
-          supportsCod,
+          maxWeight,
+          supportsCod: parseInt(courier.cod) === 1,
           isEligible: (
             rate > 0 &&
             numericWeight >= minWeight &&
-            (numericCod === 0 || supportsCod) &&
+            numericWeight <= maxWeight &&
+            (!isInternational || courier.is_international) && // International flag check
+            (country === 'IN' || numericCod === 0) && // No COD for international
             !courier.blocked
           )
         };
@@ -888,16 +992,14 @@ const CalculateShippingRate = async (req, res) => {
     if (validCouriers.length === 0) {
       return res.json({
         success: false,
-        message: 'No eligible couriers after applying business rules',
+        message: `No couriers available for ${country} shipment`,
         debug: {
-          input: { pickup_postcode, delivery_postcode, weight: numericWeight, cod: numericCod },
-          all_couriers: data.data.available_courier_companies.map(c => ({
-            name: c.courier_name,
-            rate: c.rate,
-            min_weight: c.min_weight,
-            cod: c.cod,
-            blocked: c.blocked
-          }))
+          requirements: {
+            weight: `${numericWeight}kg`,
+            country,
+            payment_type: numericCod ? "COD" : "Prepaid"
+          },
+          all_couriers: data.data.available_courier_companies
         }
       });
     }
@@ -907,7 +1009,8 @@ const CalculateShippingRate = async (req, res) => {
       success: true,
       delivery_fee: cheapest.rate,
       courier_name: cheapest.courier_name,
-      etd: cheapest.etd || '3-5 business days'
+      etd: cheapest.etd || '5-10 business days',
+      is_international: country !== 'IN'
     });
 
   } catch (err) {
@@ -919,6 +1022,25 @@ const CalculateShippingRate = async (req, res) => {
     });
   }
 };
+
+// Helper functions
+function validateInternationalPostcode(postcode, country) {
+  const patterns = {
+    UK: /^[A-Z]{1,2}[0-9][A-Z0-9]? ?[0-9][A-Z]{2}$/i,
+    US: /^\d{5}(-\d{4})?$/,
+    CA: /^[A-Z]\d[A-Z] ?\d[A-Z]\d$/i
+  };
+  return patterns[country]?.test(postcode) || false;
+}
+
+function getPostcodeExample(country) {
+  const examples = {
+    UK: 'Eg: SW1A 1AA',
+    US: 'Eg: 10001',
+    CA: 'Eg: M5V 3L9'
+  };
+  return examples[country] || '';
+}
 
 
 

@@ -106,41 +106,85 @@ const CheckOut = () => {
 
 
 
-  const fetchDeliveryFee = async () => {
-    try {
-      const { zipcode } = formData;
-      const weight = Math.max(
-        cart.reduce((total, item) => {
-          const sizeInfo = item.variants?.[0]?.sizesInfo?.find(s => s.size === item.size);
-          return total + ((sizeInfo?.weight || 0.5) * item.quantity);
-        }, 0),
-        0.5 // Minimum weight
-      ).toFixed(2)
+//   const fetchDeliveryFee = async () => {
+//     try {
+//       const { zipcode } = formData;
+//       const weight = Math.max(
+//         cart.reduce((total, item) => {
+//           const sizeInfo = item.variants?.[0]?.sizesInfo?.find(s => s.size === item.size);
+//           return total + ((sizeInfo?.weight || 0.5) * item.quantity);
+//         }, 0),
+//         0.5 // Minimum weight
+//       ).toFixed(2)
 
-      const res = await axios.post("/api/order/getshippingrate", {
-        pickup_postcode: "110015",
-        delivery_postcode: zipcode,
-        weight: Math.max(weight, 0.1).toFixed(2), // Minimum 0.1kg
-        cod: method === "cod" ? 1 : 0
+//       const res = await axios.post("/api/order/getshippingrate", {
+//         pickup_postcode: "110015",
+//         delivery_postcode: zipcode,
+//         weight: Math.max(weight, 0.1).toFixed(2), // Minimum 0.1kg
+//         cod: method === "cod" ? 1 : 0
+//       });
+
+//      if (res.data.success) {
+//   setDeliveryFee(res.data.delivery_fee);
+// } else {
+//   toast.warn(res.data.message);
+//   console.warn("Ineligible couriers:", {
+//     reason: res.data.message,
+//     couriers: res.data.debug?.all_couriers
+//   });
+// }} catch (err) {
+//       toast.error(err.response?.data?.message || "Shipping error");
+//       console.error("Shipping error:", err.response?.data);
+//     }
+//   };
+
+
+
+
+
+
+const fetchDeliveryFee = async () => {
+  try {
+    const { zipcode, country } = formData; // Add country to form data
+    const weight = Math.max(
+      cart.reduce((total, item) => {
+        const sizeInfo = item.variants?.[0]?.sizesInfo?.find(s => s.size === item.size);
+        return total + ((sizeInfo?.weight || 0.5) * item.quantity);
+      }, 0),
+      0.5 // Minimum weight
+    ).toFixed(2);
+
+    const payload = {
+      pickup_postcode: "110015", // Your India warehouse
+      delivery_postcode: zipcode,
+      weight: Math.max(weight, 0.1).toFixed(2),
+      cod: country === 'IN' ? (method === "cod" ? 1 : 0) : 0, // No COD for international
+      country: country || 'IN' // Default to India
+    };
+
+    const res = await axios.post("/api/order/getshippingrate", payload);
+
+    if (res.data.success) {
+      setDeliveryFee(res.data.delivery_fee);
+      if (res.data.is_international) {
+        toast.info(`International shipping via ${res.data.courier_name}`);
+      }
+    } else {
+      toast.warn(res.data.message);
+      console.warn("Shipping debug:", {
+        country,
+        error: res.data.message,
+        couriers: res.data.debug?.all_couriers
       });
-
-     if (res.data.success) {
-  setDeliveryFee(res.data.delivery_fee);
-} else {
-  toast.warn(res.data.message);
-  console.warn("Ineligible couriers:", {
-    reason: res.data.message,
-    couriers: res.data.debug?.all_couriers
-  });
-}} catch (err) {
-      toast.error(err.response?.data?.message || "Shipping error");
-      console.error("Shipping error:", err.response?.data);
     }
-  };
-
-
-
-
+  } catch (err) {
+    toast.error(err.response?.data?.message || "Shipping error");
+    console.error("Shipping error:", {
+      error: err.response?.data,
+      payload: { ...payload, weight: parseFloat(weight) }
+    });
+  }
+};
 
   useEffect(() => {
     if (formData.zipcode.length === 6) {
