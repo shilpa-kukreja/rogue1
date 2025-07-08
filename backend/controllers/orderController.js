@@ -841,29 +841,73 @@ async function getToken() {
 const CalculateShippingRate = async (req, res) => {
   const { pickup_postcode, delivery_postcode, weight, cod } = req.body;
 
+  // Validate required fields
+  if (!pickup_postcode || !delivery_postcode || !weight) {
+    return res.status(400).json({
+      success: false,
+      message: 'Missing required parameters (pickup_postcode, delivery_postcode, weight)'
+    });
+  }
+
   try {
-    const authToken = await getToken();
-    console.log("Shiprocket Auth Token:", authToken);
+    // Force new token if existing one fails
+    let authToken;
+    try {
+      authToken = await getToken();
+    } catch (tokenError) {
+      console.error("Token Error:", tokenError);
+      token = null; // Reset token on failure
+      authToken = await getToken(); // Retry
+    }
+
     const { data } = await axios.get(
       'https://apiv2.shiprocket.in/v1/external/courier/serviceability/',
       {
-        headers: { Authorization: `Bearer ${authToken}` },
-        params: { pickup_postcode, delivery_postcode, weight, cod },
+        headers: { 
+          Authorization: `Bearer ${authToken}`,
+          'Content-Type': 'application/json'
+        },
+        params: { 
+          pickup_postcode: String(pickup_postcode).trim(),
+          delivery_postcode: String(delivery_postcode).trim(),
+          weight: parseFloat(weight),
+          cod: cod ? 1 : 0
+        }
       }
     );
-    console.log("Shiprocket Response:", data);
 
-    const cheapest = data.available_courier_companies?.sort((a, b) => a.rate - b.rate)[0];
-    console.log("Cheapest Courier:", cheapest);
+    console.log("Full API Response:", JSON.stringify(data, null, 2));
 
-    if (cheapest) {
-      res.json({ success: true, delivery_fee: cheapest.rate });
-    } else {
-      res.json({ success: false, message: 'No courier available' });
+    if (!data.available_courier_companies || data.available_courier_companies.length === 0) {
+      return res.json({ 
+        success: false, 
+        message: 'No courier available for these parameters',
+        debug: {
+          input: { pickup_postcode, delivery_postcode, weight, cod },
+          apiResponse: data
+        }
+      });
     }
+
+    const cheapest = data.available_courier_companies.sort((a, b) => a.rate - b.rate)[0];
+    res.json({ 
+      success: true, 
+      delivery_fee: cheapest.rate,
+      courier_name: cheapest.courier_name 
+    });
+
   } catch (err) {
-    console.error(err.response?.data || err.message);
-    res.status(500).json({ success: false, message: 'Failed to fetch shipping rate' });
+    console.error("Full Error:", {
+      message: err.message,
+      response: err.response?.data,
+      stack: err.stack
+    });
+    
+    res.status(500).json({ 
+      success: false, 
+      message: 'Shipping rate fetch failed',
+      error: err.response?.data || err.message 
+    });
   }
 };
 
