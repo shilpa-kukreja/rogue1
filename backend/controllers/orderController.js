@@ -1067,13 +1067,14 @@ const CalculateShippingRate = async (req, res) => {
 
   try {
     const authToken = await getToken();
-    const params = {
-      pickup_postcode: countryCode === 'IN' ? pickup_postcode : '110015',
-      delivery_postcode,
-      weight: numericWeight,
-      cod: countryCode === 'IN' ? numericCod : 0,
-      country: countryCode
-    };
+   const params = {
+  pickup_postcode: countryCode === 'IN' ? pickup_postcode : '110015',
+  delivery_postcode,
+  weight: numericWeight,
+  cod: countryCode === 'IN' ? numericCod : 0,
+  country: countryCode,
+  ...(countryCode !== 'IN' && { delivery_country: countryCode }) 
+};
 
     // International endpoint may differ
     const apiUrl = countryCode === 'IN' 
