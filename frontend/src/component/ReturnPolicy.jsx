@@ -5,7 +5,7 @@ const ReturnPolicy = () => {
     <section className="sm:px-10 px-4 w-10/12 mx-auto text-gray-400 text-sm leading-relaxed">
       <header className="mb-4">
         <h2 className="flex items-center text-[#A9ABAE] text-xs">
-          Rogue Cancellation & Refund
+          Rogue Cancellation Policy
         </h2>
       </header>
 
@@ -16,7 +16,7 @@ const ReturnPolicy = () => {
       <p> <strong className="text-xs my-6 block text-[#A9ABAE]"> Eligibility for Exchange:</strong></p>
       <ul className="space-y-2">
         <li className="text-[#A9ABAE] text-xs mb-5">• Unused products in their original condition with all tags and labels intact are eligible for return.</li>
-        <li className="text-[#A9ABAE] text-xs mb-5">• The return request must be initiated within 7 days from the date of receipt of the order.</li>
+        <li className="text-[#A9ABAE] text-xs mb-5">• The return request must be initiated within 48 Hours from the date of receipt of the order.</li>
       </ul>
 
       <p> <strong  className="text-xs my-6 block text-[#A9ABAE]"> Initiating an Exchange:</strong></p>

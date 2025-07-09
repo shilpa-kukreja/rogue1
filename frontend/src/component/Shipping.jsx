@@ -17,9 +17,9 @@ const Shipping = () => {
       
       <p><strong className='text-xs my-6 block text-[#A9ABAE]'>SHIPPING METHODS AND DELIVERY TIMES</strong></p>
       <p className='text-[#A9ABAE] text-xs mb-5'>
-        <strong>Standard Shipping:</strong> Delivery within 7-15 business days. available worldwide.<br/>
-        <strong>Express Shipping:</strong> Delivery within 3-7 business days. available worldwide.<br/>
-        
+        {/* <strong>Standard Shipping:</strong> Delivery within 7-15 business days. available worldwide.<br/>
+        <strong>Express Shipping:</strong> Delivery within 3-7 business days. available worldwide.<br/> */}
+         DELIVERY TIMES as per 7-15 business days after the order is shipped. Available worldwide.
       </p>
       
       <p><strong className='text-xs my-6 block text-[#A9ABAE]'>SHIPPING COSTS</strong></p>
