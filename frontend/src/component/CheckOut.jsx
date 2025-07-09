@@ -456,7 +456,7 @@ const CheckOut = () => {
 
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
-      amount: Math.round(amountInSubunits * 100),
+      amount: amountInSubunits,
       currency: order.currency,
       name: "ROGUE0707",
       description: `Payment for Order ${order.receipt}`,
