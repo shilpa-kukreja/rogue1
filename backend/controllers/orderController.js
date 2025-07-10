@@ -1255,11 +1255,16 @@ const CalculateShippingRate = async (req, res) => {
       return res.json({
         success: false,
         message: `No couriers available for ${countryCode} shipment with current parameters ${data.data}`,
+     
         debug: {
           requirements: {
             weight: `${numericWeight}kg`,
             country: countryCode,
-            payment_type: numericCod ? "COD" : "Prepaid"
+            payment_type: numericCod ? "COD" : "Prepaid",
+            shiprocket_response: data, params_sent: params,
+            data_available_couriers: data.data.available_courier_companies,
+            data:data.data
+
           },
           all_couriers: data.data.available_courier_companies.map(c => ({
             name: c.courier_name,
