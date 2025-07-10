@@ -338,103 +338,103 @@ const verifyRazorpay = async (req, res) => {
 
 
 
-const ShipOrders = async (req,res)=>{
+const ShipOrders = async (req, res) => {
   try {
-       const { orderData,orderid } = req.body
-       ;
-
-            
-            
-            const authRes = await axios.post(
-              'https://apiv2.shiprocket.in/v1/external/auth/login',
-              {
-                email: "mehararora05@gmail.com",
-                password: "Mehar@0707"
-              },
-              {
-                headers: { 'Content-Type': 'application/json' }
-              }
-            );
-
-            const shiprokettoken = authRes.data.token;
-            
- 
-            console.log(shiprokettoken);
-
-            // 2. Prepare shipping order payload
-
-            const formatDate = (timestamp) => {
-              const date = new Date(timestamp);
-              const yyyy = date.getFullYear();
-              const mm = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-based
-              const dd = String(date.getDate()).padStart(2, '0');
-              const hh = String(date.getHours()).padStart(2, '0');
-              const min = String(date.getMinutes()).padStart(2, '0');
-              return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
-            };
-
-            const currentDate = Date.now();
-            var currentDatetime = formatDate(currentDate)
-            // Get the current timestamp
-
-            console.log(orderData)
-
-            const orderPayload = {
-              order_id: orderid, // Order ID   
-              order_date: currentDatetime, // Current datetime in "yyyy-mm-dd hh:mm" format
-              pickup_location: "work", // Static pickup location
-              comment: "",
-              billing_customer_name: orderData.address.firstName, // Billing first name from order data
-              billing_last_name: orderData.address.lastName, // Billing last name from order data
-              billing_address: orderData.address.street, // Billing address from order data
-              billing_address_2: "Near Hokage House", // Static second billing address
-              billing_city: orderData.address.city, // Billing city from order data
-              billing_pincode:orderData.address.zipcode, // Billing pincode from order data
-              billing_state: orderData.address.state, // Billing state from order data
-              billing_country: orderData.address.country, // Billing country from order data
-              billing_email: orderData.address.email, // Billing email from order data
-              billing_phone: orderData.address.phone, // Billing phone from order data
-              shipping_is_billing: true, // Assuming shipping is the same as billing
-              order_items: orderData.items.map(item => ({
-                name: item.name, // Item name from order data
-                sku: item._id, // SKU from order data
-                units: item.quantity, // Item quantity from order data
-                selling_price: item.discountedprice, // Discounted price from order data
-                hsn: 441122 // Static HSN code (could be dynamic based on your needs)
-              })),
-             payment_method: orderData.paymentMethod === "razorpay" ? "prepaid" : "postpaid",  // Payment method from order data
-              shipping_charges: 0, // Assuming no shipping charges
-              giftwrap_charges: 0, // Assuming no giftwrap charges
-              transaction_charges: 0, // Assuming no transaction charges
-              total_discount: 0, // Assuming no discount
-              sub_total: orderData.amount.toFixed(2), // Subtotal from order data
-               length: 10, // Static length (you can update based on actual data)
-              breadth: 15, // Static breadth (you can update based on actual data)
-              height: 20, // Static height (you can update based on actual data)
-              weight: 2.5 // Static weight (you can update based on actual data)
-            };
-            console.log(orderPayload)
-
-            // 3. Create Shiprocket Order
-            const shipRes = await axios.post('https://apiv2.shiprocket.in/v1/external/orders/create/adhoc',
-              orderPayload,
-              {
-                headers: {
-                  'Content-Type': 'application/json',
-                  'Authorization': `Bearer ${shiprokettoken}`
-                }
-              }
-            );
-
-            console.log("Shiprocket Response:", shipRes.data.orderData);
+    const { orderData, orderid } = req.body
+      ;
 
 
-            res.json({success:true,message:"Order Ship Successfully"});
+
+    const authRes = await axios.post(
+      'https://apiv2.shiprocket.in/v1/external/auth/login',
+      {
+        email: "mehararora05@gmail.com",
+        password: "Mehar@0707"
+      },
+      {
+        headers: { 'Content-Type': 'application/json' }
+      }
+    );
+
+    const shiprokettoken = authRes.data.token;
+
+
+    console.log(shiprokettoken);
+
+    // 2. Prepare shipping order payload
+
+    const formatDate = (timestamp) => {
+      const date = new Date(timestamp);
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, '0'); // Month is 0-based
+      const dd = String(date.getDate()).padStart(2, '0');
+      const hh = String(date.getHours()).padStart(2, '0');
+      const min = String(date.getMinutes()).padStart(2, '0');
+      return `${yyyy}-${mm}-${dd} ${hh}:${min}`;
+    };
+
+    const currentDate = Date.now();
+    var currentDatetime = formatDate(currentDate)
+    // Get the current timestamp
+
+    console.log(orderData)
+
+    const orderPayload = {
+      order_id: orderid, // Order ID   
+      order_date: currentDatetime, // Current datetime in "yyyy-mm-dd hh:mm" format
+      pickup_location: "work", // Static pickup location
+      comment: "",
+      billing_customer_name: orderData.address.firstName, // Billing first name from order data
+      billing_last_name: orderData.address.lastName, // Billing last name from order data
+      billing_address: orderData.address.street, // Billing address from order data
+      billing_address_2: "Near Hokage House", // Static second billing address
+      billing_city: orderData.address.city, // Billing city from order data
+      billing_pincode: orderData.address.zipcode, // Billing pincode from order data
+      billing_state: orderData.address.state, // Billing state from order data
+      billing_country: orderData.address.country, // Billing country from order data
+      billing_email: orderData.address.email, // Billing email from order data
+      billing_phone: orderData.address.phone, // Billing phone from order data
+      shipping_is_billing: true, // Assuming shipping is the same as billing
+      order_items: orderData.items.map(item => ({
+        name: item.name, // Item name from order data
+        sku: item._id, // SKU from order data
+        units: item.quantity, // Item quantity from order data
+        selling_price: item.discountedprice, // Discounted price from order data
+        hsn: 441122 // Static HSN code (could be dynamic based on your needs)
+      })),
+      payment_method: orderData.paymentMethod === "razorpay" ? "prepaid" : "postpaid",  // Payment method from order data
+      shipping_charges: 0, // Assuming no shipping charges
+      giftwrap_charges: 0, // Assuming no giftwrap charges
+      transaction_charges: 0, // Assuming no transaction charges
+      total_discount: 0, // Assuming no discount
+      sub_total: orderData.amount.toFixed(2), // Subtotal from order data
+      length: 10, // Static length (you can update based on actual data)
+      breadth: 15, // Static breadth (you can update based on actual data)
+      height: 20, // Static height (you can update based on actual data)
+      weight: 2.5 // Static weight (you can update based on actual data)
+    };
+    console.log(orderPayload)
+
+    // 3. Create Shiprocket Order
+    const shipRes = await axios.post('https://apiv2.shiprocket.in/v1/external/orders/create/adhoc',
+      orderPayload,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${shiprokettoken}`
+        }
+      }
+    );
+
+    console.log("Shiprocket Response:", shipRes.data.orderData);
+
+
+    res.json({ success: true, message: "Order Ship Successfully" });
 
 
   } catch (error) {
     console.log(error);
-     res.json({ success: false, message: error.message });
+    res.json({ success: false, message: error.message });
   }
 }
 
@@ -582,7 +582,7 @@ const EmailNotification = async (req, res) => {
       message: 'Email sent successfully',
       messageId: response.data.id,
       data: response.data,
-      payload : payload
+      payload: payload
     });
   } catch (error) {
     console.error('Email send error:', error.response?.data || error.message);
@@ -722,13 +722,13 @@ const EmailNotification = async (req, res) => {
 const sendorderstatusEmail = async (req, res) => {
   const data = req.body;
 
-  
+
 
   const status = data.current_status?.toLowerCase();
   const orderId = data.order_id;
 
   if (!status || !orderId) {
-      res.json({ success: false });
+    res.json({ success: false });
   }
 
 
@@ -747,7 +747,7 @@ const sendorderstatusEmail = async (req, res) => {
   }
 
   try {
-    const order = await orderModel.findOne({ orderid: orderId }); 
+    const order = await orderModel.findOne({ orderid: orderId });
 
     if (!order) {
       return res.status(404).json({
@@ -868,7 +868,7 @@ async function getToken() {
 //         const minWeight = parseFloat(courier.min_weight) || 0;
 //         const rate = parseFloat(courier.rate) || 0;
 //         const supportsCod = parseInt(courier.cod) === 1;
-        
+
 //         return {
 //           ...courier,
 //           minWeight,
@@ -1046,6 +1046,136 @@ async function getToken() {
 
 
 
+// const CalculateShippingRate = async (req, res) => {
+//   const { pickup_postcode, delivery_postcode, weight, cod, country = 'IN' } = req.body;
+//   const numericWeight = parseFloat(weight);
+//   const numericCod = parseInt(cod);
+
+//   // Convert full country name to ISO code if needed
+//   const countryCode = getCountryCode(country);
+
+//   // Validate postcode format
+//   if (countryCode !== 'IN') {
+//     const isValid = validateInternationalPostcode(delivery_postcode, countryCode);
+//     if (!isValid) {
+//       return res.json({
+//         success: false,
+//         message: `Invalid postcode for ${country}. ${getPostcodeExample(countryCode)}`
+//       });
+//     }
+//   }
+
+//   try {
+//     const authToken = await getToken();
+//     const params = {
+//       pickup_postcode: countryCode === 'IN' ? pickup_postcode : '110015',
+//       delivery_postcode,
+//       weight: numericWeight,
+//       cod: countryCode === 'IN' ? numericCod : 0,
+//       country: countryCode,
+//       ...(countryCode !== 'IN' && { delivery_country: countryCode })
+//     };
+
+//     // International endpoint may differ
+//     const apiUrl = countryCode === 'IN'
+//       ? 'https://apiv2.shiprocket.in/v1/external/courier/serviceability/'
+//       : 'https://apiv2.shiprocket.in/v1/external/international/courier/serviceability/';
+
+//     const { data } = await axios.get(apiUrl, {
+//       headers: {
+//         Authorization: `Bearer ${authToken}`,
+//         'Content-Type': 'application/json'
+//       },
+//       params
+//     });
+
+//     if (!data.data?.available_courier_companies) {
+//       return res.json({
+//         success: false,
+//         message: 'No courier companies available',
+//         debug: data
+//       });
+//     }
+
+//     // Enhanced courier filtering
+//     const validCouriers = data.data.available_courier_companies
+//       .map(courier => ({
+//         ...courier,
+//         rate: parseFloat(courier.rate) || 0,
+//         minWeight: parseFloat(courier.min_weight) || 0,
+//         maxWeight: parseFloat(courier.air_max_weight || courier.surface_max_weight) || 30,
+//         supportsCod: parseInt(courier.cod) === 1,
+//         isInternational: parseInt(courier.is_international) === 1
+//       }))
+//       .filter(courier => (
+//         courier.rate > 0 &&
+//         numericWeight >= courier.minWeight &&
+//         numericWeight <= courier.maxWeight &&
+//         (countryCode === 'IN' || courier.isInternational) &&
+//         (countryCode === 'IN' || numericCod === 0) &&
+//         !courier.blocked
+//       ))
+//       .sort((a, b) => a.rate - b.rate);
+
+
+//     if (!data.data?.available_courier_companies) {
+//       return res.json({
+//         success: false,
+//         message: 'No courier companies available',
+//         debug: {
+//           shiprocket_response: data,
+//           params_sent: params
+//         }
+//       });
+//     }
+
+//     if (validCouriers.length === 0) {
+//       return res.json({
+//         success: false,
+//         message: `No couriers available for ${countryCode} shipment with current parameters`,
+//         debug: {
+//           requirements: {
+//             weight: `${numericWeight}kg`,
+//             country: countryCode,
+//             payment_type: numericCod ? "COD" : "Prepaid"
+//           },
+//           all_couriers: data.data.available_courier_companies.map(c => ({
+//             name: c.courier_name,
+//             rate: c.rate,
+//             min_weight: c.min_weight,
+//             max_weight: c.air_max_weight || c.surface_max_weight,
+//             international: c.is_international,
+//             cod: c.cod
+//           }))
+//         }
+//       });
+//     }
+
+//     const cheapest = validCouriers[0];
+//     res.json({
+//       success: true,
+//       delivery_fee: cheapest.rate,
+//       courier_name: cheapest.courier_name,
+//       etd: cheapest.etd || (countryCode === 'IN' ? '3-5 days' : '7-14 days'),
+//       is_international: countryCode !== 'IN',
+//       currency: 'USD'
+//     });
+
+//   } catch (err) {
+//     console.error("Shipping Error:", {
+//       message: err.message,
+//       response: err.response?.data,
+//       stack: err.stack
+//     });
+//     res.status(500).json({
+//       success: false,
+//       message: 'Failed to calculate shipping',
+//       error: err.response?.data || err.message
+//     });
+//   }
+// };
+
+
 const CalculateShippingRate = async (req, res) => {
   const { pickup_postcode, delivery_postcode, weight, cod, country = 'IN' } = req.body;
   const numericWeight = parseFloat(weight);
@@ -1067,43 +1197,45 @@ const CalculateShippingRate = async (req, res) => {
 
   try {
     const authToken = await getToken();
-   const params = {
-  pickup_postcode: countryCode === 'IN' ? pickup_postcode : '110015',
-  delivery_postcode,
-  weight: numericWeight,
-  cod: countryCode === 'IN' ? numericCod : 0,
-  country: countryCode,
-  ...(countryCode !== 'IN' && { delivery_country: countryCode }) 
-};
+    const params = {
+      pickup_postcode: countryCode === 'IN' ? pickup_postcode : '110015',
+      delivery_postcode,
+      weight: numericWeight,
+      cod: countryCode === 'IN' ? numericCod : 0,
+      country: countryCode,
+      ...(countryCode !== 'IN' && { delivery_country: countryCode })
+    };
 
-    // International endpoint may differ
-    const apiUrl = countryCode === 'IN' 
+    console.log("🔍 Params sent to Shiprocket:", params);
+
+    const apiUrl = countryCode === 'IN'
       ? 'https://apiv2.shiprocket.in/v1/external/courier/serviceability/'
       : 'https://apiv2.shiprocket.in/v1/external/international/courier/serviceability/';
 
     const { data } = await axios.get(apiUrl, {
-      headers: { 
+      headers: {
         Authorization: `Bearer ${authToken}`,
         'Content-Type': 'application/json'
       },
       params
     });
 
+    console.log("📦 Raw Shiprocket API Response:", JSON.stringify(data, null, 2));
+
     if (!data.data?.available_courier_companies) {
       return res.json({
         success: false,
         message: 'No courier companies available',
-        debug: data
+        debug: { shiprocket_response: data, params_sent: params }
       });
     }
 
-    // Enhanced courier filtering
     const validCouriers = data.data.available_courier_companies
       .map(courier => ({
         ...courier,
         rate: parseFloat(courier.rate) || 0,
         minWeight: parseFloat(courier.min_weight) || 0,
-        maxWeight: parseFloat(courier.air_max_weight || courier.surface_max_weight) || 30, 
+        maxWeight: parseFloat(courier.air_max_weight || courier.surface_max_weight) || 30,
         supportsCod: parseInt(courier.cod) === 1,
         isInternational: parseInt(courier.is_international) === 1
       }))
@@ -1116,6 +1248,8 @@ const CalculateShippingRate = async (req, res) => {
         !courier.blocked
       ))
       .sort((a, b) => a.rate - b.rate);
+
+    console.log("✅ Valid Couriers After Filtering:", validCouriers);
 
     if (validCouriers.length === 0) {
       return res.json({
@@ -1140,17 +1274,18 @@ const CalculateShippingRate = async (req, res) => {
     }
 
     const cheapest = validCouriers[0];
+
     res.json({
       success: true,
       delivery_fee: cheapest.rate,
       courier_name: cheapest.courier_name,
       etd: cheapest.etd || (countryCode === 'IN' ? '3-5 days' : '7-14 days'),
       is_international: countryCode !== 'IN',
-      currency: 'USD' 
+      currency: countryCode === 'IN' ? 'INR' : 'USD'
     });
 
   } catch (err) {
-    console.error("Shipping Error:", {
+    console.error("❌ Shipping Error:", {
       message: err.message,
       response: err.response?.data,
       stack: err.stack
@@ -1162,6 +1297,7 @@ const CalculateShippingRate = async (req, res) => {
     });
   }
 };
+
 
 // Helper functions
 function getCountryCode(countryName) {
@@ -1286,7 +1422,7 @@ function getPostcodeExample(countryCode) {
 
 
 
-  
+
 //      const transporter = nodemailer.createTransport({
 //       service: 'gmail',
 //       auth: {
