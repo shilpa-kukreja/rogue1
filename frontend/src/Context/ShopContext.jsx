@@ -12,7 +12,7 @@ const ShopContextProvider = (props) => {
   const [products, setProducts] = useState([]);
   console.log("products context:", products);
   const [token, setToken] = useState("");
-  const [currency, setCurrency] = useState('USD');
+  const [currency, setCurrency] = useState('INR');
   const navigate = useNavigate();
    const [timerExpire, setTimerExpire] = useState(false);
 
