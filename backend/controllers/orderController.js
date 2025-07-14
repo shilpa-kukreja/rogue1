@@ -1180,7 +1180,7 @@ const CalculateShippingRate = async (req, res) => {
   const { pickup_postcode, delivery_postcode, weight,length,
     breadth,
     height,
-    hsn, cod, country = 'IN' } = req.body;
+     cod, country = 'IN' } = req.body;
   const numericWeight = parseFloat(weight);
   const numericCod = parseInt(cod);
    const numericLength = parseFloat(length);
@@ -1213,7 +1213,7 @@ const CalculateShippingRate = async (req, res) => {
         length: numericLength,
       breadth: numericBreadth,
       height: numericHeight,
-      hsn
+    
     };
 
     console.log("🔍 Params sent to Shiprocket:", params);
@@ -1272,7 +1272,7 @@ const CalculateShippingRate = async (req, res) => {
              length: numericLength,
             breadth: numericBreadth,
             height: numericHeight,
-            hsn,
+          
             country: countryCode,
             payment_type: numericCod ? "COD" : "Prepaid",
             shiprocket_response: data, params_sent: params,
