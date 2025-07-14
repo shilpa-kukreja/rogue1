@@ -1177,9 +1177,15 @@ async function getToken() {
 
 
 const CalculateShippingRate = async (req, res) => {
-  const { pickup_postcode, delivery_postcode, weight, cod, country = 'IN' } = req.body;
+  const { pickup_postcode, delivery_postcode, weight,length,
+    breadth,
+    height,
+    hsn, cod, country = 'IN' } = req.body;
   const numericWeight = parseFloat(weight);
   const numericCod = parseInt(cod);
+   const numericLength = parseFloat(length);
+  const numericBreadth = parseFloat(breadth);
+  const numericHeight = parseFloat(height);
 
   // Convert full country name to ISO code if needed
   const countryCode = getCountryCode(country);
@@ -1203,7 +1209,11 @@ const CalculateShippingRate = async (req, res) => {
       weight: numericWeight,
       cod: countryCode === 'IN' ? numericCod : 0,
       country: countryCode,
-      ...(countryCode !== 'IN' && { delivery_country: countryCode })
+      ...(countryCode !== 'IN' && { delivery_country: countryCode }),
+        length: numericLength,
+      breadth: numericBreadth,
+      height: numericHeight,
+      hsn
     };
 
     console.log("🔍 Params sent to Shiprocket:", params);
@@ -1259,6 +1269,10 @@ const CalculateShippingRate = async (req, res) => {
         debug: {
           requirements: {
             weight: `${numericWeight}kg`,
+             length: numericLength,
+            breadth: numericBreadth,
+            height: numericHeight,
+            hsn,
             country: countryCode,
             payment_type: numericCod ? "COD" : "Prepaid",
             shiprocket_response: data, params_sent: params,
