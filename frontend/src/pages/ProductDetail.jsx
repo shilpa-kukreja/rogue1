@@ -383,7 +383,7 @@ const ProductDetail = () => {
                                     {firstImages.length > 0 && (
                                         <img
                                             src={`https://rogue0707.com${firstImages[firstIndex]}`}
-                                            className="h-[90vh]"
+                                            className="heightimage"
                                             alt="First Variant Animation"
                                         />
                                     )}
@@ -392,7 +392,7 @@ const ProductDetail = () => {
                                     {secondImages.length > 0 && (
                                         <img
                                             src={`https://rogue0707.com${secondImages[secondIndex]}`}
-                                            className="h-[90vh]"
+                                            className=" heightimage"
                                             alt="Second Variant Animation"
                                         />
                                     )}
