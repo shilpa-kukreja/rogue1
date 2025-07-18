@@ -1374,7 +1374,7 @@ const CalculateShippingRate = async (req, res) => {
     const validCouriers = data.data.available_courier_companies
       .map(courier => ({
         ...courier,
-        rate: parseFloat(courier.rate) || 0,
+        rate: parseFloat(courier.rate?.rate || courier.rate) || 0,
         minWeight: parseFloat(courier.min_weight) || 0,
         maxWeight: parseFloat(courier.air_max_weight || courier.surface_max_weight) || 30,
         supportsCod: parseInt(courier.cod) === 1,
