@@ -163,9 +163,12 @@ const CheckOut = () => {
         }, 0),
         2.5 // Minimum weight set to 2kg
       ).toFixed(2);
-
+      
       // Validate postcode before API call
       const countryCode = getCountryCode(country);
+      console.log("Country Code:", countryCode);
+      console.log("Zipcode:", zipcode);
+      console.log("country:", country);
       if (countryCode !== 'IN' && !validatePostcode(zipcode, countryCode)) {
         toast.warn(`Invalid ${country} postcode format. ${getPostcodeExample(countryCode)}`);
         return;
