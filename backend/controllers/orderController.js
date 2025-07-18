@@ -1456,7 +1456,7 @@ function getCountryCode(countryName) {
 
 function validateInternationalPostcode(postcode, countryCode) {
   const patterns = {
-    UK: /^[A-Za-z]{1,2}[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}$/,
+    GB: /^[A-Za-z]{1,2}[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}$/,
     US: /^[0-9]{5}(-[0-9]{4})?$/,
     CA: /^[A-Za-z][0-9][A-Za-z] ?[0-9][A-Za-z][0-9]$/,
     AU: /^[0-9]{4}$/,
