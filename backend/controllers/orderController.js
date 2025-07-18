@@ -1176,22 +1176,155 @@ async function getToken() {
 // };
 
 
+// const CalculateShippingRate = async (req, res) => {
+//   const { pickup_postcode, delivery_postcode, weight,
+//     // length,
+//     // breadth,
+//     // height,
+//      cod, country = 'IN' } = req.body;
+//   const numericWeight = parseFloat(weight);
+//   const numericCod = parseInt(cod);
+//   //  const numericLength = parseFloat(length);
+//   // const numericBreadth = parseFloat(breadth);
+//   // const numericHeight = parseFloat(height);
+
+//   // Convert full country name to ISO code if needed
+//   const countryCode = getCountryCode(country);
+
+//   // Validate postcode format
+//   if (countryCode !== 'IN') {
+//     const isValid = validateInternationalPostcode(delivery_postcode, countryCode);
+//     if (!isValid) {
+//       return res.json({
+//         success: false,
+//         message: `Invalid postcode for ${country}. ${getPostcodeExample(countryCode)}`
+//       });
+//     }
+//   }
+
+//   try {
+//     const authToken = await getToken();
+//     const params = {
+//       pickup_postcode: countryCode === 'IN' ? pickup_postcode : '110015',
+//       delivery_postcode,
+//       weight: numericWeight,
+//       cod: countryCode === 'IN' ? numericCod : 0,
+//       country: countryCode,
+//       ...(countryCode !== 'IN' && { delivery_country: countryCode }),
+//       //   length: numericLength,
+//       // breadth: numericBreadth,
+//       // height: numericHeight,
+//       purpose_of_shipment:"1" // 1 for commercial, 2 for non-commercial
+    
+//     };
+
+//     console.log("🔍 Params sent to Shiprocket:", params);
+
+//     const apiUrl = countryCode === 'IN'
+//       ? 'https://apiv2.shiprocket.in/v1/external/courier/serviceability/'
+//       : 'https://apiv2.shiprocket.in/v1/external/international/courier/serviceability/';
+
+//     const { data } = await axios.get(apiUrl, {
+//       headers: {
+//         Authorization: `Bearer ${authToken}`,
+//         'Content-Type': 'application/json'
+//       },
+//       params
+//     });
+
+//     console.log("📦 Raw Shiprocket API Response:", JSON.stringify(data, null, 2));
+
+//     if (!data.data?.available_courier_companies) {
+//       return res.json({
+//         success: false,
+//         message: 'No courier companies available',
+//         debug: { shiprocket_response: data, params_sent: params }
+//       });
+//     }
+
+//     const validCouriers = data.data.available_courier_companies
+//       .map(courier => ({
+//         ...courier,
+//         rate: parseFloat(courier.rate) || 0,
+//         minWeight: parseFloat(courier.min_weight) || 0,
+//         maxWeight: parseFloat(courier.air_max_weight || courier.surface_max_weight) || 30,
+//         supportsCod: parseInt(courier.cod) === 1,
+//         isInternational: parseInt(courier.international) === 1
+//       }))
+//       .filter(courier => (
+//         courier.rate > 0 &&
+//         numericWeight >= courier.minWeight &&
+//         numericWeight <= courier.maxWeight &&
+//         (countryCode === 'IN' || courier.isInternational) &&
+//         (countryCode === 'IN' || numericCod === 0) &&
+//         !courier.blocked
+//       ))
+//       .sort((a, b) => a.rate - b.rate);
+
+//     console.log("✅ Valid Couriers After Filtering:", validCouriers);
+
+//     if (validCouriers.length === 0) {
+//       return res.json({
+//         success: false,
+//         message: `No couriers available for ${countryCode} shipment with current parameters ${data.data}`,
+//         data_available_couriers: data.data.available_courier_companies,
+//         debug: {
+//           requirements: {
+//             weight: `${numericWeight}kg`,
+//             //  length: numericLength,
+//             // breadth: numericBreadth,
+//             // height: numericHeight,
+          
+//             country: countryCode,
+//             payment_type: numericCod ? "COD" : "Prepaid",
+//             shiprocket_response: data, params_sent: params,
+//             data_available_couriers: data.data.available_courier_companies,
+//             data:data.data
+
+//           },
+//           all_couriers: data.data.available_courier_companies.map(c => ({
+//             name: c.courier_name,
+//             rate: c.rate,
+//             min_weight: c.min_weight,
+//             max_weight: c.air_max_weight || c.surface_max_weight,
+//             international: c.is_international,
+//             cod: c.cod
+//           }))
+//         }
+//       });
+//     }
+
+//     const cheapest = validCouriers[0];
+
+//     res.json({
+//       success: true,
+//       delivery_fee: cheapest.rate,
+//       courier_name: cheapest.courier_name,
+//       etd: cheapest.etd || (countryCode === 'IN' ? '3-5 days' : '7-14 days'),
+//       is_international: countryCode !== 'IN',
+//       currency: countryCode === 'IN' ? 'INR' : 'USD'
+//     });
+
+//   } catch (err) {
+//     console.error("❌ Shipping Error:", {
+//       message: err.message,
+//       response: err.response?.data,
+//       stack: err.stack
+//     });
+//     res.status(500).json({
+//       success: false,
+//       message: 'Failed to calculate shipping',
+//       error: err.response?.data || err.message
+//     });
+//   }
+// };
 const CalculateShippingRate = async (req, res) => {
-  const { pickup_postcode, delivery_postcode, weight,
-    // length,
-    // breadth,
-    // height,
-     cod, country = 'IN' } = req.body;
+  const { pickup_postcode, delivery_postcode, weight, cod, country = 'IN' } = req.body;
+
   const numericWeight = parseFloat(weight);
   const numericCod = parseInt(cod);
-  //  const numericLength = parseFloat(length);
-  // const numericBreadth = parseFloat(breadth);
-  // const numericHeight = parseFloat(height);
-
-  // Convert full country name to ISO code if needed
   const countryCode = getCountryCode(country);
 
-  // Validate postcode format
   if (countryCode !== 'IN') {
     const isValid = validateInternationalPostcode(delivery_postcode, countryCode);
     if (!isValid) {
@@ -1211,11 +1344,7 @@ const CalculateShippingRate = async (req, res) => {
       cod: countryCode === 'IN' ? numericCod : 0,
       country: countryCode,
       ...(countryCode !== 'IN' && { delivery_country: countryCode }),
-      //   length: numericLength,
-      // breadth: numericBreadth,
-      // height: numericHeight,
-      purpose_of_shipment:"1" // 1 for commercial, 2 for non-commercial
-    
+      purpose_of_shipment: "1" // 1 for commercial
     };
 
     console.log("🔍 Params sent to Shiprocket:", params);
@@ -1232,12 +1361,12 @@ const CalculateShippingRate = async (req, res) => {
       params
     });
 
-    console.log("📦 Raw Shiprocket API Response:", JSON.stringify(data, null, 2));
+    console.log("📦 Shiprocket API Response:", JSON.stringify(data, null, 2));
 
     if (!data.data?.available_courier_companies) {
       return res.json({
         success: false,
-        message: 'No courier companies available',
+        message: 'No courier companies available.',
         debug: { shiprocket_response: data, params_sent: params }
       });
     }
@@ -1261,26 +1390,18 @@ const CalculateShippingRate = async (req, res) => {
       ))
       .sort((a, b) => a.rate - b.rate);
 
-    console.log("✅ Valid Couriers After Filtering:", validCouriers);
+    console.log("✅ Valid Couriers:", validCouriers);
 
     if (validCouriers.length === 0) {
       return res.json({
         success: false,
-        message: `No couriers available for ${countryCode} shipment with current parameters ${data.data}`,
+        message: `No couriers available for ${countryCode} shipment.`,
         data_available_couriers: data.data.available_courier_companies,
         debug: {
           requirements: {
             weight: `${numericWeight}kg`,
-            //  length: numericLength,
-            // breadth: numericBreadth,
-            // height: numericHeight,
-          
             country: countryCode,
-            payment_type: numericCod ? "COD" : "Prepaid",
-            shiprocket_response: data, params_sent: params,
-            data_available_couriers: data.data.available_courier_companies,
-            data:data.data
-
+            payment_type: numericCod ? "COD" : "Prepaid"
           },
           all_couriers: data.data.available_courier_companies.map(c => ({
             name: c.courier_name,
