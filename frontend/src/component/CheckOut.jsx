@@ -163,7 +163,7 @@ const CheckOut = () => {
         }, 0),
         0.01 // Minimum weight set to 2kg
       ).toFixed(2);
-      
+
       // Validate postcode before API call
       const countryCode = getCountryCode(country);
       console.log("Country Code:", countryCode);
@@ -174,20 +174,33 @@ const CheckOut = () => {
         return;
       }
 
+      // const payload = {
+      //   pickup_postcode: "110015",
+      //   delivery_postcode: zipcode,
+      //   weight,
+      //   cod: countryCode === 'IN' ? (method === "cod" ? 1 : 0) : 0,
+      //   country: countryCode,
+      //   purpose_of_shipment: "1" // 1 for commercial, 2 for non-commercial
+      // };
+
       const payload = {
         pickup_postcode: "110015",
         delivery_postcode: zipcode,
-        weight,
-        cod: countryCode === 'IN' ? (method === "cod" ? 1 : 0) : 0,
+        weight: parseFloat(weight),
+        cod: countryCode === 'IN' && method === "cod" ? 1 : 0,
         country: countryCode,
-        purpose_of_shipment: "1" // 1 for commercial, 2 for non-commercial
+        purpose_of_shipment: "1",
+        is_doc: 0 // Add this if your package is a product
       };
+
 
       const res = await axios.post("/api/order/getshippingrate", payload);
 
       console.log("Shipping response:", res.data);
       console.log("Shipping debug:", res.data.debug);
       console.log("Payload", payload);
+      console.log("Available couriers:", res.data.available_courier_companies);
+
       if (res.data.success) {
         setDeliveryFee(res.data.delivery_fee);
         // Force USD for international
