@@ -176,7 +176,8 @@ const CheckOut = () => {
         delivery_postcode: zipcode,
         weight,
         cod: countryCode === 'IN' ? (method === "cod" ? 1 : 0) : 0,
-        country: countryCode
+        country: countryCode,
+        purpose_of_shipment: "1" // 1 for commercial, 2 for non-commercial
       };
 
       const res = await axios.post("/api/order/getshippingrate", payload);

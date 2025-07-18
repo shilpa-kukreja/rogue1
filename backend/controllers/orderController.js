@@ -1213,6 +1213,7 @@ const CalculateShippingRate = async (req, res) => {
         length: numericLength,
       breadth: numericBreadth,
       height: numericHeight,
+      purpose_of_shipment:"1" // 1 for commercial, 2 for non-commercial
     
     };
 
