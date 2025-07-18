@@ -1177,15 +1177,16 @@ async function getToken() {
 
 
 const CalculateShippingRate = async (req, res) => {
-  const { pickup_postcode, delivery_postcode, weight,length,
-    breadth,
-    height,
+  const { pickup_postcode, delivery_postcode, weight,
+    // length,
+    // breadth,
+    // height,
      cod, country = 'IN' } = req.body;
   const numericWeight = parseFloat(weight);
   const numericCod = parseInt(cod);
-   const numericLength = parseFloat(length);
-  const numericBreadth = parseFloat(breadth);
-  const numericHeight = parseFloat(height);
+  //  const numericLength = parseFloat(length);
+  // const numericBreadth = parseFloat(breadth);
+  // const numericHeight = parseFloat(height);
 
   // Convert full country name to ISO code if needed
   const countryCode = getCountryCode(country);
@@ -1210,9 +1211,9 @@ const CalculateShippingRate = async (req, res) => {
       cod: countryCode === 'IN' ? numericCod : 0,
       country: countryCode,
       ...(countryCode !== 'IN' && { delivery_country: countryCode }),
-        length: numericLength,
-      breadth: numericBreadth,
-      height: numericHeight,
+      //   length: numericLength,
+      // breadth: numericBreadth,
+      // height: numericHeight,
       purpose_of_shipment:"1" // 1 for commercial, 2 for non-commercial
     
     };
@@ -1270,9 +1271,9 @@ const CalculateShippingRate = async (req, res) => {
         debug: {
           requirements: {
             weight: `${numericWeight}kg`,
-             length: numericLength,
-            breadth: numericBreadth,
-            height: numericHeight,
+            //  length: numericLength,
+            // breadth: numericBreadth,
+            // height: numericHeight,
           
             country: countryCode,
             payment_type: numericCod ? "COD" : "Prepaid",
