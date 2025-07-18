@@ -1267,7 +1267,7 @@ const CalculateShippingRate = async (req, res) => {
       return res.json({
         success: false,
         message: `No couriers available for ${countryCode} shipment with current parameters ${data.data}`,
-     
+        data_available_couriers: data.data.available_courier_companies,
         debug: {
           requirements: {
             weight: `${numericWeight}kg`,
