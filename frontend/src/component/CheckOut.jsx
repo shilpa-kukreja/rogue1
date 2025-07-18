@@ -206,7 +206,7 @@ const CheckOut = () => {
   };
 
   useEffect(() => {
-    if (formData.zipcode.length === 6) {
+    if (formData.zipcode.length === 4 || formData.zipcode.length === 6 || formData.zipcode.length === 5) {
       fetchDeliveryFee();
     }
   }, [formData.zipcode, method, cart]);
