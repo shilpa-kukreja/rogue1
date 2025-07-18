@@ -204,10 +204,10 @@ const CheckOut = () => {
       if (res.data.success) {
         setDeliveryFee(res.data.delivery_fee);
         // Force USD for international
-        if (res.data.is_international) {
-          setCurrency('USD');
-          toast.info(`International shipping via ${res.data.courier_name} (${res.data.etd})`);
-        }
+        // if (res.data.is_international) {
+        //   setCurrency('USD');
+        //   toast.info(`International shipping via ${res.data.courier_name} (${res.data.etd})`);
+        // }
       } else {
         toast.warn(res.data.message);
         console.warn("Shipping debug:", res.data.debug);
