@@ -243,11 +243,12 @@ const ProductDetail = () => {
                             <div className="price-display mt-[-10px]">
                                 {discountPrice !== price ? (
                                     <span className="text-[8px] text-[#A9ABAE]">
-                                        {convertPrice(discountPrice, currency)?.toLocaleString(undefined, {
+                                        {Number(convertPrice(discountPrice, currency))?.toLocaleString(undefined, {
                                             minimumFractionDigits: 2,
                                             maximumFractionDigits: 2,
                                         })} {currency}
                                     </span>
+
                                 ) : (
                                     <span className="text-[8px] text-[#A9ABAE]">
                                         ${price?.toFixed(2)} USD
