@@ -143,71 +143,71 @@ const ProductDetail = () => {
                 </div>
 
 
-               
-                   {/* Mobile View with Swiper */}
-<div className="lg:hidden block mb-30">
-    <Swiper
-        slidesPerView={1}
-        spaceBetween={10}
-        pagination={{
-            clickable: true,
-        }}
-        navigation={false}
-        modules={[Pagination, Navigation]}
-        className="mySwiper"
-    >
-        {/* Animation images slides */}
-        <SwiperSlide>
-            <div className='flex'>
-                {firstImages.length > 0 && (
-                    <div className="w-[50%]">
-                        <img
-                            src={`https://rogue0707.com${firstImages[firstIndex]}`}
-                            alt="First Variant Animation"
-                            className="w-full max-h-[400px] object-contain"
-                        />
-                    </div>
-                )}
-                {secondImages.length > 0 && (
-                    <div className="w-[50%]">
-                        <img
-                            src={`https://rogue0707.com${secondImages[secondIndex]}`}
-                            alt="Second Variant Animation"
-                            className="w-full max-h-[400px] object-contain"
-                        />
-                    </div>
-                )}
-            </div>
-        </SwiperSlide>
 
-        {/* Static images - matching desktop view */}
-        {variant.images?.[1] && (
-            <SwiperSlide>
-                <div className="w-full">
-                    <img
-                        src={`https://rogue0707.com${variant.images[firstdownimage]}`}
-                        alt={selectedProduct.name}
-                        className="w-full max-h-[400px] object-contain"
-                    />
-                </div>
-            </SwiperSlide>
-        )}
-        
-        {variant.images?.length === 6 && variant.images?.[2] && (
-            <SwiperSlide>
-                <div className="w-full">
-                    <img
-                         src={`https://rogue0707.com${variant.images[seconddownimage]}`}
-                        alt={selectedProduct.name}
-                        className="w-full max-h-[400px] object-contain"
-                    />
-                </div>
-            </SwiperSlide>
-        )}
-        
-       
-        
-        {/* {variant.images?.length === 6 && variant.images[4] && (
+                {/* Mobile View with Swiper */}
+                <div className="lg:hidden block mb-30">
+                    <Swiper
+                        slidesPerView={1}
+                        spaceBetween={10}
+                        pagination={{
+                            clickable: true,
+                        }}
+                        navigation={false}
+                        modules={[Pagination, Navigation]}
+                        className="mySwiper"
+                    >
+                        {/* Animation images slides */}
+                        <SwiperSlide>
+                            <div className='flex'>
+                                {firstImages.length > 0 && (
+                                    <div className="w-[50%]">
+                                        <img
+                                            src={`https://rogue0707.com${firstImages[firstIndex]}`}
+                                            alt="First Variant Animation"
+                                            className="w-full max-h-[400px] object-contain"
+                                        />
+                                    </div>
+                                )}
+                                {secondImages.length > 0 && (
+                                    <div className="w-[50%]">
+                                        <img
+                                            src={`https://rogue0707.com${secondImages[secondIndex]}`}
+                                            alt="Second Variant Animation"
+                                            className="w-full max-h-[400px] object-contain"
+                                        />
+                                    </div>
+                                )}
+                            </div>
+                        </SwiperSlide>
+
+                        {/* Static images - matching desktop view */}
+                        {variant.images?.[1] && (
+                            <SwiperSlide>
+                                <div className="w-full">
+                                    <img
+                                        src={`https://rogue0707.com${variant.images[firstdownimage]}`}
+                                        alt={selectedProduct.name}
+                                        className="w-full max-h-[400px] object-contain"
+                                    />
+                                </div>
+                            </SwiperSlide>
+                        )}
+
+                        {variant.images?.length === 6 && variant.images?.[2] && (
+                            <SwiperSlide>
+                                <div className="w-full">
+                                    <img
+                                        src={`https://rogue0707.com${variant.images[seconddownimage]}`}
+                                        alt={selectedProduct.name}
+                                        className="w-full max-h-[400px] object-contain"
+                                    />
+                                </div>
+                            </SwiperSlide>
+                        )}
+
+
+
+                        {/* {variant.images?.length === 6 && variant.images[4] && (
             <SwiperSlide>
                 <div className="w-full">
                     <img
@@ -230,9 +230,9 @@ const ProductDetail = () => {
                 </div>
             </SwiperSlide>
         )} */}
-    </Swiper>
-</div>
-                
+                    </Swiper>
+                </div>
+
                 {/* Desktop View */}
                 <div className='grid grid-cols-1 lg:grid-cols-10 sm:ml-[30px] ml-0 md:gap-2'>
                     {/* Left Panel */}
@@ -243,7 +243,10 @@ const ProductDetail = () => {
                             <div className="price-display mt-[-10px]">
                                 {discountPrice !== price ? (
                                     <span className="text-[8px] text-[#A9ABAE]">
-                                        {convertPrice(discountPrice, currency)} {currency}
+                                        {convertPrice(discountPrice, currency)?.toLocaleString(undefined, {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                        })} {currency}
                                     </span>
                                 ) : (
                                     <span className="text-[8px] text-[#A9ABAE]">
@@ -251,8 +254,8 @@ const ProductDetail = () => {
                                     </span>
                                 )}
                             </div>
-                             
-                             <h4 className='text-[8px] uppercase text-[#A9ABAE] font-medium'>INCLUSIVE OF TAXES. DUTIES ON ARRIVAL.</h4>
+
+                            <h4 className='text-[8px] uppercase text-[#A9ABAE] font-medium'>INCLUSIVE OF TAXES. DUTIES ON ARRIVAL.</h4>
 
                             {/* Colors */}
                             <div className='flex gap-3 my-5'>
@@ -313,7 +316,7 @@ const ProductDetail = () => {
                             {/* Chart Details */}
                             <div className='p-0 m-0 mt-[-10px]'>
                                 <button onClick={() => setChartDetails(!chartDetails)} className='cursor-pointer text-[8px] text-[#A9ABAE] rounded-lg'>
-                                    Chart Details {chartDetails ? "-" : "+"}
+                                    Size  Chart  {chartDetails ? "-" : "+"}
                                 </button>
 
                             </div>
