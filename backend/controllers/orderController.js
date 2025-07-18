@@ -1378,7 +1378,7 @@ const CalculateShippingRate = async (req, res) => {
         minWeight: parseFloat(courier.min_weight) || 0,
         maxWeight: parseFloat(courier.air_max_weight || courier.surface_max_weight) || 30,
         supportsCod: parseInt(courier.cod) === 1,
-        isInternational: parseInt(courier.international) === 1
+        isInternational: parseInt(courier.is_international) === 1
       }))
       .filter(courier => (
         courier.rate > 0 &&
