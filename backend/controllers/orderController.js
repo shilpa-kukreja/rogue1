@@ -1445,7 +1445,7 @@ const CalculateShippingRate = async (req, res) => {
 function getCountryCode(countryName) {
   const countryMap = {
     'india': 'IN',
-    'united kingdom': 'UK',
+    'united kingdom': 'GB',
     'united states': 'US',
     'canada': 'CA',
     'australia': 'AU'
@@ -1467,7 +1467,7 @@ function validateInternationalPostcode(postcode, countryCode) {
 
 function getPostcodeExample(countryCode) {
   const examples = {
-    UK: 'Eg: SW1A 1AA',
+    GB: 'Eg: SW1A 1AA',
     US: 'Eg: 10001 or 10001-1234',
     CA: 'Eg: M5V 3L9',
     AU: 'Eg: 2000',

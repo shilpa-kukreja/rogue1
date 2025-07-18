@@ -280,7 +280,7 @@ const CheckOut = () => {
   const getCountryCode = (countryName) => {
     const countryMap = {
       'india': 'IN',
-      'united kingdom': 'UK',
+      'united kingdom': 'GB',
       'united states': 'US',
       'canada': 'CA',
       'australia': 'AU'
@@ -290,7 +290,7 @@ const CheckOut = () => {
 
   const validatePostcode = (postcode, countryCode) => {
     const patterns = {
-      UK: /^[A-Za-z]{1,2}[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}$/,
+      GB: /^[A-Za-z]{1,2}[0-9][A-Za-z0-9]? ?[0-9][A-Za-z]{2}$/,
       US: /^[0-9]{5}(-[0-9]{4})?$/,
       CA: /^[A-Za-z][0-9][A-Za-z] ?[0-9][A-Za-z][0-9]$/,
       IN: /^[1-9][0-9]{5}$/
@@ -300,7 +300,7 @@ const CheckOut = () => {
 
   const getPostcodeExample = (countryCode) => {
     const examples = {
-      UK: 'Eg: SW1A 1AA',
+      GB: 'Eg: SW1A 1AA',
       US: 'Eg: 10001 or 10001-1234',
       CA: 'Eg: M5V 3L9',
       IN: 'Eg: 110001'
