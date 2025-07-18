@@ -182,6 +182,9 @@ const CheckOut = () => {
 
       const res = await axios.post("/api/order/getshippingrate", payload);
 
+      console.log("Shipping response:", res.data);
+      console.log("Shipping debug:", res.data.debug);
+      console.log("Payload", payload);
       if (res.data.success) {
         setDeliveryFee(res.data.delivery_fee);
         // Force USD for international
