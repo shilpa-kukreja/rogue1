@@ -474,6 +474,9 @@ const CheckOut = () => {
       return;
     }
 
+
+     
+
     const options = {
       key: import.meta.env.VITE_RAZORPAY_KEY_ID,
       amount: amountInSubunits,
@@ -481,6 +484,9 @@ const CheckOut = () => {
       name: "ROGUE0707",
       description: `Payment for Order ${order.receipt}`,
       order_id: order.id,
+
+
+
 
       handler: async (response) => {
         try {
@@ -608,9 +614,23 @@ const CheckOut = () => {
       // Convert to selected currency for display/processing
       const finalAmount = convertPrice(totalUSD, currency);
 
+      
+
       // Prepare order items
       const orderItems = cart.map((item) => {
         const sizeInfo = item.variants?.[0]?.sizesInfo?.find(s => s.size === item.size);
+        
+        const itemsid = ['' + item._id + ''];
+
+         fbq('track', 'InitiateCheckout', {
+            value: Number(sizeInfo?.discountPrice), 
+            currency: currency, 
+            content_ids: itemsid, 
+            content_name: item.name, 
+            content_category: item.name, 
+            num_items: 1 
+        });
+
         return {
           _id: item._id,
           name: item.name,
@@ -633,6 +653,8 @@ const CheckOut = () => {
         paymentMethod: method,
         deliveryFee: deliveryFeeUSD // Send delivery fee in USD
       };
+
+      
 
       console.log("Order Data:", {
         ...orderData,
