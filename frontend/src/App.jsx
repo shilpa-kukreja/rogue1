@@ -171,7 +171,7 @@ const App = () => {
         <Route path="/reset-password/:token" element={<ResetPassword />} />
         <Route path='/cart' element={<Cart />} />
         <Route path='/checkout' element={<CheckOut />} />
-        <Route path='/forgot-password' element={<ForgotPassword />} />
+        <Route path='/forgot-password' element={<ForgotPassword/>} />
         <Route path='/orders' element={<Orders />} />
         <Route path="/search" element={<SearchResults />} />
         <Route path='*' element={<Error />} />

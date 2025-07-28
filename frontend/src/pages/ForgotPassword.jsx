@@ -1,70 +1,71 @@
+import React, { useState } from 'react';
 
-import React from 'react'
+const ForgotPassword = () => {
+  const [email, setEmail] = useState('');
+  const [sent, setSent] = useState(false);
 
-import loginimg from '../assets/login.jpg'
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-import { assets } from '../assets/assets'
+    const query = `
+      mutation customerRecover($email: String!) {
+        customerRecover(email: $email) {
+          customerUserErrors {
+            message
+          }
+        }
+      }
+    `;
 
+    try {
+      const res = await fetch("https://q3uepe-ic.myshopify.com/api/2023-07/graphql.json", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "X-Shopify-Storefront-Access-Token": "76df5b05e1b2db908234960f1757df67",
+        },
+        body: JSON.stringify({ query, variables: { email } }),
+      });
 
+      const json = await res.json();
+      const error = json?.data?.customerRecover?.customerUserErrors?.[0]?.message;
 
-const FotgotPassword = () => {
+      if (error) {
+        alert(error);
+      } else {
+        alert("Password reset email sent");
+        setSent(true);
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    }
+  };
 
+  return (
+    <div className="flex flex-col items-center justify-center min-h-screen">
+      <form onSubmit={handleSubmit} className="w-full max-w-sm p-4  rounded shadow">
+        <h2 className="mb-4 text-[20px] font-semibold text-[#A9ABAE]">Forgot Password</h2>
+        {sent ? (
+          <p className="text-[#A9ABAE] text-[10px]">Check your email for a reset link.</p>
+        ) : (
+          <>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Enter your email"
+              required
+              className="w-full bg-transparent border-b text-[#A9ABAE] placeholder-[#A9ABAE] py-2 text-sm outline-none mb-3"
+            />
+            <button type="submit" className="w-full text-[#A9ABAE] bg-[#605B55] hover:bg-[#534f49] text-sm py-2 rounded-full tracking-wide">
+              Send Reset Link
+            </button>
+          </>
+        )}
+      </form>
+    </div>
+  );
+};
 
-
-
-    return (
-        <div className=' flex w-[100vw] h-[100vh] '>
-
-            <div className='w-[30%]'>
-                <img src={loginimg} className="h-full w-[100%] " alt="" />
-            </div>
-
-            <div className='w-[70%] m-auto  flex  justify-center'>
-                <div className='w-[400px]'>
-                    <div>
-                        <img src={assets.s4} alt="Logo" className="w-30 mix-blend-multiply opacity-40" />
-                    </div>
-                    <div>
-                        <p className='text-[#A9ABAE] text-sm'>Forgot Your Password?</p>
-                        <p className='text-[#A9ABAE] text-sm'>
-                            Let’s get you back on track to a fashion world!
-                        </p>
-
-
-
-                    </div>
-
-
-
-                    <form action="" id='frmLogin'>
-                        <div>
-                            <input type="email" className='border w-full py-1 mt-6 mb-3 px-2 text-[#A9ABAE] placeholder-[#A9ABAE] text-sm outline-0' name='txtemail' id='txtemail' placeholder='Email' />
-                        </div>
-
-
-
-
-
-
-
-                        
-
-                        <div>
-                            <button type='submit' className='w-full border  bg-[#605B55] hover:bg-[#534f49]   py-1 px-2 mt-3 text-[#D2D3D5] text-sm outline-0 cursor-pointer'> Forgot </button>
-                        </div>
-
-
-                    </form>
-
-
-
-
-                </div>
-
-
-            </div>
-        </div>
-    )
-}
-
-export default FotgotPassword;
+export default ForgotPassword;
