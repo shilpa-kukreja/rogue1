@@ -579,141 +579,278 @@ const CheckOut = () => {
   };
 
 
-  const onSubmitHandler = async (event) => {
-    event.preventDefault();
+  // const onSubmitHandler = async (event) => {
+  //   event.preventDefault();
 
-    if (!token) {
-      toast('Login REQUIRED', {
-        style: {
-          background: '#605B55',
-          color: '#A9ABAE',
-          width: '300px',
-          fontSize: '10px',
-          borderRadius: '8px',
-          fontFamily: "'Andale Mono', monospace"
-        },
-        progressStyle: {
-          background: '#5C4033',
-        },
-      });
-      return;
-    }
+  //   if (!token) {
+  //     toast('Login REQUIRED', {
+  //       style: {
+  //         background: '#605B55',
+  //         color: '#A9ABAE',
+  //         width: '300px',
+  //         fontSize: '10px',
+  //         borderRadius: '8px',
+  //         fontFamily: "'Andale Mono', monospace"
+  //       },
+  //       progressStyle: {
+  //         background: '#5C4033',
+  //       },
+  //     });
+  //     return;
+  //   }
 
-    try {
-      // Ensure cart is not empty
-      if (!cart || cart.length === 0) {
-        return toast.error("Your cart is empty. Please add items before checkout.");
-      }
+  //   try {
+  //     // Ensure cart is not empty
+  //     if (!cart || cart.length === 0) {
+  //       return toast.error("Your cart is empty. Please add items before checkout.");
+  //     }
 
-      // Calculate amounts in USD first
-      const subtotalUSD = getTotalPrice(); // Products total in USD
-      const deliveryFeeUSD = deliveryFee / (conversionRates['inr'] || 1); // Convert INR to USD
-      const discountUSD = discount / (conversionRates['inr'] || 1); // Convert discount from INR to USD
-      const totalUSD = subtotalUSD + deliveryFeeUSD - discountUSD;
+  //     // Calculate amounts in USD first
+  //     const subtotalUSD = getTotalPrice(); // Products total in USD
+  //     const deliveryFeeUSD = deliveryFee / (conversionRates['inr'] || 1); // Convert INR to USD
+  //     const discountUSD = discount / (conversionRates['inr'] || 1); // Convert discount from INR to USD
+  //     const totalUSD = subtotalUSD + deliveryFeeUSD - discountUSD;
 
-      // Convert to selected currency for display/processing
-      const finalAmount = convertPrice(totalUSD, currency);
+  //     // Convert to selected currency for display/processing
+  //     const finalAmount = convertPrice(totalUSD, currency);
 
       
 
-      // Prepare order items
-      const orderItems = cart.map((item) => {
-        const sizeInfo = item.variants?.[0]?.sizesInfo?.find(s => s.size === item.size);
+  //     // Prepare order items
+  //     const orderItems = cart.map((item) => {
+  //       const sizeInfo = item.variants?.[0]?.sizesInfo?.find(s => s.size === item.size);
         
-        const itemsid = ['' + item._id + ''];
+  //       const itemsid = ['' + item._id + ''];
 
-         fbq('track', 'InitiateCheckout', {
-            value: Number(sizeInfo?.discountPrice), 
-            currency: currency, 
-            content_ids: itemsid, 
-            content_name: item.name, 
-            content_category: item.name, 
-            num_items: 1 
-        });
+  //        fbq('track', 'InitiateCheckout', {
+  //           value: Number(sizeInfo?.discountPrice), 
+  //           currency: currency, 
+  //           content_ids: itemsid, 
+  //           content_name: item.name, 
+  //           content_category: item.name, 
+  //           num_items: 1 
+  //       });
 
-        return {
-          _id: item._id,
-          name: item.name,
-          image: item.images?.[0] || "",
-          size: item.size,
-          quantity: item.quantity,
-          discountedprice: Number(sizeInfo?.discountPrice) || 0,
-          actualprice: Number(sizeInfo?.actualPrice) || 0,
-        };
-      });
+  //       return {
+  //         _id: item._id,
+  //         name: item.name,
+  //         image: item.images?.[0] || "",
+  //         size: item.size,
+  //         quantity: item.quantity,
+  //         discountedprice: Number(sizeInfo?.discountPrice) || 0,
+  //         actualprice: Number(sizeInfo?.actualPrice) || 0,
+  //       };
+  //     });
 
-      const orderData = {
-        address: formData,
-        items: orderItems,
-        amount: parseFloat(finalAmount),
-        currency: currency,
-        baseAmountUSD: totalUSD, // Original amount in USD
-        couponCode,
-        discount: discountUSD, // Send discount in USD
-        paymentMethod: method,
-        deliveryFee: deliveryFeeUSD // Send delivery fee in USD
-      };
+  //     const orderData = {
+  //       address: formData,
+  //       items: orderItems,
+  //       amount: parseFloat(finalAmount),
+  //       currency: currency,
+  //       baseAmountUSD: totalUSD, // Original amount in USD
+  //       couponCode,
+  //       discount: discountUSD, // Send discount in USD
+  //       paymentMethod: method,
+  //       deliveryFee: deliveryFeeUSD // Send delivery fee in USD
+  //     };
 
       
 
-      console.log("Order Data:", {
-        ...orderData,
-        currencyConversion: {
-          inrToUsdRate: conversionRates['inr'] || 1,
-          selectedCurrency: currency,
-          finalAmount
-        }
-      });
+  //     console.log("Order Data:", {
+  //       ...orderData,
+  //       currencyConversion: {
+  //         inrToUsdRate: conversionRates['inr'] || 1,
+  //         selectedCurrency: currency,
+  //         finalAmount
+  //       }
+  //     });
 
-      // Process order based on payment method
-      switch (method) {
-        case "cod": {
-          const response = await axios.post(
-            "https://rogue0707.com/api/order/place",
-            orderData,
-            { headers: { token } }
-          );
+  //     // Process order based on payment method
+  //     switch (method) {
+  //       case "cod": {
+  //         const response = await axios.post(
+  //           "https://rogue0707.com/api/order/place",
+  //           orderData,
+  //           { headers: { token } }
+  //         );
 
-          if (response.data.success) {
-            setCart([]);
-            navigate("/orders");
-          } else {
-            toast.error(response.data.message);
-          }
-          break;
-        }
+  //         if (response.data.success) {
+  //           setCart([]);
+  //           navigate("/orders");
+  //         } else {
+  //           toast.error(response.data.message);
+  //         }
+  //         break;
+  //       }
 
-        case "razorpay": {
-          const responseRazorpay = await axios.post(
-            "https://rogue0707.com/api/order/razorpay",
-            orderData,
-            { headers: { token } }
-          );
+  //       case "razorpay": {
+  //         const responseRazorpay = await axios.post(
+  //           "https://rogue0707.com/api/order/razorpay",
+  //           orderData,
+  //           { headers: { token } }
+  //         );
 
-          if (responseRazorpay.data.success) {
-            initPay({
-              ...responseRazorpay.data.order,
-              amount: parseFloat(finalAmount),
-              currency: currency,
-              orderData,
-            });
-          }
-          break;
-        }
+  //         if (responseRazorpay.data.success) {
+  //           initPay({
+  //             ...responseRazorpay.data.order,
+  //             amount: parseFloat(finalAmount),
+  //             currency: currency,
+  //             orderData,
+  //           });
+  //         }
+  //         break;
+  //       }
 
-        default:
-          break;
-      }
-    } catch (error) {
-      console.error("Order Error:", {
-        error: error.response?.data || error.message,
-        stack: error.stack
-      });
-      toast.error(error.response?.data?.message || "Failed to place order");
+  //       default:
+  //         break;
+  //     }
+  //   } catch (error) {
+  //     console.error("Order Error:", {
+  //       error: error.response?.data || error.message,
+  //       stack: error.stack
+  //     });
+  //     toast.error(error.response?.data?.message || "Failed to place order");
+  //   }
+  // };
+
+
+const onSubmitHandler = async (event) => {
+  event.preventDefault();
+
+  if (!token) {
+    toast('Login REQUIRED', {
+      style: {
+        background: '#605B55',
+        color: '#A9ABAE',
+        width: '300px',
+        fontSize: '10px',
+        borderRadius: '8px',
+        fontFamily: "'Andale Mono', monospace"
+      },
+      progressStyle: {
+        background: '#5C4033',
+      },
+    });
+    return;
+  }
+
+  try {
+    // Ensure cart is not empty
+    if (!cart || cart.length === 0) {
+      return toast.error("Your cart is empty. Please add items before checkout.");
     }
-  };
 
+    // Calculate amounts in USD first
+    const subtotalUSD = getTotalPrice(); // Products total in USD
+    const deliveryFeeUSD = deliveryFee / (conversionRates['inr'] || 1); // Convert INR to USD
+    const discountUSD = discount / (conversionRates['inr'] || 1); // Convert discount from INR to USD
+    const totalUSD = subtotalUSD + deliveryFeeUSD - discountUSD;
 
+    // Convert to selected currency for display/processing
+    const finalAmount = convertPrice(totalUSD, currency);
+
+    // Build content_ids for fbq
+    const content_ids = cart.map((item) => '' + item._id);
+
+    // Calculate total cart value in current currency
+    const totalCartValue = cart.reduce((sum, item) => {
+      const sizeInfo = item.variants?.[0]?.sizesInfo?.find(s => s.size === item.size);
+      return sum + Number(sizeInfo?.discountPrice || 0);
+    }, 0);
+
+    // ✅ Trigger Facebook Pixel InitiateCheckout event once
+    if (typeof fbq === 'function') {
+      fbq('track', 'InitiateCheckout', {
+        value: totalCartValue,
+        currency: currency,
+        content_ids: content_ids,
+        content_type: 'product',
+        num_items: cart.length
+      });
+    }
+
+    // Prepare order items
+    const orderItems = cart.map((item) => {
+      const sizeInfo = item.variants?.[0]?.sizesInfo?.find(s => s.size === item.size);
+      return {
+        _id: item._id,
+        name: item.name,
+        image: item.images?.[0] || "",
+        size: item.size,
+        quantity: item.quantity,
+        discountedprice: Number(sizeInfo?.discountPrice) || 0,
+        actualprice: Number(sizeInfo?.actualPrice) || 0,
+      };
+    });
+
+    const orderData = {
+      address: formData,
+      items: orderItems,
+      amount: parseFloat(finalAmount),
+      currency: currency,
+      baseAmountUSD: totalUSD,
+      couponCode,
+      discount: discountUSD,
+      paymentMethod: method,
+      deliveryFee: deliveryFeeUSD
+    };
+
+    console.log("Order Data:", {
+      ...orderData,
+      currencyConversion: {
+        inrToUsdRate: conversionRates['inr'] || 1,
+        selectedCurrency: currency,
+        finalAmount
+      }
+    });
+
+    // Process order based on payment method
+    switch (method) {
+      case "cod": {
+        const response = await axios.post(
+          "https://rogue0707.com/api/order/place",
+          orderData,
+          { headers: { token } }
+        );
+
+        if (response.data.success) {
+          setCart([]);
+          navigate("/orders");
+        } else {
+          toast.error(response.data.message);
+        }
+        break;
+      }
+
+      case "razorpay": {
+        const responseRazorpay = await axios.post(
+          "https://rogue0707.com/api/order/razorpay",
+          orderData,
+          { headers: { token } }
+        );
+
+        if (responseRazorpay.data.success) {
+          initPay({
+            ...responseRazorpay.data.order,
+            amount: parseFloat(finalAmount),
+            currency: currency,
+            orderData,
+          });
+        }
+        break;
+      }
+
+      default:
+        break;
+    }
+  } catch (error) {
+    console.error("Order Error:", {
+      error: error.response?.data || error.message,
+      stack: error.stack
+    });
+    toast.error(error.response?.data?.message || "Failed to place order");
+  }
+};
 
 
 

@@ -14,7 +14,7 @@ const ShopContextProvider = (props) => {
   const [token, setToken] = useState("");
   const [currency, setCurrency] = useState('INR');
   const navigate = useNavigate();
-   const [timerExpire, setTimerExpire] = useState(false);
+  const [timerExpire, setTimerExpire] = useState(false);
 
   const [cart, setCart] = useState(() => {
     const savedCart = localStorage.getItem("cart");
@@ -51,6 +51,17 @@ const ShopContextProvider = (props) => {
         alert("This product is already in your cart!");
         return prevCart;
       } else {
+        if (typeof fbq === 'function') {
+          fbq('track', 'AddToCart', {
+            content_ids: [product._id],
+            content_type: 'product',
+            value: sizeInfo.discountPrice,
+            currency: currency
+          });
+        }
+
+
+
         // Add new product to cart
         return [
           ...prevCart,
@@ -84,10 +95,10 @@ const ShopContextProvider = (props) => {
   };
 
   const getCartCount = () => {
-    if (!cart || !Array.isArray(cart)) return 0; // ✅ Ensure cartItems is an array
+    if (!cart || !Array.isArray(cart)) return 0;
 
     return cart.reduce((total, product) => {
-      return total + (Number(product.quantity) || 0); // ✅ Directly sum up the quantity
+      return total + (Number(product.quantity) || 0);
     }, 0);
   };
 
@@ -215,7 +226,7 @@ const ShopContextProvider = (props) => {
     navigate,
     getCartCount,
     updateQuantity,
-     timerExpire,
+    timerExpire,
     setTimerExpire
   };
   return (
