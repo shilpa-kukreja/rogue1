@@ -140,16 +140,16 @@
 
 
 
-import React, { useContext, useEffect, useState } from 'react'
-import { ShopContext } from '../Context/ShopContext'
-import { assets } from '../assets/assets';
-import { IoIosArrowRoundBack } from "react-icons/io";
-import { Swiper, SwiperSlide } from "swiper/react";
-import { Navigation, Pagination, Autoplay } from "swiper/modules";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
-import { Link } from "react-router-dom";
+// import React, { useContext, useEffect, useState } from 'react'
+// import { ShopContext } from '../Context/ShopContext'
+// import { assets } from '../assets/assets';
+// import { IoIosArrowRoundBack } from "react-icons/io";
+// import { Swiper, SwiperSlide } from "swiper/react";
+// import { Navigation, Pagination, Autoplay } from "swiper/modules";
+// import "swiper/css";
+// import "swiper/css/navigation";
+// import "swiper/css/pagination";
+// import { Link } from "react-router-dom";
 // import DealTimer from '../component/DealTimer';
 // import DealTimer from '../component/DealTimer';
 
