@@ -1091,7 +1091,7 @@ const ProductDetail = () => {
                             : product.images.edges[0]?.node?.url 
                       }
                       alt={product.title}
-                      className='object-cover h-[132px] bg-[#7f7f7f50]  w-full'
+                      className='object-cover h-auto sm:h-[132px] bg-[#7f7f7f50]  w-full'
                     />
                   </div>
                 </div>
