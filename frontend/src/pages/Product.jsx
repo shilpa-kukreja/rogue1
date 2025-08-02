@@ -328,8 +328,16 @@ const Product = () => {
               className="mySwiper w-full flex items-center justify-center"
             >
               {showProduct.map((product, index) => {
-                const mainImage = product.images?.edges?.[32]?.node?.url;
-                const productId = product.id?.split("/").pop(); // Shopify ID last part
+                const imageCount = product.images?.edges?.length || 0;
+
+                let imageIndex = 0;
+                if (imageCount >= 36) imageIndex = 32;
+                else if (imageCount >= 21) imageIndex = 16;
+                else if (imageCount >= 10) imageIndex = 5;
+                else imageIndex = 0;
+
+                const mainImage = product.images?.edges?.[imageIndex]?.node?.url;
+                const productId = product.id?.split("/").pop();
 
                 return (
                   <SwiperSlide key={product.id || index} className="cursor-pointer flex justify-center items-center">
@@ -343,6 +351,7 @@ const Product = () => {
                   </SwiperSlide>
                 );
               })}
+
             </Swiper>
           </div>
 
@@ -361,5 +370,3 @@ const Product = () => {
 };
 
 export default Product;
-
-

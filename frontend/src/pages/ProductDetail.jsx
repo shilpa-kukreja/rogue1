@@ -435,7 +435,6 @@
 
 
 
-
 import React, { useEffect, useState } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { FaArrowRightLong } from 'react-icons/fa6';
@@ -481,6 +480,7 @@ const ProductDetail = () => {
   const [hasExtendedImages, setHasExtendedImages] = useState(false);
   const [usdToCurrencyRate, setUsdToCurrencyRate] = useState(1);
   const { currency } = useContext(ShopContext);
+  const [isSingleproduct , setIsSingleProduct] = useState(false);
 
   // Extract available colors from product variants
   const colors = [];
@@ -659,28 +659,113 @@ const ProductDetail = () => {
   // };
 
   // In your filterImagesByColorAndGender function:
-  const filterImagesByColorAndGender = (images) => {
-    const maleBlack = [], femaleBlack = [], maleBeige = [], femaleBeige = [];
-    const bottomBlackMale = [], bottomBlackFemale = [], bottomBeigeMale = [], bottomBeigeFemale = [];
+  // const filterImagesByColorAndGender = (images) => {
+  //   const maleBlack = [], femaleBlack = [], maleBeige = [], femaleBeige = [];
+  //   const bottomBlackMale = [], bottomBlackFemale = [], bottomBeigeMale = [], bottomBeigeFemale = [];
 
-    // First 8 images for male black (1-8)
-    for (let i = 0; i < 8; i++) {
-      if (images[i]?.node?.url) maleBlack.push(images[i].node.url);
+  //   // First 8 images for male black (1-8)
+  //   for (let i = 0; i < 8; i++) {
+  //     if (images[i]?.node?.url) maleBlack.push(images[i].node.url);
+  //   }
+
+  //   // Next 8 images for female black (9-16)
+  //   for (let i = 8; i < 16; i++) {
+  //     if (images[i]?.node?.url) femaleBlack.push(images[i].node.url);
+  //   }
+
+  //   // Next 8 images for male beige (17-24)
+  //   for (let i = 16; i < 24; i++) {
+  //     if (images[i]?.node?.url) maleBeige.push(images[i].node.url);
+  //   }
+
+  //   // Next 8 images for female beige (25-32)
+  //   for (let i = 24; i < 32; i++) {
+  //     if (images[i]?.node?.url) femaleBeige.push(images[i].node.url);
+  //   }
+
+  //   // Handle special cases for bottom images only
+  //   if (images.length >= 38) {
+  //     // If there are 38+ images
+  //     bottomBlackMale.push(images[33]?.node?.url || maleBlack[7]);
+  //     bottomBlackFemale.push(images[34]?.node?.url || femaleBlack[7]);
+  //     bottomBeigeMale.push(images[35]?.node?.url || maleBeige[7]);
+  //     bottomBeigeFemale.push(images[36]?.node?.url || femaleBeige[7]);
+  //   } else if (images.length >= 36) {
+  //     // If there are exactly 36 images - only use male images
+  //     bottomBlackMale.push(images[33]?.node?.url || maleBlack[7]);
+  //     bottomBlackFemale.push(null); // No female image for 36
+  //     bottomBeigeMale.push(images[34]?.node?.url || maleBeige[7]);
+  //     bottomBeigeFemale.push(null); // No female image for 36
+  //   } else {
+  //     // Default case - use the last image from each category
+  //     bottomBlackMale.push(maleBlack[7]);
+  //     bottomBlackFemale.push(femaleBlack[7]);
+  //     bottomBeigeMale.push(maleBeige[7]);
+  //     bottomBeigeFemale.push(femaleBeige[7]);
+  //   }
+
+  //   setMaleBlackImages(maleBlack);
+  //   setFemaleBlackImages(femaleBlack);
+  //   setMaleBeigeImages(maleBeige);
+  //   setFemaleBeigeImages(femaleBeige);
+
+  //   // Set the bottom images separately
+  //   setBottomBlackMaleImage(bottomBlackMale[0]);
+  //   setBottomBlackFemaleImage(bottomBlackFemale[0]);
+  //   setBottomBeigeMaleImage(bottomBeigeMale[0]);
+  //   setBottomBeigeFemaleImage(bottomBeigeFemale[0]);
+
+  //   // Store whether we have 38+ images
+  //   setHasExtendedImages(images.length >= 38);
+  // };
+
+
+const filterImagesByColorAndGender = (images) => {
+  const maleBlack = [], femaleBlack = [], maleBeige = [], femaleBeige = [];
+  const bottomBlackMale = [], bottomBlackFemale = [], bottomBeigeMale = [], bottomBeigeFemale = [];
+
+  const totalImages = images.length;
+
+  // Special case: only male images
+  if (totalImages >= 21 && totalImages <= 23) {
+        setIsSingleProduct(true);
+    for (let i = 0; i < totalImages; i++) {
+      const url = images[i]?.node?.url;
+      if (i < 8) {
+        maleBlack.push(url);
+      } else if (i >= 8 && i < 16) {
+        maleBeige.push(url);
+      }
     }
 
-    // Next 8 images for female black (9-16)
-    for (let i = 8; i < 16; i++) {
-      if (images[i]?.node?.url) femaleBlack.push(images[i].node.url);
-    }
 
-    // Next 8 images for male beige (17-24)
-    for (let i = 16; i < 24; i++) {
-      if (images[i]?.node?.url) maleBeige.push(images[i].node.url);
-    }
 
-    // Next 8 images for female beige (25-32)
-    for (let i = 24; i < 32; i++) {
-      if (images[i]?.node?.url) femaleBeige.push(images[i].node.url);
+    // Last 2 images are bottom images
+    bottomBlackMale.push(images[totalImages - 4]?.node?.url || maleBlack[7]);
+    bottomBeigeMale.push(images[totalImages - 3]?.node?.url || maleBeige[7]);
+
+    // Clear female arrays
+    femaleBlack.length = 0;
+    femaleBeige.length = 0;
+    bottomBlackFemale.push(null);
+    bottomBeigeFemale.push(null);
+  }
+
+  // Normal case
+  else {
+    for (let i = 0; i < totalImages; i++) {
+
+      const url = images[i]?.node?.url;
+
+      if (i < 8) {
+        maleBlack.push(url);
+      } else if (i >= 8 && i < 16) {
+        femaleBlack.push(url);
+      } else if (i >= 16 && i < 24) {
+        maleBeige.push(url);
+      } else if (i >= 24 && i < 32) {
+        femaleBeige.push(url);
+      }
     }
 
     // Handle special cases for bottom images only
@@ -703,21 +788,23 @@ const ProductDetail = () => {
       bottomBeigeMale.push(maleBeige[7]);
       bottomBeigeFemale.push(femaleBeige[7]);
     }
+  }
 
     setMaleBlackImages(maleBlack);
     setFemaleBlackImages(femaleBlack);
     setMaleBeigeImages(maleBeige);
     setFemaleBeigeImages(femaleBeige);
 
-    // Set the bottom images separately
-    setBottomBlackMaleImage(bottomBlackMale[0]);
-    setBottomBlackFemaleImage(bottomBlackFemale[0]);
-    setBottomBeigeMaleImage(bottomBeigeMale[0]);
-    setBottomBeigeFemaleImage(bottomBeigeFemale[0]);
+  setBottomBlackMaleImage(bottomBlackMale[0]);
+  setBottomBlackFemaleImage(bottomBlackFemale[0]);
+  setBottomBeigeMaleImage(bottomBeigeMale[0]);
+  setBottomBeigeFemaleImage(bottomBeigeFemale[0]);
 
-    // Store whether we have 38+ images
-    setHasExtendedImages(images.length >= 38);
-  };
+  setHasExtendedImages(totalImages >= 38);
+};
+
+
+
   const handleColorChange = (color) => {
     setSelectedColor(color);
     setMaleIndex(0);
@@ -832,7 +919,7 @@ const ProductDetail = () => {
           >
             {/* Animation images slides */}
             <SwiperSlide>
-              <div className='flex'>
+              <div className={`flex  ${isSingleproduct ? 'justify-center' : ''  }`}>
                 {firstImages.length > 0 && (
                   <div className="w-[50%]">
                     <img
@@ -1035,94 +1122,103 @@ const ProductDetail = () => {
             </div>
           </div>
           {chartDetails && (
-            <div className='fixed top-[50%] transform translate-y-[-50%] flex flex-row left-0 w-[100%] z-50 text-[10px] text-[#d2d2d4]'>
-              <div className="z-50 left-4 bg-black/50 w-fit p-6 rounded-lg relative">
-                <div className='sm:flex space-y-4 sm:space-y-0 gap-16 sm:items-center sm:justify-center'>
-                  <div className='bg-[#7f7f7f50] sm:flex sm:justify-center w-[250px] z-50 sm:left-4 left-0 relative border'>
-                    <button
-                      className="absolute top-0 right-0 text-[10px] border w-6 h-6 font-bold bg-white text-black z-50"
-                      onClick={() => setChartDetails(false)}
-                    >
-                      ✖
-                    </button>
+  <div className='fixed top-[50%] transform translate-y-[-50%] flex flex-row left-0 w-[100%] z-50 text-[10px] text-[#d2d2d4]'>
+    <div className="z-50 left-4 bg-black/50 w-fit p-6 rounded-lg relative">
+      <div className='sm:flex space-y-4 sm:space-y-0 gap-16 sm:items-center sm:justify-center'>
+        <div className='bg-[#7f7f7f50] sm:flex sm:justify-center w-[250px] z-50 sm:left-4 left-0 relative border'>
+          <button
+            className="absolute top-0 right-0 text-[10px] border w-6 h-6 font-bold bg-white text-black z-50"
+            onClick={() => setChartDetails(false)}
+          >
+            ✖
+          </button>
 
-                    <img
-                      src={
-                        product.images.edges.length >= 39
-                          ? product.images.edges[37]?.node?.url
-                          : product.images.edges.length >= 37
-                            ? product.images.edges[35]?.node?.url
-                            : product.images.edges[0]?.node?.url 
-                      }
-                      alt={product.title}
-                      className='h-[180px]'
-                    />
-                  </div>
-
-                  <div className="sm:max-w-4xl max-w-3xl border  border-gray-300 shadow-md">
-                    {/* <table className="w-full text-center">
-                      <thead>
-                        <tr className="text-[8px]">
-                          <th className="py-1">Ref</th>
-                          <th className="py-1">Measurement (cm)</th>
-                          {variant.sizesInfo.map((s) => (
-                            <th key={s.size} className="py-1">{s.size}</th>
-                          ))}
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {variant.sizeChart.map((item, index) => (
-                          <tr key={index} className="text-[8px]">
-                            <td className="px-4 py-1">{item.ref}</td>
-                            <td className="px-4 py-1">{item.label}</td>
-                            {variant.sizesInfo.map((s) => (
-                              <td key={s.size} className="px-4 py-1">{item[s.size]}</td>
-                            ))}
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table> */}
-                    <img
-                      src={
-                        product.images.edges.length >= 39
-                          ? product.images.edges[38]?.node?.url
-                          : product.images.edges.length >= 37
-                            ? product.images.edges[36]?.node?.url
-                            : product.images.edges[0]?.node?.url 
-                      }
-                      alt={product.title}
-                      className='object-cover h-auto sm:h-[132px] bg-[#7f7f7f50]  w-full'
-                    />
-                  </div>
-                </div>
-              </div>
-            </div>
+          {product.images.edges.length >= 21 && product.images.edges.length <= 23 ? (
+            <img
+              src={
+                product.images.edges.length >= 23
+                  ? product.images.edges[20]?.node?.url
+                  : product.images.edges.length >= 21
+                    ? product.images.edges[19]?.node?.url
+                    : product.images.edges[0]?.node?.url
+              }
+              alt={product.title}
+              className='h-[180px]'
+            />
+          ) : (
+            <img
+              src={
+                product.images.edges.length >= 39
+                  ? product.images.edges[37]?.node?.url
+                  : product.images.edges.length >= 37
+                    ? product.images.edges[35]?.node?.url
+                    : product.images.edges[0]?.node?.url
+              }
+              alt={product.title}
+              className='h-[180px]'
+            />
           )}
+        </div>
+
+        <div className="sm:max-w-4xl max-w-3xl border border-gray-300 shadow-md">
+           {product.images.edges.length >= 37 && product.images.edges.length <= 39 ? (
+          <img
+            src={
+              product.images.edges.length >= 39
+                ? product.images.edges[38]?.node?.url
+                : product.images.edges.length >= 37
+                  ? product.images.edges[36]?.node?.url
+                  : product.images.edges[0]?.node?.url
+            }
+            alt={product.title}
+            className='object-cover h-[132px] bg-[#7f7f7f50] w-full'
+          />
+            ) : (<img
+            src={
+              product.images.edges.length >= 23
+                ? product.images.edges[21]?.node?.url
+                : product.images.edges.length >= 21
+                  ? product.images.edges[20]?.node?.url
+                  : product.images.edges[0]?.node?.url
+            }
+            alt={product.title}
+            className='object-cover h-[132px] bg-[#7f7f7f50] w-full'
+          />
+           )}
+        </div>
+      </div>
+    </div>
+  </div>
+)}
 
 
 
           {/* Right Media Panel - Desktop */}
           <div className='lg:col-span-7 relative lg:block hidden'>
             <div className='relative flex items-center justify-center transition-all duration-500 ease-in-out'>
-              <div className="flex md:gap-10 w-full mt-[-45px] 2xl:mt-[-100px] justify-end items-center overflow-hidden h-auto ">
+              <div className={`flex md:gap-10 w-full mt-[-45px] 2xl:mt-[-100px] ${isSingleproduct ? 'mr-[100px]' : ''  } justify-end items-center overflow-hidden h-auto`}>
+                   {firstImages.length > 0 && (
                 <div className="animation-image-container">
-                  {firstImages.length > 0 && (
+                 
                     <img
                       src={maleImages[maleIndex]}
-                      className="h-[90vh]"
+                      className="heightimage"
                       alt="First Variant Animation"
                     />
-                  )}
+                  
                 </div>
+                )}
+                {secondImages.length > 0 && (
                 <div className="animation-image-container">
-                  {secondImages.length > 0 && (
+                  
                     <img
                       src={femaleImages[femaleIndex]}
-                      className="h-[90vh]"
+                      className="heightimage"
                       alt="Second Variant Animation"
                     />
-                  )}
+               
                 </div>
+                  )}
               </div>
             </div>
 
