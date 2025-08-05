@@ -286,8 +286,102 @@ export const getCart = async (cartId) => {
 // }
 
 
+// export async function addToCart(variantId, quantity = 1, product = {}, sizeInfo = {}, currency = 'INR') {
+//   let cartId = localStorage.getItem('cart_id');
+
+//   if (!cartId) {
+//     const query = `
+//       mutation cartCreate($input: CartInput!) {
+//         cartCreate(input: $input) {
+//           cart {
+//             id
+//             checkoutUrl
+//           }
+//           userErrors {
+//             field
+//             message
+//           }
+//         }
+//       }
+//     `;
+
+//     const variables = {
+//       input: {
+//         lines: [{ quantity, merchandiseId: variantId }],
+//       },
+//     };
+
+//     const data = await fetchShopify(query, variables);
+//     const cart = data.cartCreate.cart;
+//     localStorage.setItem('cart_id', cart.id);
+//     localStorage.setItem('checkout_url', cart.checkoutUrl);
+
+//     // ✅ Facebook Pixel AddToCart Event
+//     if (typeof fbq === 'function') {
+//       fbq('track', 'AddToCart', {
+//         content_ids: [product._id || variantId],
+//         content_type: 'product',
+//         value: sizeInfo.discountPrice || 0,
+//         currency: currency
+//       });
+//     }
+
+//     return cart;
+//   }
+
+//   const query = `
+//     mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
+//       cartLinesAdd(cartId: $cartId, lines: $lines) {
+//         cart {
+//           id
+//           checkoutUrl
+//         }
+//         userErrors {
+//           field
+//           message
+//         }
+//       }
+//     }
+//   `;
+
+//   const variables = {
+//     cartId,
+//     lines: [{ quantity, merchandiseId: variantId }],
+//   };
+
+//   const data = await fetchShopify(query, variables);
+//   const cart = data.cartLinesAdd.cart;
+//   localStorage.setItem('checkout_url', cart.checkoutUrl);
+
+//   // ✅ Facebook Pixel AddToCart Event
+//   if (typeof fbq === 'function') {
+//     fbq('track', 'AddToCart', {
+//       content_ids: [product._id || variantId],
+//       content_type: 'product',
+//       value: sizeInfo.discountPrice || 0,
+//       currency: currency
+//     });
+//   }
+
+//   return cart;
+// }
+
+
 export async function addToCart(variantId, quantity = 1, product = {}, sizeInfo = {}, currency = 'INR') {
   let cartId = localStorage.getItem('cart_id');
+
+  const trackPixel = () => {
+    if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
+      window.fbq('track', 'AddToCart', {
+        content_ids: [product._id || variantId],
+        content_type: 'product',
+        value: sizeInfo.discountPrice || 0,
+        currency: currency,
+      });
+    } else {
+      console.warn('Meta Pixel (fbq) is not available.');
+    }
+  };
 
   if (!cartId) {
     const query = `
@@ -313,22 +407,17 @@ export async function addToCart(variantId, quantity = 1, product = {}, sizeInfo 
 
     const data = await fetchShopify(query, variables);
     const cart = data.cartCreate.cart;
-    localStorage.setItem('cart_id', cart.id);
-    localStorage.setItem('checkout_url', cart.checkoutUrl);
 
-    // ✅ Facebook Pixel AddToCart Event
-    if (typeof fbq === 'function') {
-      fbq('track', 'AddToCart', {
-        content_ids: [product._id || variantId],
-        content_type: 'product',
-        value: sizeInfo.discountPrice || 0,
-        currency: currency
-      });
+    if (cart) {
+      localStorage.setItem('cart_id', cart.id);
+      localStorage.setItem('checkout_url', cart.checkoutUrl);
     }
 
+    trackPixel();
     return cart;
   }
 
+  // cart already exists
   const query = `
     mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
       cartLinesAdd(cartId: $cartId, lines: $lines) {
@@ -351,20 +440,48 @@ export async function addToCart(variantId, quantity = 1, product = {}, sizeInfo 
 
   const data = await fetchShopify(query, variables);
   const cart = data.cartLinesAdd.cart;
-  localStorage.setItem('checkout_url', cart.checkoutUrl);
 
-  // ✅ Facebook Pixel AddToCart Event
-  if (typeof fbq === 'function') {
-    fbq('track', 'AddToCart', {
-      content_ids: [product._id || variantId],
-      content_type: 'product',
-      value: sizeInfo.discountPrice || 0,
-      currency: currency
-    });
+  if (cart) {
+    localStorage.setItem('checkout_url', cart.checkoutUrl);
   }
 
+  trackPixel();
   return cart;
 }
+
+
+
+
+// export async function createCart(variantId = null, quantity = 1) {
+//   const query = `
+//     mutation cartCreate($input: CartInput!) {
+//       cartCreate(input: $input) {
+//         cart {
+//           id
+//           checkoutUrl
+//         }
+//         userErrors {
+//           field
+//           message
+//         }
+//       }
+//     }
+//   `;
+
+//   const variables = {
+//     input: variantId
+//       ? {
+//           lines: [{ quantity, merchandiseId: variantId }],
+//         }
+//       : {},
+//   };
+
+//   const data = await fetchShopify(query, variables);
+//   const cart = data.cartCreate.cart;
+//   localStorage.setItem('cart_id', cart.id);
+//   localStorage.setItem('checkout_url', cart.checkoutUrl);
+//   return cart;
+// }
 
 
 
@@ -395,8 +512,12 @@ export async function createCart(variantId = null, quantity = 1) {
 
   const data = await fetchShopify(query, variables);
   const cart = data.cartCreate.cart;
-  localStorage.setItem('cart_id', cart.id);
-  localStorage.setItem('checkout_url', cart.checkoutUrl);
+
+  if (cart) {
+    localStorage.setItem('cart_id', cart.id);
+    localStorage.setItem('checkout_url', cart.checkoutUrl);
+  }
+
   return cart;
 }
 
