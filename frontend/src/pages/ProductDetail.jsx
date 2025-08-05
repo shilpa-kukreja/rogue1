@@ -1143,7 +1143,7 @@ const filterImagesByColorAndGender = (images) => {
                     : product.images.edges[0]?.node?.url
               }
               alt={product.title}
-              className='h-[180px]'
+              className='h-[180px] p-5'
             />
           ) : (
             <img
@@ -1155,7 +1155,7 @@ const filterImagesByColorAndGender = (images) => {
                     : product.images.edges[0]?.node?.url
               }
               alt={product.title}
-              className='h-[180px]'
+              className='h-[180px] p-5'
             />
           )}
         </div>
