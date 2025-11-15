@@ -18,7 +18,7 @@ const Footer = () => {
           <Link
             key={index}
             to={item.path}
-            className="cursor-pointer font-andale bg-[#605B55] text-[#D2D3D5] text-[8px] px-6 text-center py-1 rounded-full"
+            className="cursor-pointer font-andale bg-[#666259] text-[#030100]  font-bold  text-[8px] px-6 text-center py-1 rounded-full"
           >
             {item.name}
           </Link>
@@ -33,7 +33,7 @@ const Footer = () => {
             <Link
               key={index}
               to={item.path}
-              className="cursor-pointer font-andale text-[11px] text-[#A9ABAE] text-center"
+              className="cursor-pointer font-andale text-[11px] font-bold  text-[#666259] text-center"
             >
               {item.name}
             </Link>

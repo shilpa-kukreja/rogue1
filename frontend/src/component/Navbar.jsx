@@ -44,7 +44,7 @@ const Navbar = () => {
                 key={index}
                 to={item.path}
                 onClick={() => setMenuOpen(false)}
-                className="bg-[#605B55] text-[#D2D3D5] cursor-pointer font-andale text-[9px] sm:text-[10px]  px-6 text-center py-1 rounded-full"
+                className="bg-[#666259] text-[#030100] font-bold  cursor-pointer font-andale text-[9px] sm:text-[10px]  px-6 text-center py-1 rounded-full"
               >
                 {item.name}
               </Link>
@@ -55,7 +55,7 @@ const Navbar = () => {
               <Link
                 to="/login"
                 onClick={() => setMenuOpen(false)}
-                className="bg-[#605B55] text-[#D2D3D5] cursor-pointer font-andale text-[9px] sm:text-[10px] px-6 text-center py-1 rounded-full"
+                className="bg-[#666259] text-[#030100]font-bold   cursor-pointer font-andale text-[9px] sm:text-[10px] px-6 text-center py-1 rounded-full"
               >
                 LOGIN
               </Link>
@@ -68,7 +68,7 @@ const Navbar = () => {
                   logout();
                   setMenuOpen(false);
                 }}
-                className="bg-[#605B55] text-[#D2D3D5] cursor-pointer font-andale text-[9px] sm:text-[10px] px-6 text-center py-1 rounded-full"
+                className="bg-[#666259] text-[#030100] font-bold   cursor-pointer font-andale text-[9px] sm:text-[10px] px-6 text-center py-1 rounded-full"
               >
                 LOGOUT
               </button>

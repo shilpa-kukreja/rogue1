@@ -45,7 +45,7 @@ const Sidebar = ({ isMobile = false }) => {
         <li>
           <Link
             to="/cart"
-            className="block font-andale bg-[#605B55] text-[#D2D3D5] text-[8px] px-2 py-1 rounded-full"
+            className="block font-andale bg-[#666259] text-[#030100] font-bold  text-[8px] px-2 py-1 rounded-full"
             style={isMobile ? {} : { transform: 'rotate(270deg)' }}
           >
             BAG
@@ -55,7 +55,7 @@ const Sidebar = ({ isMobile = false }) => {
         <li>
           <div
             onClick={() => setShowSearch(!showSearch)}
-            className="flex justify-center items-center font-andale bg-[#605B55] text-[#D2D3D5] text-[8px] px-2 py-1 rounded-full cursor-pointer"
+            className="flex justify-center items-center font-andale bg-[#666259] text-[#030100] font-bold   text-[8px] px-2 py-1 rounded-full cursor-pointer"
             style={isMobile ? {} : { transform: "rotate(270deg)" }}
           >
             <FiSearch size={12} />
@@ -65,7 +65,7 @@ const Sidebar = ({ isMobile = false }) => {
         <li>
           <div
             onClick={() => setShowCurrencyDropdown(!showCurrencyDropdown)}
-            className="block font-andale bg-[#605B55] text-[#D2D3D5] text-[8px] px-2 py-1 rounded-full cursor-pointer"
+            className="block font-andale bg-[#666259] text-[#030100] font-bold  text-[8px] px-2 py-1 rounded-full cursor-pointer"
             style={isMobile ? {} : { transform: 'rotate(270deg)' }}
           >
             {currency}
@@ -75,7 +75,7 @@ const Sidebar = ({ isMobile = false }) => {
         <li>
           <Link
             to="/products"
-            className="block font-andale bg-[#605B55] text-[#D2D3D5] text-[8px] px-2 py-1 rounded-full"
+            className="block font-andale bg-[#666259] text-[#030100] font-bold   text-[8px] px-2 py-1 rounded-full"
             style={isMobile ? {} : { transform: 'rotate(270deg)' }}
           >
            R&nbsp;001 
@@ -87,7 +87,7 @@ const Sidebar = ({ isMobile = false }) => {
       {showSearch && (
         <form
           onSubmit={handleSearchSubmit}
-          className={`absolute ${isMobile ? 'bottom-16' : 'top-25 left-[150px]'} bg-[#605B55] text-[#D2D3D5] text-[10px] rounded-md px-2 py-1 z-50 shadow-lg`}
+          className={`absolute ${isMobile ? 'bottom-16' : 'top-25 left-[150px]'} bg-[#666259] text-[#030100] font-bold   text-[10px] rounded-md px-2 py-1 z-50 shadow-lg`}
         >
           <input
             type="text"
@@ -104,7 +104,7 @@ const Sidebar = ({ isMobile = false }) => {
         <select
           value={currency}
           onChange={handleCurrencyChange}
-          className={`absolute ${isMobile ? 'bottom-16' : 'top-24 left-[150px]'} z-50 outline-none text-[10px] bg-[#605B55] text-[#D2D3D5] rounded-md shadow-md px-2 py-1`}
+          className={`absolute ${isMobile ? 'bottom-16' : 'top-24 left-[150px]'} z-50 outline-none text-[10px] font-bold  bg-[#666259] text-[#030100] rounded-md shadow-md px-2 py-1`}
         >
           {currencies.map((c) => (
             <option key={c.value} value={c.value}>

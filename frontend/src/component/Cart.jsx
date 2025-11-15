@@ -568,9 +568,9 @@ const Cart = () => {
       </div>
 
       <div className="container mx-auto h-full sm:min-h-[75vh]">
-        <div className="relative z-10 text-[#D2D3D5] min-h-screen font-mono tracking-wide bg-transparent">
+        <div className="relative z-10 text-[#666259] min-h-screen font-mono tracking-wide bg-transparent">
           {/* Desktop header */}
-          <div className="hidden md:grid grid-cols-7 text-xs text-center uppercase text-[#A9ABAE] mb-4">
+          <div className="hidden md:grid grid-cols-7 text-xs text-center uppercase text-[#666259] mb-4">
             {["Image", "Name", "Price", "Size", "Quantity", "Total", ""].map((h, i) => (
               <div key={i} className={`col-span-1`}>{h}</div>
             ))}
@@ -587,28 +587,28 @@ const Cart = () => {
                 <div className="col-span-1 flex justify-center">
                   <img src={variant.image?.url} alt={variant.product.title} className="w-15 object-cover" />
                 </div>
-                <div className="text-[10px] text-[#A9ABAE]">{variant.product.title}</div>
-                <div className="col-span-1 text-[10px] text-[#A9ABAE]">{convert(price)} {currency}</div>
-                <div className="col-span-1 text-[10px] text-[#A9ABAE]">{variant.title}</div>
+                <div className="text-[10px] text-[#666259]">{variant.product.title}</div>
+                <div className="col-span-1 text-[10px] text-[#666259]">{convert(price)} {currency}</div>
+                <div className="col-span-1 text-[10px] text-[#666259]">{variant.title}</div>
                 <div className="col-span-1 flex justify-center gap-2">
                   <input
                     type="number"
                     min="1"
-                    className="w-12 text-center text-[10px] text-[#A9ABAE] bg-transparent outline-none"
+                    className="w-12 text-center text-[10px] text-[#666259] bg-transparent outline-none"
                     value={localQuantities[node.id] || node.quantity}
                     onChange={(e) => handleQuantityChange(node.id, e.target.value)}
                   />
                 </div>
-                <div className="col-span-1 text-[10px] text-[#A9ABAE]">{convert(totalPrice)} {currency}</div>
+                <div className="col-span-1 text-[10px] text-[#666259]">{convert(totalPrice)} {currency}</div>
                 <div className="col-span-1">
-                  <button onClick={() => handleRemove(node.id)} className="text-[10px] text-[#A9ABAE]">X</button>
+                  <button onClick={() => handleRemove(node.id)} className="text-[10px] text-[#666259]">X</button>
                 </div>
               </div>
             );
           })}
 
           {/* Summary */}
-          <div className="text-[10px] mt-4 text-[#A9ABAE] space-y-2">
+          <div className="text-[10px] mt-4 text-[#666259] space-y-2">
             <p>SUBTOTAL: {convert(subtotalINR)} {currency}</p>
             <p>
               SHIPPING AND ALL APPLICABLE TAXES & DUTIES CALCULATED AT CHECKOUT.
@@ -620,7 +620,7 @@ const Cart = () => {
           <Link
             to={cartData.checkoutUrl}
             onClick={handleInitiateCheckout}
-            className="mt-6 inline-block px-6 py-2 text-[10px] bg-[#605B55] text-[#D2D3D5] rounded-full hover:bg-[#726d67]"
+            className="mt-6 inline-block px-6 py-2 text-[10px] bg-[#666259] text-[#030100] rounded-full hover:bg-[#726d67]"
           >
             PROCEED TO CHECKOUT
           </Link>

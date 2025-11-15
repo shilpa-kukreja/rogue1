@@ -4,7 +4,7 @@ import s2 from './s2.png'
 import s3 from './s3.jpeg'
 import s4 from './s4.png'
 import BG from './BG.jpg'
-
+import s5 from './WebsiteLOGO.png'
 // import p1 from '../assets/ProductImg/productImg1.webp'
 
 
@@ -66,7 +66,7 @@ import final2 from './final2.webm'
 
 export const assets = {
     p_img1,s1,s2,s3,s4,p1,p2,p3,p4,p5,p6,p7,bgImg,p1top,p1bottom,p1Chart ,rotatep1,rotatep2,rotatep3,rotatep4,rotatep5,rotatep6,rotatep7,rotatep8,rotate2,rotate3,rotate4,rotate5,rotate6,rotate7,rotate8,
-    animationblackbackground,gif,videogif,Video,Finale,Video1,prodcut,final1,final2,BG
+    animationblackbackground,gif,videogif,Video,Finale,Video1,prodcut,final1,final2,BG,s5
 }
 
 console.log("Product Image 1 Path:", p1);

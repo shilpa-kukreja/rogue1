@@ -64,8 +64,8 @@
 //             <img src={assets.s4} alt="Logo" className="w-30  mix-blend-multiply opacity-40" />
 //           </div>
 //           {/* <div>
-//             <p className='text-[#A9ABAE] text-sm'>Join Rogue!</p>
-//             <p className='text-[#A9ABAE] text-sm'>
+//             <p className='text-[#666259] text-sm'>Join Rogue!</p>
+//             <p className='text-[#666259] text-sm'>
 //               Unlock Your Potential – Join Us Today!
 //             </p>
 
@@ -74,35 +74,35 @@
 //           </div> */}
          
 
-//           <div className='text-[#A9ABAE]  text-sm font-medium pt-2 my-6'>
-//             <Link to="/login" className='text-[#A9ABAE] rounded-full !border-none   bg-[#605B55] hover:bg-[#534f49]   py-1 px-2 '>Login</Link>
+//           <div className='text-[#666259]  text-sm font-medium pt-2 my-6'>
+//             <Link to="/login" className='text-[#666259] rounded-full !border-none   bg-[#605B55] hover:bg-[#534f49]   py-1 px-2 '>Login</Link>
 //           </div>
 //           <form onSubmit={handleSubmit} action="" id='frmLogin'>
 //             <div>
 //               <input   value={email}
 //               onChange={(e) => setEmail(e.target.value.toLowerCase())} 
-//               required   type="email" autoComplete="off" pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"  title="Please enter a valid email address" className='border-b login-input w-full py-1 px-2 text-[#A9ABAE] placeholder-[#A9ABAE] text-sm outline-0' name='txtemail' id='txtemail' placeholder='Email' />
+//               required   type="email" autoComplete="off" pattern="^[^\s@]+@[^\s@]+\.[^\s@]+$"  title="Please enter a valid email address" className='border-b login-input w-full py-1 px-2 text-[#666259] placeholder-[#A9ABAE] text-sm outline-0' name='txtemail' id='txtemail' placeholder='Email' />
 //             </div>
 
 //             <div>
 //               <input value={mobile}
 //                 onChange={(e) => setMobile(e.target.value)} autoComplete="off"
-//                 required type="tel" className='border-b login-input w-full py-1 px-2 mt-5 text-[#A9ABAE] placeholder-[#A9ABAE] text-sm outline-0'  pattern="^[6-9][0-9]{9}$"  title="Please enter a valid 10-digit phone number starting with 6-9" name='txtnum' id='txtnum' placeholder='Mobile' />
+//                 required type="tel" className='border-b login-input w-full py-1 px-2 mt-5 text-[#666259] placeholder-[#A9ABAE] text-sm outline-0'  pattern="^[6-9][0-9]{9}$"  title="Please enter a valid 10-digit phone number starting with 6-9" name='txtnum' id='txtnum' placeholder='Mobile' />
 //             </div>
 
 //             <div className='flex relative'>
 //               <input  value={password}
 //               onChange={(e) => setPassword(e.target.value)}
-//               required type={passwords ? "text" : "password"} className='border-b login-input w-full py-1 px-2 placeholder-[#A9ABAE] text-[#A9ABAE] text-sm outline-0  mt-5' name='txtpassword' id='txtpassword' placeholder='Password' />
+//               required type={passwords ? "text" : "password"} className='border-b login-input w-full py-1 px-2 placeholder-[#A9ABAE] text-[#666259] text-sm outline-0  mt-5' name='txtpassword' id='txtpassword' placeholder='Password' />
 
 //               <div
 //                 className="absolute right-3 top-1/2 transform -translate-y-0/2 cursor-pointer"
 //                 onClick={() => showPassword(!passwords)}
 //               >
 //                 {passwords ? (
-//                   <FaEye className="text-[#A9ABAE]" />
+//                   <FaEye className="text-[#666259]" />
 //                 ) : (
-//                   <FaEyeSlash className="text-[#A9ABAE]" />
+//                   <FaEyeSlash className="text-[#666259]" />
 //                 )}
 //               </div>
 //             </div>
@@ -110,16 +110,16 @@
 //             <div className='flex relative'>
 //               <input  value={confirmPassword}
 //                 onChange={(e) => setConfirmPassword(e.target.value)}
-//                 required type={passwords ? "text" : "password"} className='border-b login-input w-full py-1 px-2 placeholder-[#A9ABAE] text-[#A9ABAE] text-sm outline-0  mt-5' name='cpassword' id='cpassword' placeholder='Confirm Password' />
+//                 required type={passwords ? "text" : "password"} className='border-b login-input w-full py-1 px-2 placeholder-[#A9ABAE] text-[#666259] text-sm outline-0  mt-5' name='cpassword' id='cpassword' placeholder='Confirm Password' />
 
 //               <div
 //                 className="absolute right-3 top-1/2  transform -translate-y-0/2 cursor-pointer"
 //                 onClick={() => showPassword(!passwords)}
 //               >
 //                 {passwords ? (
-//                   <FaEye className="text-[#A9ABAE]" />
+//                   <FaEye className="text-[#666259]" />
 //                 ) : (
-//                   <FaEyeSlash className="text-[#A9ABAE]" />
+//                   <FaEyeSlash className="text-[#666259]" />
 //                 )}
 //               </div>
 //             </div>
@@ -132,7 +132,7 @@
 //         </div>
 //       </div>
 //        <div className='sm:px-10 px-0 fixed top-15 right-5 z-50'>
-//         <Link to="/products" className='flex items-center justify-center text-[#A9ABAE] hover:underline text-sm cursor-pointer'>
+//         <Link to="/products" className='flex items-center justify-center text-[#666259] hover:underline text-sm cursor-pointer'>
 //           <IoIosArrowRoundBack className='text-xl cursor-pointer' />
 //         </Link>
 //       </div>
@@ -227,8 +227,8 @@ const Signup = () => {
             <img src={assets.s4} alt="Logo" className="w-30 mix-blend-multiply opacity-40" />
           </div>
 
-          <div className='text-[#A9ABAE] text-sm font-medium pt-2 my-6'>
-            <Link to="/login" className='text-[#A9ABAE] rounded-full bg-[#605B55] hover:bg-[#534f49] py-1 px-2'>Login</Link>
+          <div className='text-[#666259] text-sm font-medium pt-2 my-6'>
+            <Link to="/login" className='bg-[#666259] rounded-full text-[#030100] hover:bg-[#534f49] py-1 px-2'>Login</Link>
           </div>
 
           <form onSubmit={handleSubmit}>
@@ -236,7 +236,7 @@ const Signup = () => {
               type="email"
               placeholder="Email"
               required
-              className='border-b login-input w-full py-1 px-2 text-[#A9ABAE] placeholder-[#A9ABAE] text-sm outline-0 mt-5'
+              className='border-b login-input w-full py-1 px-2 text-[#666259] placeholder-[#666259] text-sm outline-0 mt-5'
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value.toLowerCase() })}
             />
@@ -246,12 +246,12 @@ const Signup = () => {
                 type={passwords ? 'text' : 'password'}
                 placeholder="Password"
                 required
-                className='border-b login-input w-full py-1 px-2 text-[#A9ABAE] placeholder-[#A9ABAE] text-sm outline-0'
+                className='border-b login-input w-full py-1 px-2 text-[#666259] placeholder-[#666259] text-sm outline-0'
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
               />
               <div className="absolute right-3 top-[20%] transform -translate-y-0/2 cursor-pointer" onClick={() => showPassword(!passwords)}>
-                {passwords ? <FaEye className="text-[#A9ABAE]" /> : <FaEyeSlash className="text-[#A9ABAE]" />}
+                {passwords ? <FaEye className="text-[#666259]" /> : <FaEyeSlash className="text-[#666259]" />}
               </div>
             </div>
 
@@ -260,22 +260,22 @@ const Signup = () => {
                 type={passwords ? 'text' : 'password'}
                 placeholder="Confirm Password"
                 required
-                className='border-b login-input w-full py-1 px-2 text-[#A9ABAE] placeholder-[#A9ABAE] text-sm outline-0'
+                className='border-b login-input w-full py-1 px-2 text-[#666259] placeholder-[#666259] text-sm outline-0'
                 value={form.confirmPassword}
                 onChange={(e) => setForm({ ...form, confirmPassword: e.target.value })}
               />
               <div className="absolute right-3 top-[20%] transform -translate-y-0/2 cursor-pointer" onClick={() => showPassword(!passwords)}>
-                {passwords ? <FaEye className="text-[#A9ABAE]" /> : <FaEyeSlash className="text-[#A9ABAE]" />}
+                {passwords ? <FaEye className="text-[#666259]" /> : <FaEyeSlash className="text-[#666259]" />}
               </div>
             </div>
 
-            <button type="submit" className='w-full rounded-full bg-[#605B55] hover:bg-[#534f49] py-1 px-2 mt-3 text-[#D2D3D5] text-sm'> Sign Up </button>
+            <button type="submit" className='w-full rounded-full bg-[#605B55] hover:bg-[#534f49] py-1 px-2 mt-3 text-[#030100] text-sm'> Sign Up </button>
           </form>
         </div>
       </div>
 
       <div className='sm:px-10 px-0 fixed top-15 right-5 z-50'>
-        <Link to="/products" className='flex items-center justify-center text-[#A9ABAE] hover:underline text-sm'>
+        <Link to="/products" className='flex items-center justify-center text-[#666259] hover:underline text-sm'>
           <IoIosArrowRoundBack className='text-xl cursor-pointer' />
         </Link>
       </div>

@@ -12,6 +12,7 @@ import { useLocation } from 'react-router-dom'
 import Error from './component/Error'
 import Career from './component/Career'
 import rougemp4video1 from './assets/rougemp4video1.mp4';
+import rougemp4video2 from './assets/rougemp4video2.mp4';
 
 import Terms from './component/Terms'
 import Shipping from './component/Shipping'
@@ -100,9 +101,9 @@ const App = () => {
             preload="auto"
           >
             {browser === 'Safari' ? (
-              <source src={rougemp4video1} type="video/mp4" />
+              <source src={rougemp4video2} type="video/mp4" />
             ) : (
-              <source src={bgVideo} type="video/mp4" />
+              <source src={rougemp4video2} type="video/mp4" />
             )}
             Your browser does not support the video tag.
           </video>
@@ -118,7 +119,8 @@ const App = () => {
       ) : (
         <div
           className="absolute top-0 left-0 w-full h-full min-h-[100vh] bg-cover bg-center z-[-1]"
-          style={{ backgroundImage: `url(${assets.bgImg})`, backgroundAttachment: "fixed" }}
+          // style={{ backgroundImage: `url(${assets.bgImg})`, backgroundAttachment: "fixed" }}
+          style={{backgroundColor: "#1c1c1c"}}
         />
 
       )}

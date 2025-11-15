@@ -5,12 +5,12 @@ const PreOrderPolicy = () => {
   return (
     <div className='sm:px-10 h-[75vh] px-4 w-10/12 m-auto'>
       <div>
-        <p className='flex  text-[#A9ABAE] text-xs font-semibold uppercase'>
+        <p className='flex  text-[#666259] text-xs font-semibold uppercase'>
           Rogue Pre-Order Policy <FaArrowDown className='ms-3' />
         </p>
       </div>
 
-      <div className='text-[#A9ABAE] text-xs mt-6 space-y-4 text-justify'>
+      <div className='text-[#666259] text-xs mt-6 space-y-4 text-justify'>
         <p>
           All pre-orders placed with ROGUE require full payment at the time the order is submitted. This payment acts as a formal confirmation of the client’s intent to purchase and secures the reserved item(s) within ROGUE’s production schedule for the upcoming collection. Once payment is processed, ROGUE considers the pre-order confirmed, and preparation for fulfillment begins internally. Payments are accepted through all major standard methods supported by ROGUE’s checkout system and are subject to the same fraud protection, security, and verification protocols applied to standard transactions.
         </p>
