@@ -11,7 +11,6 @@ import Footer from './pages/Footer'
 import { useLocation } from 'react-router-dom'
 import Error from './component/Error'
 import Career from './component/Career'
-import rougemp4video1 from './assets/rougemp4video1.mp4';
 import rougemp4video2 from './assets/rougemp4video2.mp4';
 
 import Terms from './component/Terms'
