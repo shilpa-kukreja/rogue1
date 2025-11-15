@@ -4,7 +4,7 @@ import s2 from './s2.png'
 import s3 from './s3.jpeg'
 import s4 from './s4.png'
 import BG from './BG.jpg'
-import s5 from './WebsiteLOGO.png'
+import s5 from './WebsiteLOGO2.png'
 // import p1 from '../assets/ProductImg/productImg1.webp'
 
 
