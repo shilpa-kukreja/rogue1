@@ -388,7 +388,7 @@ import { Link } from "react-router-dom";
 import DealTimer from "../component/DealTimer";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
-import CurrencyPopup from "../component/CurrencyPopup ";
+import CurrencyPopup from "../component/CurrencyPopup";
 
 const Product = () => {
   const { products, timerExpire } = useContext(ShopContext);
