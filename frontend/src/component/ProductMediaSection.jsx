@@ -12,9 +12,12 @@ const ProductMediaSection = () => {
 
     // Function to render additional information from JSON
     const renderAdditionalInfo = (info) => {
+        if (!info) return "No additional information available.";
+        
         if (typeof info === 'string') {
             return <p>{info}</p>;
         }
+        
         return info?.children?.map((child, index) => {
             if (child.type === 'paragraph') {
                 return (
@@ -58,21 +61,34 @@ const ProductMediaSection = () => {
                 });
 
                 const result = await res.json();
-                console.log('API Response:', result); // Log the API response to check for data
+                console.log('API Response:', result);
 
                 const metafields = result.data?.product?.metafields || [];
 
+                // Filter out null metafields first
+                const validMetafields = metafields.filter(meta => meta !== null);
+                console.log('Valid Metafields:', validMetafields);
+
                 // Process additional information
-                const infoMeta = metafields.find(m => m.key === "additional_information");
+                const infoMeta = validMetafields.find(m => m && m.key === "additional_information");
                 if (infoMeta?.value) {
-                    setAdditionalInfo(infoMeta.value);
-                    console.log('Additional Info:', infoMeta.value); // Log additional info
+                    try {
+                        const parsedInfo = JSON.parse(infoMeta.value);
+                        setAdditionalInfo(parsedInfo);
+                        console.log('Additional Info:', parsedInfo);
+                    } catch (error) {
+                        console.error('Error parsing additional info:', error);
+                        // If it's not valid JSON, use it as a string
+                        setAdditionalInfo(infoMeta.value);
+                    }
+                } else {
+                    console.log('No additional information found');
                 }
 
                 // Process videos
-                const videosMeta = metafields.find(m => m.key === "videos");
+                const videosMeta = validMetafields.find(m => m && m.key === "videos");
                 if (videosMeta?.value) {
-                    const videoId = videosMeta.value;  // Get the video ID
+                    const videoId = videosMeta.value;
                     console.log('Video ID:', videoId);
 
                     // Query for video data using the video ID
@@ -100,23 +116,29 @@ const ProductMediaSection = () => {
                     });
 
                     const videoResult = await videoRes.json();
-                    console.log('Video Data:', videoResult); // Log video data
+                    console.log('Video Data:', videoResult);
 
                     // Process the video data
                     const videoData = videoResult.data?.node?.sources || [];
-                    console.log('Processed Video Data:', videoData); // Log processed video data
-                    setVideos(videoData); // Set the video in state
+                    console.log('Processed Video Data:', videoData);
+                    setVideos(videoData);
+                } else {
+                    console.log('No videos found');
                 }
             } catch (error) {
                 console.error("Error fetching product data:", error);
             }
         };
 
-        fetchProductData();
+        if (productId) {
+            fetchProductData();
+        }
     }, [productId]);
 
     // Auto-play video logic using IntersectionObserver
     useEffect(() => {
+        if (videos.length === 0) return;
+
         const observer = new IntersectionObserver(
             (entries) => {
                 entries.forEach((entry) => {
@@ -130,6 +152,9 @@ const ProductMediaSection = () => {
             },
             { threshold: 0.5 }
         );
+
+        // Initialize refs array
+        videoRefs.current = videoRefs.current.slice(0, videos.length);
 
         videoRefs.current.forEach((video) => {
             if (video) observer.observe(video);
@@ -146,48 +171,42 @@ const ProductMediaSection = () => {
         <div className="w-full min-h-screen">
             {/* Additional Information Section */}
             <div className="w-full h-screen flex sm:flex-row flex-col">
-                <div className="sm:w-1/2 w-full h-full flex items-center justify-center  p-4">
+                <div className="sm:w-1/2 w-full h-full flex items-center justify-center p-4">
                     <div className="text-center max-w-2xl">
-
-                        <div className="text-[10px] text-[#666259]   py-4 leading-relaxed">
-                            {additionalInfo ? renderAdditionalInfo(JSON.parse(additionalInfo)) : "No additional information available."}
+                        <div className="text-[10px] text-[#666259] py-4 leading-relaxed">
+                            {additionalInfo ? renderAdditionalInfo(additionalInfo) : "No additional information available."}
                         </div>
                     </div>
                 </div>
 
                 {/* Video Section */}
-  <div className="sm:w-1/2 w-full h-full flex items-center justify-center relative overflow-hidden ">
-  {videos.length > 0 ? (
-    videos.map((video, idx) => (
-      <video
-        key={idx}
-        ref={(el) => (videoRefs.current[idx] = el)}
-        className="absolute top-1/2 left-1/2 w-auto h-full -translate-x-1/2 -translate-y-1/2 object-contain rounded-none"
-        muted
-        loop
-        playsInline
-        preload="auto"
-        autoPlay
-        style={{
-          background: "black",
-        }}
-        onLoadedData={(e) => (e.target.style.opacity = 1)}
-      >
-        <source src={video.url} type={video.mimeType} />
-        Your browser does not support the video tag.
-      </video>
-    ))
-  ) : (
-    <div className="w-full h-full flex flex-col items-center justify-center bg-[#666259] text-[#030100]">
-      <h2 className="text-xs mb-2">Product Demonstration</h2>
-      <p className="text-gray-300 text-xs">No video available</p>
-    </div>
-  )}
-</div>
-
-
-
-
+                <div className="sm:w-1/2 w-full h-full flex items-center justify-center relative overflow-hidden">
+                    {videos.length > 0 ? (
+                        videos.map((video, idx) => (
+                            <video
+                                key={idx}
+                                ref={(el) => (videoRefs.current[idx] = el)}
+                                className="absolute top-1/2 left-1/2 w-auto h-full -translate-x-1/2 -translate-y-1/2 object-contain rounded-none"
+                                muted
+                                loop
+                                playsInline
+                                preload="auto"
+                                style={{
+                                    background: "black",
+                                }}
+                                onLoadedData={(e) => (e.target.style.opacity = 1)}
+                            >
+                                <source src={video.url} type={video.mimeType} />
+                                Your browser does not support the video tag.
+                            </video>
+                        ))
+                    ) : (
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-[#666259] text-[#030100]">
+                            <h2 className="text-xs mb-2">Product Demonstration</h2>
+                            <p className="text-gray-300 text-xs">No video available</p>
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

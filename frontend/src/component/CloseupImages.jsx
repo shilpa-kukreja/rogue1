@@ -20,10 +20,10 @@ const CloseupImages = ({ closeupImages, selectedColor }) => {
         modules={[Navigation, Pagination, Autoplay]}
         spaceBetween={10}
         slidesPerView={1}
-        navigation={{
-          nextEl: ".swiper-button-next-custom",
-          prevEl: ".swiper-button-prev-custom",
-        }}
+        // navigation={{
+        //   nextEl: ".swiper-button-next-custom",
+        //   prevEl: ".swiper-button-prev-custom",
+        // }}
         pagination={{ clickable: true }}
         autoplay={{ delay: 3000, disableOnInteraction: false }}
         breakpoints={{
