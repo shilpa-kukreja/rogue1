@@ -1500,7 +1500,7 @@ const ProductDetail = () => {
                   ))}
                 </Swiper>
               ) : (
-                <div className="w-full h-[60vh] flex items-center justify-center bg-gray-100">
+                <div className="w-full h-[60vh] flex items-center justify-center ">
                   <p className="text-gray-500">Loading images...</p>
                 </div>
               )}
