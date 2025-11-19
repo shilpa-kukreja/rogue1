@@ -21,7 +21,7 @@ const Navbar = () => {
   };
 
   return (
-    <div className=" flex group   h-[16vh] flex-row  justify-between px-10 py-6 sticky top-0 z-[9] ">
+    <div className=" flex group   h-[16vh] flex-row  justify-between px-10 py-6 sticky top-0 z-50 ">
       <div>
         <button onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? (

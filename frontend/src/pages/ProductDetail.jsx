@@ -1489,7 +1489,7 @@ const ProductDetail = () => {
                 >
                   {currentMainImages.map((url, index) => (
                     <SwiperSlide key={index}>
-                      <div className="w-full h-[60vh] flex items-center justify-center">
+                      <div className="w-full h-[60vh]  flex items-center justify-center">
                         <img
                           src={url}
                           alt={`${selectedColor} Slide ${index}`}
@@ -1672,7 +1672,7 @@ const ProductDetail = () => {
 
           {/* Right Media Panel - Desktop */}
           <div className="lg:col-span-5 product_cont hidden sm:flex flex-col justify-center order-2 lg:order-1">
-            <div className="relative">
+            <div className="relative mt-[-45px] 2xl:mt-[-100px]">
               {currentMainImages.length > 0 ? (
                 <Swiper
                   {...swiperSettings}
