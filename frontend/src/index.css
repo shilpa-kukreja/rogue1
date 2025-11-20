@@ -339,3 +339,38 @@
 /* .productSwiper img:hover {
   transform: scale(1.05);
 } */
+
+
+
+
+
+
+
+
+
+
+
+/* Scrollbar base width */
+::-webkit-scrollbar {
+  height: 10px;
+  width: 4px;
+}
+
+
+/* Scrollbar track */
+::-webkit-scrollbar-track {
+  background: #666259;
+  border-radius: 10px;
+}
+
+/* Scrollbar thumb */
+::-webkit-scrollbar-thumb {
+  background: #030100;
+  border-radius: 20px;
+ 
+}
+
+/* Remove arrow buttons (Chrome/Safari) */
+::-webkit-scrollbar-button {
+  display: none;
+}

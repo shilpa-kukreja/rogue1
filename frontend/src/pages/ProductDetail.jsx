@@ -1469,7 +1469,7 @@ const ProductDetail = () => {
 
   return (
     <>
-      <div className='w-10/12 mx-auto'>
+      <div className='w-10/12 mx-auto '>
         <div className="fixed inset-0 flex left-0 justify-center items-center pointer-events-none z-10">
           <img src={assets.s4} alt="Logo" className="w-70 mix-blend-multiply opacity-40" />
         </div>

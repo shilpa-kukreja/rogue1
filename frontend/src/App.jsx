@@ -119,7 +119,7 @@ const App = () => {
         <div
           className="absolute top-0 left-0 w-full h-full min-h-[100vh] bg-cover bg-center z-[-1]"
           // style={{ backgroundImage: `url(${assets.bgImg})`, backgroundAttachment: "fixed" }}
-          style={{backgroundColor: "#1c1c1c"}}
+          style={{backgroundColor: "#171717"}}
         />
 
       )}
