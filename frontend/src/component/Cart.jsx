@@ -529,14 +529,14 @@ const Cart = () => {
   };
 
   if (loading) {
-    return <p className="text-center text-gray-400 mt-10">Loading cart...</p>;
+    return <p className="text-center text-[#666259] mt-10">Loading cart...</p>;
   }
 
   if (!cartData || items.length === 0) {
     return (
-      <div className="text-center text-xl text-gray-400 mt-20">
+      <div className="text-center text-xl h-[65vh] text-[#666259] mt-20">
         Your cart is empty. <br />
-        <Link to="/products" className="text-blue-400 underline">
+        <Link to="/products" className="text-[#666259] text-sm underline">
           Browse Products
         </Link>
       </div>
