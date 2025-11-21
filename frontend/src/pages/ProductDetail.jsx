@@ -1501,7 +1501,7 @@ const ProductDetail = () => {
                 </Swiper>
               ) : (
                 <div className="w-full h-[60vh] flex items-center justify-center ">
-                  <p className="text-gray-500">Loading images...</p>
+                  <p className="text-[#666259]">Loading images...</p>
                 </div>
               )}
 
@@ -1563,7 +1563,7 @@ const ProductDetail = () => {
                         key={node.id}
                         onClick={() => !isOutOfStock && handleSizeSelect(sizeOption.value)}
                         className={`w-6 h-6 items-center flex justify-center rounded text-[8px] text-[#030100] cursor-pointer
-          ${selectedSize === sizeOption.value ? "bg-[#666259] text-[#030100]" : "bg-[#605B55] hover:bg-gray-200 hover:text-black"}
+          ${selectedSize === sizeOption.value ? "bg-[#666259] text-[#030100]" : "bg-[#605B55] hover:bg-[#605B55] hover:text-black"}
           ${isOutOfStock ? "opacity-40 cursor-not-allowed" : ""}`}
                       >
                         {sizeOption.value}
@@ -1696,7 +1696,7 @@ const ProductDetail = () => {
                 </Swiper>
               ) : (
                 <div className="w-full h-[80vh] flex items-center justify-center ">
-                  <p className="text-gray-500">Loading images...</p>
+                  <p className="text-[#666259] ">Loading images...</p>
                 </div>
               )}
 
@@ -1716,7 +1716,8 @@ const ProductDetail = () => {
           selectedColor={selectedColor} 
         />
         
-        <ProductMediaSection />
+        {/* <ProductMediaSection /> */}
+        <ProductMediaSection selectedColor={selectedColor} />
       </div>
     </>
   );

@@ -8,7 +8,7 @@ import "swiper/css/navigation";
 const CloseupImages = ({ closeupImages, selectedColor }) => {
   if (!closeupImages || closeupImages.length === 0) {
     return (
-      <div className="flex justify-center items-center text-gray-500 text-sm h-32">
+      <div className="flex justify-center items-center text-[#666259] text-sm h-32">
         No closeup images available for {selectedColor} color.
       </div>
     );

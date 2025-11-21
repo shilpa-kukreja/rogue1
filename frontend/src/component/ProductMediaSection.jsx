@@ -1,213 +1,407 @@
+// import React, { useEffect, useState, useRef } from "react";
+// import { useParams } from "react-router-dom";
+
+// const GRAPHQL_URL = "https://q3uepe-ic.myshopify.com/api/2024-04/graphql.json";
+// const ACCESS_TOKEN = "76df5b05e1b2db908234960f1757df67";
+
+// const ProductMediaSection = () => {
+//     const { productId } = useParams();
+//     const [additionalInfo, setAdditionalInfo] = useState("");
+//     const [videos, setVideos] = useState([]);
+//     const videoRefs = useRef([]);
+
+//     // Function to render additional information from JSON
+//     const renderAdditionalInfo = (info) => {
+//         if (!info) return "No additional information available.";
+        
+//         if (typeof info === 'string') {
+//             return <p>{info}</p>;
+//         }
+        
+//         return info?.children?.map((child, index) => {
+//             if (child.type === 'paragraph') {
+//                 return (
+//                     <p key={index} className={child.children?.[0]?.bold ? 'font-bold' : ''}>
+//                         {child.children?.map((text, i) => (
+//                             <span key={i}>{text.value}</span>
+//                         ))}
+//                     </p>
+//                 );
+//             }
+//             return null;
+//         });
+//     };
+
+//     // Fetch product data (additional information and videos)
+//     useEffect(() => {
+//         const fetchProductData = async () => {
+//             try {
+//                 const globalId = `gid://shopify/Product/${productId}`;
+//                 const query = `
+//           query {
+//             product(id: "${globalId}") {
+//               metafields(identifiers: [
+//                 {namespace: "custom", key: "additional_information"},
+//                 {namespace: "custom", key: "videos"}
+//               ]) {
+//                 key
+//                 value
+//               }
+//             }
+//           }
+//         `;
+
+//                 const res = await fetch(GRAPHQL_URL, {
+//                     method: "POST",
+//                     headers: {
+//                         "Content-Type": "application/json",
+//                         "X-Shopify-Storefront-Access-Token": ACCESS_TOKEN,
+//                     },
+//                     body: JSON.stringify({ query }),
+//                 });
+
+//                 const result = await res.json();
+//                 console.log('API Response:', result);
+
+//                 const metafields = result.data?.product?.metafields || [];
+
+//                 // Filter out null metafields first
+//                 const validMetafields = metafields.filter(meta => meta !== null);
+//                 console.log('Valid Metafields:', validMetafields);
+
+//                 // Process additional information
+//                 const infoMeta = validMetafields.find(m => m && m.key === "additional_information");
+//                 if (infoMeta?.value) {
+//                     try {
+//                         const parsedInfo = JSON.parse(infoMeta.value);
+//                         setAdditionalInfo(parsedInfo);
+//                         console.log('Additional Info:', parsedInfo);
+//                     } catch (error) {
+//                         console.error('Error parsing additional info:', error);
+//                         // If it's not valid JSON, use it as a string
+//                         setAdditionalInfo(infoMeta.value);
+//                     }
+//                 } else {
+//                     console.log('No additional information found');
+//                 }
+
+//                 // Process videos
+//                 const videosMeta = validMetafields.find(m => m && m.key === "videos");
+//                 if (videosMeta?.value) {
+//                     const videoId = videosMeta.value;
+//                     console.log('Video ID:', videoId);
+
+//                     // Query for video data using the video ID
+//                     const videoQuery = `
+//             query {
+//               node(id: "${videoId}") {
+//                 ... on Video {
+//                   id
+//                   sources {
+//                     url
+//                     mimeType
+//                   }
+//                 }
+//               }
+//             }
+//           `;
+
+//                     const videoRes = await fetch(GRAPHQL_URL, {
+//                         method: "POST",
+//                         headers: {
+//                             "Content-Type": "application/json",
+//                             "X-Shopify-Storefront-Access-Token": ACCESS_TOKEN,
+//                         },
+//                         body: JSON.stringify({ query: videoQuery }),
+//                     });
+
+//                     const videoResult = await videoRes.json();
+//                     console.log('Video Data:', videoResult);
+
+//                     // Process the video data
+//                     const videoData = videoResult.data?.node?.sources || [];
+//                     console.log('Processed Video Data:', videoData);
+//                     setVideos(videoData);
+//                 } else {
+//                     console.log('No videos found');
+//                 }
+//             } catch (error) {
+//                 console.error("Error fetching product data:", error);
+//             }
+//         };
+
+//         if (productId) {
+//             fetchProductData();
+//         }
+//     }, [productId]);
+
+//     // Auto-play video logic using IntersectionObserver
+//     useEffect(() => {
+//         if (videos.length === 0) return;
+
+//         const observer = new IntersectionObserver(
+//             (entries) => {
+//                 entries.forEach((entry) => {
+//                     const video = entry.target;
+//                     if (entry.isIntersecting) {
+//                         video.play().catch((error) => console.error("Error playing video:", error));
+//                     } else {
+//                         video.pause();
+//                     }
+//                 });
+//             },
+//             { threshold: 0.5 }
+//         );
+
+//         // Initialize refs array
+//         videoRefs.current = videoRefs.current.slice(0, videos.length);
+
+//         videoRefs.current.forEach((video) => {
+//             if (video) observer.observe(video);
+//         });
+
+//         return () => {
+//             videoRefs.current.forEach((video) => {
+//                 if (video) observer.unobserve(video);
+//             });
+//         };
+//     }, [videos]);
+
+//     return (
+//         <div className="w-full min-h-screen">
+//             {/* Additional Information Section */}
+//             <div className="w-full h-screen flex sm:flex-row flex-col">
+//                 <div className="sm:w-1/2 w-full h-full flex items-center justify-center p-4">
+//                     <div className="text-center max-w-2xl">
+//                         <div className="text-[10px] text-[#666259] py-4 leading-relaxed">
+//                             {additionalInfo ? renderAdditionalInfo(additionalInfo) : "No additional information available."}
+//                         </div>
+//                     </div>
+//                 </div>
+
+//                 {/* Video Section */}
+//                 <div className="sm:w-1/2 w-full h-full flex items-center justify-center relative overflow-hidden">
+//                     {videos.length > 0 ? (
+//                         videos.map((video, idx) => (
+//                             <video
+//                                 key={idx}
+//                                 ref={(el) => (videoRefs.current[idx] = el)}
+//                                 className="absolute top-1/2 left-1/2 w-auto h-full -translate-x-1/2 -translate-y-1/2 object-contain rounded-none"
+//                                 muted
+//                                 loop
+//                                 playsInline
+//                                 preload="auto"
+//                                 style={{
+//                                     background: "black",
+//                                 }}
+//                                 onLoadedData={(e) => (e.target.style.opacity = 1)}
+//                             >
+//                                 <source src={video.url} type={video.mimeType} />
+//                                 Your browser does not support the video tag.
+//                             </video>
+//                         ))
+//                     ) : (
+//                         <div className="w-full h-full flex flex-col items-center justify-center bg-[#666259] text-[#030100]">
+//                             <h2 className="text-xs mb-2">Product Demonstration</h2>
+//                             <p className="text-gray-300 text-xs">No video available</p>
+//                         </div>
+//                     )}
+//                 </div>
+//             </div>
+//         </div>
+//     );
+// };
+
+// export default ProductMediaSection;
+
 import React, { useEffect, useState, useRef } from "react";
 import { useParams } from "react-router-dom";
 
 const GRAPHQL_URL = "https://q3uepe-ic.myshopify.com/api/2024-04/graphql.json";
 const ACCESS_TOKEN = "76df5b05e1b2db908234960f1757df67";
 
-const ProductMediaSection = () => {
+const ProductMediaSection = ({ selectedColor }) => {
     const { productId } = useParams();
-    const [additionalInfo, setAdditionalInfo] = useState("");
-    const [videos, setVideos] = useState([]);
-    const videoRefs = useRef([]);
 
-    // Function to render additional information from JSON
-    const renderAdditionalInfo = (info) => {
-        if (!info) return "No additional information available.";
-        
-        if (typeof info === 'string') {
-            return <p>{info}</p>;
+    const [blackInfo, setBlackInfo] = useState("");
+    const [beigeInfo, setBeigeInfo] = useState("");
+    const [additionalInfo, setAdditionalInfo] = useState("");
+
+    const [blackVideoUrl, setBlackVideoUrl] = useState(null);
+    const [beigeVideoUrl, setBeigeVideoUrl] = useState(null);
+
+    const videoRef = useRef(null);
+
+    // 🔥 Convert metafield JSON → plain text
+    const extractText = (jsonString) => {
+        try {
+            const data = JSON.parse(jsonString);
+
+            if (!data?.children) return "";
+
+            return data.children
+                .map(block =>
+                    block.children
+                        ?.map(child => child.value || "")
+                        .join(" ")
+                )
+                .join("\n");
+        } catch {
+            return jsonString; // fallback text
         }
-        
-        return info?.children?.map((child, index) => {
-            if (child.type === 'paragraph') {
-                return (
-                    <p key={index} className={child.children?.[0]?.bold ? 'font-bold' : ''}>
-                        {child.children?.map((text, i) => (
-                            <span key={i}>{text.value}</span>
-                        ))}
-                    </p>
-                );
-            }
-            return null;
-        });
     };
 
-    // Fetch product data (additional information and videos)
+    // Cache video as blob
+    const fetchAndCacheVideo = async (url, setter) => {
+        try {
+            const res = await fetch(url);
+            const blob = await res.blob();
+            const objectUrl = URL.createObjectURL(blob);
+            setter(objectUrl);
+        } catch (error) {
+            console.error("VIDEO CACHE ERROR:", error);
+        }
+    };
+
+    const fetchVideoData = async (videoId, setCache) => {
+        try {
+            const query = `
+                query {
+                    node(id: "${videoId}") {
+                        ... on Video {
+                            sources {
+                                url
+                                mimeType
+                                height
+                            }
+                            previewImage { url }
+                        }
+                    }
+                }
+            `;
+
+            const res = await fetch(GRAPHQL_URL, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Shopify-Storefront-Access-Token": ACCESS_TOKEN
+                },
+                body: JSON.stringify({ query })
+            });
+
+            const data = await res.json();
+            const sources = data.data?.node?.sources || [];
+
+            if (!sources.length) return;
+
+            const fastest = [...sources].sort((a, b) => a.height - b.height)[0];
+
+            fetchAndCacheVideo(fastest.url, setCache);
+
+        } catch (error) {
+            console.error("Error fetching video:", error);
+        }
+    };
+
+    const isVideoId = (value) =>
+        typeof value === "string" && value.startsWith("gid://shopify/Video/");
+
     useEffect(() => {
-        const fetchProductData = async () => {
+        const fetchProduct = async () => {
             try {
-                const globalId = `gid://shopify/Product/${productId}`;
+                const gid = `gid://shopify/Product/${productId}`;
+
                 const query = `
-          query {
-            product(id: "${globalId}") {
-              metafields(identifiers: [
-                {namespace: "custom", key: "additional_information"},
-                {namespace: "custom", key: "videos"}
-              ]) {
-                key
-                value
-              }
-            }
-          }
-        `;
+                    query {
+                        product(id: "${gid}") {
+                            metafields(identifiers: [
+                                {namespace: "custom", key: "black_additional_information"},
+                                {namespace: "custom", key: "black_videos"},
+                                {namespace: "custom", key: "beige_additional_information"},
+                                {namespace: "custom", key: "beige_videos"}
+                            ]) {
+                                key
+                                value
+                            }
+                        }
+                    }
+                `;
 
                 const res = await fetch(GRAPHQL_URL, {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
-                        "X-Shopify-Storefront-Access-Token": ACCESS_TOKEN,
+                        "X-Shopify-Storefront-Access-Token": ACCESS_TOKEN
                     },
-                    body: JSON.stringify({ query }),
+                    body: JSON.stringify({ query })
                 });
 
-                const result = await res.json();
-                console.log('API Response:', result);
+                const json = await res.json();
+                const mf = Object.fromEntries(
+                    (json.data?.product?.metafields || []).map(m => [m.key, m.value])
+                );
 
-                const metafields = result.data?.product?.metafields || [];
+                // ✔ Convert RichText JSON → Plain text
+                setBlackInfo(extractText(mf.black_additional_information || ""));
+                setBeigeInfo(extractText(mf.beige_additional_information || ""));
 
-                // Filter out null metafields first
-                const validMetafields = metafields.filter(meta => meta !== null);
-                console.log('Valid Metafields:', validMetafields);
-
-                // Process additional information
-                const infoMeta = validMetafields.find(m => m && m.key === "additional_information");
-                if (infoMeta?.value) {
-                    try {
-                        const parsedInfo = JSON.parse(infoMeta.value);
-                        setAdditionalInfo(parsedInfo);
-                        console.log('Additional Info:', parsedInfo);
-                    } catch (error) {
-                        console.error('Error parsing additional info:', error);
-                        // If it's not valid JSON, use it as a string
-                        setAdditionalInfo(infoMeta.value);
-                    }
-                } else {
-                    console.log('No additional information found');
+                // ✔ Cache Black video
+                if (mf.black_videos && isVideoId(mf.black_videos)) {
+                    fetchVideoData(mf.black_videos, setBlackVideoUrl);
                 }
 
-                // Process videos
-                const videosMeta = validMetafields.find(m => m && m.key === "videos");
-                if (videosMeta?.value) {
-                    const videoId = videosMeta.value;
-                    console.log('Video ID:', videoId);
-
-                    // Query for video data using the video ID
-                    const videoQuery = `
-            query {
-              node(id: "${videoId}") {
-                ... on Video {
-                  id
-                  sources {
-                    url
-                    mimeType
-                  }
+                // ✔ Cache Beige video
+                if (mf.beige_videos && isVideoId(mf.beige_videos)) {
+                    fetchVideoData(mf.beige_videos, setBeigeVideoUrl);
                 }
-              }
-            }
-          `;
 
-                    const videoRes = await fetch(GRAPHQL_URL, {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json",
-                            "X-Shopify-Storefront-Access-Token": ACCESS_TOKEN,
-                        },
-                        body: JSON.stringify({ query: videoQuery }),
-                    });
-
-                    const videoResult = await videoRes.json();
-                    console.log('Video Data:', videoResult);
-
-                    // Process the video data
-                    const videoData = videoResult.data?.node?.sources || [];
-                    console.log('Processed Video Data:', videoData);
-                    setVideos(videoData);
-                } else {
-                    console.log('No videos found');
-                }
-            } catch (error) {
-                console.error("Error fetching product data:", error);
+            } catch (e) {
+                console.error("Product fetch error:", e);
             }
         };
 
-        if (productId) {
-            fetchProductData();
-        }
+        fetchProduct();
     }, [productId]);
 
-    // Auto-play video logic using IntersectionObserver
+    // Switch instantly between Black & Beige video + info
     useEffect(() => {
-        if (videos.length === 0) return;
+        if (!videoRef.current) return;
 
-        const observer = new IntersectionObserver(
-            (entries) => {
-                entries.forEach((entry) => {
-                    const video = entry.target;
-                    if (entry.isIntersecting) {
-                        video.play().catch((error) => console.error("Error playing video:", error));
-                    } else {
-                        video.pause();
-                    }
-                });
-            },
-            { threshold: 0.5 }
-        );
+        if (selectedColor === "Black") {
+            setAdditionalInfo(blackInfo);
+            if (blackVideoUrl) videoRef.current.src = blackVideoUrl;
+        } else {
+            setAdditionalInfo(beigeInfo);
+            if (beigeVideoUrl) videoRef.current.src = beigeVideoUrl;
+        }
 
-        // Initialize refs array
-        videoRefs.current = videoRefs.current.slice(0, videos.length);
+        setTimeout(() => videoRef.current?.play(), 100);
 
-        videoRefs.current.forEach((video) => {
-            if (video) observer.observe(video);
-        });
+    }, [selectedColor, blackVideoUrl, beigeVideoUrl]);
 
-        return () => {
-            videoRefs.current.forEach((video) => {
-                if (video) observer.unobserve(video);
-            });
-        };
-    }, [videos]);
 
     return (
-        <div className="w-full min-h-screen">
-            {/* Additional Information Section */}
-            <div className="w-full h-screen flex sm:flex-row flex-col">
-                <div className="sm:w-1/2 w-full h-full flex items-center justify-center p-4">
-                    <div className="text-center max-w-2xl">
-                        <div className="text-[10px] text-[#666259] py-4 leading-relaxed">
-                            {additionalInfo ? renderAdditionalInfo(additionalInfo) : "No additional information available."}
-                        </div>
-                    </div>
-                </div>
+        <div className="w-full min-h-screen flex">
 
-                {/* Video Section */}
-                <div className="sm:w-1/2 w-full h-full flex items-center justify-center relative overflow-hidden">
-                    {videos.length > 0 ? (
-                        videos.map((video, idx) => (
-                            <video
-                                key={idx}
-                                ref={(el) => (videoRefs.current[idx] = el)}
-                                className="absolute top-1/2 left-1/2 w-auto h-full -translate-x-1/2 -translate-y-1/2 object-contain rounded-none"
-                                muted
-                                loop
-                                playsInline
-                                preload="auto"
-                                style={{
-                                    background: "black",
-                                }}
-                                onLoadedData={(e) => (e.target.style.opacity = 1)}
-                            >
-                                <source src={video.url} type={video.mimeType} />
-                                Your browser does not support the video tag.
-                            </video>
-                        ))
-                    ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center bg-[#666259] text-[#030100]">
-                            <h2 className="text-xs mb-2">Product Demonstration</h2>
-                            <p className="text-gray-300 text-xs">No video available</p>
-                        </div>
-                    )}
+            {/* INFO */}
+            <div className="sm:w-1/2 p-4 flex items-center justify-center">
+                <div className="text-[12px] text-[#666259] whitespace-pre-line">
+                    {additionalInfo}
                 </div>
             </div>
+
+            {/* VIDEO */}
+            <div className="sm:w-1/2 flex items-center justify-center relative overflow-hidden bg-[#0d0d0d]">
+                <video
+                    ref={videoRef}
+                    muted
+                    loop
+                    playsInline
+                    preload="auto"
+                    className="w-auto h-full object-contain"
+                />
+            </div>
+
         </div>
     );
 };
