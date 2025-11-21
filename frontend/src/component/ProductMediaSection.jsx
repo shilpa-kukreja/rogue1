@@ -380,30 +380,31 @@ const ProductMediaSection = ({ selectedColor }) => {
     }, [selectedColor, blackVideoUrl, beigeVideoUrl]);
 
 
-    return (
-        <div className="w-full min-h-screen flex">
+   return (
+    <div className="w-full min-h-screen flex flex-col sm:flex-row">
 
-            {/* INFO */}
-            <div className="sm:w-1/2 p-4 flex items-center justify-center">
-                <div className="text-[12px] text-[#666259] whitespace-pre-line">
-                    {additionalInfo}
-                </div>
+        {/* INFO */}
+        <div className="w-full sm:w-1/2 p-4 flex items-center justify-center">
+            <div className="text-[12px] text-[#666259] whitespace-pre-line">
+                {additionalInfo}
             </div>
-
-            {/* VIDEO */}
-            <div className="sm:w-1/2 flex items-center justify-center relative overflow-hidden bg-[#0d0d0d]">
-                <video
-                    ref={videoRef}
-                    muted
-                    loop
-                    playsInline
-                    preload="auto"
-                    className="w-auto h-full object-contain"
-                />
-            </div>
-
         </div>
-    );
+
+        {/* VIDEO */}
+        <div className="w-full sm:w-1/2 flex items-center justify-center relative overflow-hidden bg-[#0d0d0d]">
+            <video
+                ref={videoRef}
+                muted
+                loop
+                playsInline
+                preload="auto"
+                className="w-full h-auto sm:w-auto sm:h-full object-contain"
+            />
+        </div>
+
+    </div>
+);
+
 };
 
 export default ProductMediaSection;
