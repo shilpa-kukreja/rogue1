@@ -153,7 +153,7 @@ export const fetchShopify = async (query, variables = {}) => {
     },
     body: JSON.stringify({ query, variables }),
   });
-
+  console.log(res);
   const json = await res.json();
   if (json.errors) throw new Error(json.errors[0].message);
   return json.data;
@@ -224,7 +224,7 @@ export const getCart = async (cartId) => {
   `;
   const variables = { cartId };
   const data = await fetchShopify(query, variables);
-  console.log(data);
+  console.log("Create Cart",data);
   if(data.cart === null) {
     await createCart();
     console.log('cart created');
@@ -376,9 +376,12 @@ export const getCart = async (cartId) => {
 
 
 export async function addToCart(variantId, quantity = 1, product = {}, sizeInfo = {}, currency = 'INR') {
-   
+   console.log('addToCart called');
+  
   let cartId = localStorage.getItem('cart_id');
-  await getCart(cartId);
+  // console.log('cartId', cartId);
+  // let cartdata = await getCart(cartId);
+  // console.log('cartId', cartdata);
   const trackPixel = () => {
     if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
       window.fbq('track', 'AddToCart', {
