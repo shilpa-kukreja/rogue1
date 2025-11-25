@@ -448,16 +448,21 @@ const Cart = () => {
   const [rate, setRate] = useState(1);
   const [localQuantities, setLocalQuantities] = useState({});
 
+  console.log("Cart Component Rendered");
+ 
   // Fetch cart data
   const fetchCartData = async () => {
+    
     const cartId = localStorage.getItem("cart_id");
     if (!cartId) {
+
       setLoading(false);
       return;
     }
     try {
       const cart = await getCart(cartId);
       setCartData(cart);
+
     } catch (error) {
       console.error("Error fetching cart:", error);
     } finally {
@@ -466,17 +471,18 @@ const Cart = () => {
   };
 
   useEffect(() => {
+    
     fetchCartData();
   }, []);
 
   const items = cartData?.lines?.edges || [];
-
-  // Initialize local quantities
+  console.log("Cart Items:", items);
+  // // Initialize local quantities
   useEffect(() => {
     const q = {};
     items.forEach(({ node }) => (q[node.id] = node.quantity));
     setLocalQuantities(q);
-  }, [items]);
+  }, [cartData]);
 
   // Fetch currency rate if not INR
   useEffect(() => {

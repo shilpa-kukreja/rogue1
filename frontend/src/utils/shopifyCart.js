@@ -142,6 +142,8 @@
 const GRAPHQL_URL = 'https://q3uepe-ic.myshopify.com/api/2024-04/graphql.json';
 const ACCESS_TOKEN = '76df5b05e1b2db908234960f1757df67';
 
+
+
 export const fetchShopify = async (query, variables = {}) => {
   const res = await fetch(GRAPHQL_URL, {
     method: 'POST',
@@ -222,6 +224,12 @@ export const getCart = async (cartId) => {
   `;
   const variables = { cartId };
   const data = await fetchShopify(query, variables);
+  console.log(data);
+  if(data.cart === null) {
+    await createCart();
+    console.log('cart created');
+      return [];
+  };
   return data.cart;
 };
 
@@ -368,8 +376,9 @@ export const getCart = async (cartId) => {
 
 
 export async function addToCart(variantId, quantity = 1, product = {}, sizeInfo = {}, currency = 'INR') {
+   
   let cartId = localStorage.getItem('cart_id');
-
+  await getCart(cartId);
   const trackPixel = () => {
     if (typeof window !== 'undefined' && typeof window.fbq === 'function') {
       window.fbq('track', 'AddToCart', {
@@ -417,6 +426,7 @@ export async function addToCart(variantId, quantity = 1, product = {}, sizeInfo 
     return cart;
   }
 
+  cartId = localStorage.getItem('cart_id');
   // cart already exists
   const query = `
     mutation cartLinesAdd($cartId: ID!, $lines: [CartLineInput!]!) {
