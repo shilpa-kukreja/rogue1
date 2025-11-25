@@ -87,7 +87,7 @@ const Sidebar = ({ isMobile = false }) => {
       {showSearch && (
         <form
           onSubmit={handleSearchSubmit}
-          className={`absolute ${isMobile ? 'bottom-16' : 'top-25 left-[150px]'} bg-[#666259] text-[#030100] font-bold   text-[10px] rounded-md px-2 py-1 z-50 shadow-lg`}
+          className={`absolute ${isMobile ? 'bottom-16' : 'top-25 xl:top-40 left-[150px]'} bg-[#666259] text-[#030100] font-bold   text-[10px] rounded-md px-2 py-1 z-50 shadow-lg`}
         >
           <input
             type="text"
@@ -104,7 +104,7 @@ const Sidebar = ({ isMobile = false }) => {
         <select
           value={currency}
           onChange={handleCurrencyChange}
-          className={`absolute ${isMobile ? 'bottom-16' : 'top-24 left-[150px]'} z-50 outline-none text-[10px] font-bold  bg-[#666259] text-[#030100] rounded-md shadow-md px-2 py-1`}
+          className={`absolute ${isMobile ? 'bottom-16' : 'top-24 xl:top-40 left-[150px]'} z-[999] outline-none text-[10px] font-bold  bg-[#666259] text-[#030100] rounded-md shadow-md px-2 py-1`}
         >
           {currencies.map((c) => (
             <option key={c.value} value={c.value}>
